@@ -1,50 +1,40 @@
 package com.gnopai.ji65.parser;
 
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
 
 public class NumberParser {
 
     public Optional<Integer> parseValue(String input) {
-        if (isValidHexValue(input)) {
-            return Optional.of(parseHexValue(input));
-        }
-        if (isValidBinaryValue(input)) {
-            return Optional.of(parseBinaryValue(input));
-        }
-        if (isValidDecimalValue(input)) {
-            return Optional.of(parseDecimalValue(input));
-        }
-        return Optional.empty();
+        return Stream.<Function<String, Optional<Integer>>>of(
+                this::parseHexValue,
+                this::parseBinaryValue,
+                this::parseDecimalValue)
+                .map(function -> function.apply(input))
+                .flatMap(Optional::stream)
+                .findFirst();
     }
 
-    private boolean isValidHexValue(String input) {
-        return input.matches("\\$[0-9a-fA-F]{1,4}");
+    private Optional<Integer> parseHexValue(String input) {
+        return Optional.of(input)
+                .filter(value -> value.matches("\\$[0-9a-fA-F]{1,4}"))
+                .map(value -> parseInt(value.substring(1), 16));
     }
 
-    private boolean isValidBinaryValue(String input) {
-        return input.matches("%[01]{8}");
+    private Optional<Integer> parseBinaryValue(String input) {
+        return Optional.of(input)
+                .filter(value -> value.matches("%[01]{8}"))
+                .map(value -> parseInt(value.substring(1), 2));
     }
 
-    private boolean isValidDecimalValue(String input) {
-        if (!input.matches("\\d+")) {
-            return false;
-        }
-        int value = parseInt(input);
-        return 0 <= value && value < 65536;
-    }
-
-    private int parseHexValue(String input) {
-        return parseInt(input.substring(1), 16);
-    }
-
-    private int parseBinaryValue(String input) {
-        return parseInt(input.substring(1), 2);
-    }
-
-    private int parseDecimalValue(String input) {
-        return parseInt(input);
+    private Optional<Integer> parseDecimalValue(String input) {
+        return Optional.of(input)
+                .filter(value -> value.matches("\\d+"))
+                .map(Integer::parseInt)
+                .filter(value -> 0 <= value && value < 65536);
     }
 
     public boolean isZeroPageValue(String input) {
