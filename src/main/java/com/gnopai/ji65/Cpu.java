@@ -49,4 +49,12 @@ public class Cpu {
         stack.push(value);
         stackPointer = (byte) (stackPointer - 1);
     }
+
+    public void updateZeroFlag(byte value) {
+        zeroFlagSet = value == 0;
+    }
+
+    public void updateNegativeFlag(byte value) {
+        negativeFlagSet = Byte.toUnsignedInt(value) >= 128;
+    }
 }
