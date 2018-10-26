@@ -12,62 +12,62 @@ import static java.util.stream.Collectors.toUnmodifiableMap;
 
 @Getter
 public enum InstructionType {
-    ADC("adc", Lda.class),
-    AND("and", Lda.class),
-    ASL("asl", Lda.class),
-    BCC("bcc", Lda.class),
-    BCS("bcs", Lda.class),
-    BEQ("beq", Lda.class),
-    BIT("bit", Lda.class),
-    BMI("bmi", Lda.class),
-    BNE("bne", Lda.class),
-    BPL("bpl", Lda.class),
-    BRK("brk", Lda.class),
-    BVC("bvc", Lda.class),
-    BVS("bvs", Lda.class),
-    CLC("clc", Lda.class),
-    CLD("cld", Lda.class),
-    CLI("cli", Lda.class),
-    CLV("clv", Lda.class),
-    CMP("cmp", Lda.class),
-    CPX("cpx", Lda.class),
-    CPY("cpy", Lda.class),
-    DEC("dec", Lda.class),
-    DEX("dex", Lda.class),
-    DEY("dey", Lda.class),
-    EOR("eor", Lda.class),
-    INC("inc", Lda.class),
-    INX("inx", Lda.class),
-    INY("iny", Lda.class),
-    JMP("jmp", Lda.class),
-    JSR("jsr", Lda.class),
+    ADC("adc", Lda.class), // TODO
+    AND("and", Lda.class), // TODO
+    ASL("asl", Lda.class), // TODO
+    BCC("bcc", Lda.class), // TODO
+    BCS("bcs", Lda.class), // TODO
+    BEQ("beq", Lda.class), // TODO
+    BIT("bit", Lda.class), // TODO
+    BMI("bmi", Lda.class), // TODO
+    BNE("bne", Lda.class), // TODO
+    BPL("bpl", Lda.class), // TODO
+    BRK("brk", Lda.class), // TODO
+    BVC("bvc", Lda.class), // TODO
+    BVS("bvs", Lda.class), // TODO
+    CLC("clc", Lda.class), // TODO
+    CLD("cld", Lda.class), // TODO
+    CLI("cli", Lda.class), // TODO
+    CLV("clv", Lda.class), // TODO
+    CMP("cmp", Lda.class), // TODO
+    CPX("cpx", Lda.class), // TODO
+    CPY("cpy", Lda.class), // TODO
+    DEC("dec", Lda.class), // TODO
+    DEX("dex", Lda.class), // TODO
+    DEY("dey", Lda.class), // TODO
+    EOR("eor", Lda.class), // TODO
+    INC("inc", Lda.class), // TODO
+    INX("inx", Lda.class), // TODO
+    INY("iny", Lda.class), // TODO
+    JMP("jmp", Lda.class), // TODO
+    JSR("jsr", Lda.class), // TODO
     LDA("lda", Lda.class),
     LDX("ldx", Ldx.class),
     LDY("ldy", Ldy.class),
-    LSR("lsr", Lda.class),
-    NOP("nop", Lda.class),
-    ORA("ora", Lda.class),
-    PHA("pha", Lda.class),
-    PHP("php", Lda.class),
-    PLA("pla", Lda.class),
-    PLP("plp", Lda.class),
-    ROL("rol", Lda.class),
-    ROR("ror", Lda.class),
-    RTI("rti", Lda.class),
-    RTS("rts", Lda.class),
-    SBC("sbc", Lda.class),
-    SEC("sec", Lda.class),
-    SED("sed", Lda.class),
-    SEI("sei", Lda.class),
-    STA("sta", Lda.class),
-    STX("stx", Lda.class),
-    STY("sty", Lda.class),
-    TAX("tax", Lda.class),
-    TAY("tay", Lda.class),
-    TSX("tsx", Lda.class),
-    TXA("txa", Lda.class),
-    TXS("txs", Lda.class),
-    TYA("tya", Lda.class),
+    LSR("lsr", Lda.class), // TODO
+    NOP("nop", Lda.class), // TODO
+    ORA("ora", Lda.class), // TODO
+    PHA("pha", Lda.class), // TODO
+    PHP("php", Lda.class), // TODO
+    PLA("pla", Lda.class), // TODO
+    PLP("plp", Lda.class), // TODO
+    ROL("rol", Lda.class), // TODO
+    ROR("ror", Lda.class), // TODO
+    RTI("rti", Lda.class), // TODO
+    RTS("rts", Lda.class), // TODO
+    SBC("sbc", Lda.class), // TODO
+    SEC("sec", Lda.class), // TODO
+    SED("sed", Lda.class), // TODO
+    SEI("sei", Lda.class), // TODO
+    STA("sta", Sta.class),
+    STX("stx", Stx.class),
+    STY("sty", Sty.class),
+    TAX("tax", Lda.class), // TODO
+    TAY("tay", Lda.class), // TODO
+    TSX("tsx", Lda.class), // TODO
+    TXA("txa", Lda.class), // TODO
+    TXS("txs", Lda.class), // TODO
+    TYA("tya", Lda.class), // TODO
     ;
 
     private final String instructionName;

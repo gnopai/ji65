@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class LoadInstructionTest {
     private final InstructionType instructionType = InstructionType.LDA;
-    private Instruction testClass;
+    private LoadInstruction testClass;
 
     @BeforeEach
     public void setUp() {
