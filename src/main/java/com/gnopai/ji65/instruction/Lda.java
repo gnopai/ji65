@@ -1,25 +1,11 @@
 package com.gnopai.ji65.instruction;
 
 import com.gnopai.ji65.Cpu;
-import com.gnopai.ji65.Operand;
 
-public class Lda implements Instruction {
+import static com.gnopai.ji65.instruction.InstructionType.LDA;
 
-    @Override
-    public InstructionType getInstructionType() {
-        return InstructionType.LDA;
-    }
-
-    @Override
-    public void run(Cpu cpu, Operand operand) {
-        byte value = determineValue(cpu, operand);
-        cpu.setAccumulator(value);
-    }
-
-    private byte determineValue(Cpu cpu, Operand operand) {
-        if (operand.isAddress()) {
-            return cpu.getMemoryValue(operand.asAddress());
-        }
-        return operand.getLowByte();
+public class Lda extends LoadInstruction {
+    public Lda() {
+        super(LDA, Cpu::setAccumulator);
     }
 }
