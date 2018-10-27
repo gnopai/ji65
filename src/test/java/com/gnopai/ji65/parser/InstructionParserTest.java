@@ -10,24 +10,24 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class InstructionParserTest {
+class InstructionParserTest {
     private final NumberParser numberParser = mock(NumberParser.class);
     private final ParsingData parsingData = mock(ParsingData.class);
     private InstructionParser testClass;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         testClass = new InstructionParser(numberParser);
     }
 
     @Test
-    public void testUnrecognizedInstructionType() {
+    void testUnrecognizedInstructionType() {
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction("DERP $55", parsingData);
         assertFalse(instruction.isPresent());
     }
 
     @Test
-    public void testImplicit() {
+    void testImplicit() {
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" TAX ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(TAX_IMPLICIT, null);
         assertTrue(instruction.isPresent());
@@ -35,7 +35,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testAccumulator() {
+    void testAccumulator() {
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" ASL  A ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(ASL_ACCUMULATOR, null);
         assertTrue(instruction.isPresent());
@@ -43,7 +43,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testRelative_symbol() {
+    void testRelative_symbol() {
         when(parsingData.isAddressLabel("thing")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" BNE thing ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(BNE_RELATIVE, "thing");
@@ -52,7 +52,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testRelative_explicitPositive() {
+    void testRelative_explicitPositive() {
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" BNE *+4 ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(BNE_RELATIVE, "*+4");
         assertTrue(instruction.isPresent());
@@ -60,7 +60,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testRelative_explicitNegative() {
+    void testRelative_explicitNegative() {
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" BNE *-8 ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(BNE_RELATIVE, "*-8");
         assertTrue(instruction.isPresent());
@@ -68,7 +68,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testRelative_invalidJunk() {
+    void testRelative_invalidJunk() {
         Exception exception = assertThrows(RuntimeException.class, () ->
                 testClass.parseInstruction(" BNE --8 ", parsingData)
         );
@@ -76,8 +76,8 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testImmediate_value() {
-        when(numberParser.isValidValue("$BB")).thenReturn(true);
+    void testImmediate_value() {
+        when(numberParser.isValidSingleByteValue("$BB")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" LDA #$BB ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(LDA_IMMEDIATE, "$BB");
         assertTrue(instruction.isPresent());
@@ -85,7 +85,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testImmediate_symbol() {
+    void testImmediate_symbol() {
         when(parsingData.isConstant("THING")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" LDA #THING ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(LDA_IMMEDIATE, "THING");
@@ -94,7 +94,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testZeroPage_value() {
+    void testZeroPage_value() {
         when(numberParser.isZeroPageValue("$F5")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" LDA  $F5 ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(LDA_ZERO_PAGE, "$F5");
@@ -103,7 +103,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testZeroPage_symbol() {
+    void testZeroPage_symbol() {
         when(numberParser.isZeroPageValue("THING")).thenReturn(true);
         when(parsingData.isZeroPageSymbol("THING")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" LDA THING ", parsingData);
@@ -113,7 +113,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testAbsolute_value() {
+    void testAbsolute_value() {
         when(numberParser.isAbsoluteValue("$55A2")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" LDA  $55A2 ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(LDA_ABSOLUTE, "$55A2");
@@ -122,7 +122,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testAbsolute_symbol() {
+    void testAbsolute_symbol() {
         when(parsingData.isAddressLabel("THING")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" LDA THING ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(LDA_ABSOLUTE, "THING");
@@ -131,7 +131,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testZeroPageXIndexed_value() {
+    void testZeroPageXIndexed_value() {
         when(numberParser.isZeroPageValue("$55")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" LDA $55,X ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(LDA_ZERO_PAGE_X, "$55");
@@ -140,7 +140,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testZeroPageXIndexed_symbol() {
+    void testZeroPageXIndexed_symbol() {
         when(parsingData.isZeroPageSymbol("thing")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" LDA thing,X ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(LDA_ZERO_PAGE_X, "thing");
@@ -149,7 +149,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testZeroPageYIndexed_value() {
+    void testZeroPageYIndexed_value() {
         when(numberParser.isZeroPageValue("$55")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" LDX $55, Y ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(LDX_ZERO_PAGE_Y, "$55");
@@ -158,7 +158,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testZeroPageYIndexed_symbol() {
+    void testZeroPageYIndexed_symbol() {
         when(parsingData.isZeroPageSymbol("thing")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" LDX thing,Y ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(LDX_ZERO_PAGE_Y, "thing");
@@ -167,7 +167,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testAbsoluteXIndexed_value() {
+    void testAbsoluteXIndexed_value() {
         when(numberParser.isAbsoluteValue("$4455")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" LDA $4455,X ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(LDA_ABSOLUTE_X, "$4455");
@@ -176,7 +176,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testAbsoluteXIndexed_symbol() {
+    void testAbsoluteXIndexed_symbol() {
         when(parsingData.isAddressLabel("thing")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" LDA thing,X ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(LDA_ABSOLUTE_X, "thing");
@@ -185,7 +185,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testAbsoluteYIndexed_value() {
+    void testAbsoluteYIndexed_value() {
         when(numberParser.isAbsoluteValue("$4455")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" LDX $4455, Y ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(LDX_ABSOLUTE_Y, "$4455");
@@ -194,7 +194,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testAbsoluteYIndexed_symbol() {
+    void testAbsoluteYIndexed_symbol() {
         when(parsingData.isAddressLabel("thing")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" LDX thing,Y ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(LDX_ABSOLUTE_Y, "thing");
@@ -203,7 +203,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testIndirectIndexed_value() {
+    void testIndirectIndexed_value() {
         when(numberParser.isAbsoluteValue("$4455")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" LDA ($4455), Y ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(LDA_INDIRECT_INDEXED, "$4455");
@@ -212,7 +212,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testIndirectIndexed_symbol() {
+    void testIndirectIndexed_symbol() {
         when(parsingData.isAddressLabel("thing")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" LDA (thing), Y ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(LDA_INDIRECT_INDEXED, "thing");
@@ -221,7 +221,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testIndexedXModeJunk() {
+    void testIndexedXModeJunk() {
         Exception exception = assertThrows(RuntimeException.class, () ->
                 testClass.parseInstruction("LDX derp,X", parsingData)
         );
@@ -229,7 +229,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testIndexedYModeJunk() {
+    void testIndexedYModeJunk() {
         Exception exception = assertThrows(RuntimeException.class, () ->
                 testClass.parseInstruction("LDX derp,Y", parsingData)
         );
@@ -237,7 +237,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testIndirectIndexedJunk() {
+    void testIndirectIndexedJunk() {
         Exception exception = assertThrows(RuntimeException.class, () ->
                 testClass.parseInstruction("LDA (derp),Y", parsingData)
         );
@@ -245,7 +245,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testIndirect_value() {
+    void testIndirect_value() {
         when(numberParser.isAbsoluteValue("$1234")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" JMP ($1234) ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(JMP_INDIRECT, "$1234");
@@ -254,7 +254,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testIndirect_symbol() {
+    void testIndirect_symbol() {
         when(parsingData.isAddressLabel("thing")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" JMP (thing) ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(JMP_INDIRECT, "thing");
@@ -263,7 +263,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testIndexedIndirect_value() {
+    void testIndexedIndirect_value() {
         when(numberParser.isAbsoluteValue("$1234")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" LDA ($1234,X) ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(LDA_INDEXED_INDIRECT, "$1234");
@@ -272,7 +272,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testIndexedIndirect_symbol() {
+    void testIndexedIndirect_symbol() {
         when(parsingData.isAddressLabel("thing")).thenReturn(true);
         Optional<UnresolvedInstruction> instruction = testClass.parseInstruction(" LDA (thing,X) ", parsingData);
         UnresolvedInstruction expectedInstruction = new UnresolvedInstruction(LDA_INDEXED_INDIRECT, "thing");
@@ -281,7 +281,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testIndexedIndirect_invalidJunk() {
+    void testIndexedIndirect_invalidJunk() {
         Exception exception = assertThrows(RuntimeException.class, () ->
                 testClass.parseInstruction(" LDA (derp,X) ", parsingData)
         );
@@ -289,7 +289,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testIndirect_invalidJunk() {
+    void testIndirect_invalidJunk() {
         Exception exception = assertThrows(RuntimeException.class, () ->
                 testClass.parseInstruction(" JMP (derp) ", parsingData)
         );
@@ -297,7 +297,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testInvalidAddressingMode() {
+    void testInvalidAddressingMode() {
         Exception exception = assertThrows(RuntimeException.class, () ->
                 testClass.parseInstruction("LDA )-:", parsingData)
         );
@@ -305,7 +305,7 @@ public class InstructionParserTest {
     }
 
     @Test
-    public void testInvalidOpcode() {
+    void testInvalidOpcode() {
         when(numberParser.isZeroPageValue("$55")).thenReturn(true);
         Exception exception = assertThrows(RuntimeException.class, () ->
                 testClass.parseInstruction("TAX $55", parsingData)

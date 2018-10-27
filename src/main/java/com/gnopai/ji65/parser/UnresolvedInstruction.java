@@ -7,8 +7,4 @@ import lombok.Value;
 public class UnresolvedInstruction {
     Opcode opcode;
     String argument;
-
-    public int getByteCount() {
-        return opcode.getByteCount();
-    }
 }

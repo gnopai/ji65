@@ -38,9 +38,7 @@ public class NumberParser {
     }
 
     public boolean isZeroPageValue(String input) {
-        return parseValue(input)
-                .map(value -> value < 256)
-                .orElse(false);
+        return isValidSingleByteValue(input);
     }
 
     public boolean isAbsoluteValue(String input) {
@@ -49,7 +47,9 @@ public class NumberParser {
                 .orElse(false);
     }
 
-    public boolean isValidValue(String input) {
-        return parseValue(input).isPresent();
+    public boolean isValidSingleByteValue(String input) {
+        return parseValue(input)
+                .map(value -> value < 256)
+                .orElse(false);
     }
 }

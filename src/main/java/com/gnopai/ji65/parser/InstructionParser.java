@@ -101,7 +101,7 @@ public class InstructionParser {
             return false;
         }
         String value = input.substring(1);
-        return numberParser.isValidValue(value) || parsingData.isConstant(value);
+        return numberParser.isValidSingleByteValue(value) || parsingData.isConstant(value);
     }
 
     private Optional<UnresolvedInstruction> findZeroPageAddressInstruction(ParseValues parseValues) {
