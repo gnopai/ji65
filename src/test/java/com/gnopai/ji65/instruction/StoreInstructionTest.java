@@ -8,17 +8,17 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class StoreInstructionTest {
+class StoreInstructionTest {
     private final InstructionType instructionType = InstructionType.STX;
     private StoreInstruction testClass;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         testClass = new StoreInstruction(instructionType, Cpu::getX);
     }
 
     @Test
-    public void test() {
+    void test() {
         Address address = new Address(0x1234);
         byte registerValue = (byte) 0x24;
         Cpu cpu = Cpu.builder()

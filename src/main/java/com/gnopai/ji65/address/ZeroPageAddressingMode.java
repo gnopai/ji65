@@ -1,5 +1,6 @@
 package com.gnopai.ji65.address;
 
+import com.gnopai.ji65.BytesValue;
 import com.gnopai.ji65.Cpu;
 import com.gnopai.ji65.Operand;
 
@@ -10,10 +11,9 @@ public class ZeroPageAddressingMode implements AddressingMode {
     }
 
     @Override
-    public Operand determineRuntimeOperand(Cpu cpu, Operand operand) {
+    public Operand determineRuntimeOperand(Cpu cpu, BytesValue argument) {
         return Operand.builder()
-                .lowByte(operand.getLowByte())
-                .highByte((byte) 0x00)
+                .value(argument)
                 .address(true)
                 .build();
     }

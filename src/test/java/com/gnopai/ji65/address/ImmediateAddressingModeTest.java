@@ -1,5 +1,6 @@
 package com.gnopai.ji65.address;
 
+import com.gnopai.ji65.BytesValue;
 import com.gnopai.ji65.Cpu;
 import com.gnopai.ji65.Operand;
 import org.junit.jupiter.api.Test;
@@ -7,20 +8,20 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class ImmediateAddressingModeTest {
+class ImmediateAddressingModeTest {
 
     @Test
-    public void test() throws Exception {
+    void test() {
         byte value = (byte) 0x9A;
-        Operand operand = Operand.builder().lowByte(value).build();
+        BytesValue argument = new BytesValue(value);
         Cpu cpu = Cpu.builder().build();
         ImmediateAddressingMode testClass = new ImmediateAddressingMode();
 
-        Operand result = testClass.determineRuntimeOperand(cpu, operand);
+        Operand result = testClass.determineRuntimeOperand(cpu, argument);
 
         Operand expectedResult = Operand.builder()
                 .address(false)
-                .lowByte(value)
+                .value(argument)
                 .build();
         assertEquals(expectedResult, result);
     }
