@@ -25,7 +25,7 @@ public class InstructionParser {
         List<String> stringTokens = Splitter.on(" ").omitEmptyStrings().splitToList(line);
         String instructionTypeString = stringTokens.get(0);
         String argument = Joiner.on("").join(stringTokens.subList(1, stringTokens.size()));
-        return InstructionType.fromName(instructionTypeString)
+        return InstructionType.fromIdentifier(instructionTypeString)
                 .map(instructionType -> parseInstruction(line, instructionType, argument, parsingData));
     }
 

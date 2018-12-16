@@ -1,0 +1,32 @@
+.segment "ZEROPAGE"
+NPC_MAX = 8
+NPC_OAM_SIZE = 16 ; 4 sprites per npc, 4 bytes per sprite
+
+.macro ldx_npc_offset
+    ldy npc_index
+    ldx npc_indexes,Y
+.endmacro
+
+; npc data
+npcs: .res NPC_TOTAL_BYTES
+
+npc_check_for_unbuffering:
+    ; 2 byte x column coordinates in npc_offscreen_column
+    lda #0
+    sta npc_index
+    @loop:
+        ldx_npc_offset
+        lda npcs+NPC_STATUS,X
+        and #(NPC_STATUS_ACTIVE | NPC_STATUS_ONSCREEN)
+        cmp #NPC_STATUS_ACTIVE ; npcs must be active and off-screen to be un-buffered
+        bne @next
+
+        lda npcs+NPC_X1,X
+        and #$F0
+        eor npc_offscreen_column+0 ; see if high 4 bits are the same for the low x byte
+        bne @next
+        lda npcs+NPC_X2,X
+        and #$01
+        eor npc_offscreen_column+1 ; see if the low bit is the same for the high x byte
+        bne @next
+        jsr npc_unload
