@@ -12,84 +12,82 @@ import static java.util.stream.Collectors.toUnmodifiableMap;
 
 @Getter
 public enum InstructionType {
-    ADC("adc", Lda.class), // TODO
-    AND("and", Lda.class), // TODO
-    ASL("asl", Lda.class), // TODO
-    BCC("bcc", Lda.class), // TODO
-    BCS("bcs", Lda.class), // TODO
-    BEQ("beq", Lda.class), // TODO
-    BIT("bit", Lda.class), // TODO
-    BMI("bmi", Lda.class), // TODO
-    BNE("bne", Lda.class), // TODO
-    BPL("bpl", Lda.class), // TODO
-    BRK("brk", Lda.class), // TODO
-    BVC("bvc", Lda.class), // TODO
-    BVS("bvs", Lda.class), // TODO
-    CLC("clc", Lda.class), // TODO
-    CLD("cld", Lda.class), // TODO
-    CLI("cli", Lda.class), // TODO
-    CLV("clv", Lda.class), // TODO
-    CMP("cmp", Lda.class), // TODO
-    CPX("cpx", Lda.class), // TODO
-    CPY("cpy", Lda.class), // TODO
-    DEC("dec", Lda.class), // TODO
-    DEX("dex", Lda.class), // TODO
-    DEY("dey", Lda.class), // TODO
-    EOR("eor", Lda.class), // TODO
-    INC("inc", Lda.class), // TODO
-    INX("inx", Lda.class), // TODO
-    INY("iny", Lda.class), // TODO
-    JMP("jmp", Lda.class), // TODO
-    JSR("jsr", Lda.class), // TODO
-    LDA("lda", Lda.class),
-    LDX("ldx", Ldx.class),
-    LDY("ldy", Ldy.class),
-    LSR("lsr", Lda.class), // TODO
-    NOP("nop", Lda.class), // TODO
-    ORA("ora", Lda.class), // TODO
-    PHA("pha", Lda.class), // TODO
-    PHP("php", Lda.class), // TODO
-    PLA("pla", Lda.class), // TODO
-    PLP("plp", Lda.class), // TODO
-    ROL("rol", Lda.class), // TODO
-    ROR("ror", Lda.class), // TODO
-    RTI("rti", Lda.class), // TODO
-    RTS("rts", Lda.class), // TODO
-    SBC("sbc", Lda.class), // TODO
-    SEC("sec", Lda.class), // TODO
-    SED("sed", Lda.class), // TODO
-    SEI("sei", Lda.class), // TODO
-    STA("sta", Sta.class),
-    STX("stx", Stx.class),
-    STY("sty", Sty.class),
-    TAX("tax", Lda.class), // TODO
-    TAY("tay", Lda.class), // TODO
-    TSX("tsx", Lda.class), // TODO
-    TXA("txa", Lda.class), // TODO
-    TXS("txs", Lda.class), // TODO
-    TYA("tya", Lda.class), // TODO
+    ADC("adc"), // TODO
+    AND("and"), // TODO
+    ASL("asl"), // TODO
+    BCC("bcc"), // TODO
+    BCS("bcs"), // TODO
+    BEQ("beq"), // TODO
+    BIT("bit"), // TODO
+    BMI("bmi"), // TODO
+    BNE("bne"), // TODO
+    BPL("bpl"), // TODO
+    BRK("brk"), // TODO
+    BVC("bvc"), // TODO
+    BVS("bvs"), // TODO
+    CLC("clc"), // TODO
+    CLD("cld"), // TODO
+    CLI("cli"), // TODO
+    CLV("clv"), // TODO
+    CMP("cmp"), // TODO
+    CPX("cpx"), // TODO
+    CPY("cpy"), // TODO
+    DEC("dec"), // TODO
+    DEX("dex"), // TODO
+    DEY("dey"), // TODO
+    EOR("eor"), // TODO
+    INC("inc"), // TODO
+    INX("inx"), // TODO
+    INY("iny"), // TODO
+    JMP("jmp"), // TODO
+    JSR("jsr"), // TODO
+    LDA("lda"),
+    LDX("ldx"),
+    LDY("ldy"),
+    LSR("lsr"), // TODO
+    NOP("nop"), // TODO
+    ORA("ora"), // TODO
+    PHA("pha"), // TODO
+    PHP("php"), // TODO
+    PLA("pla"), // TODO
+    PLP("plp"), // TODO
+    ROL("rol"), // TODO
+    ROR("ror"), // TODO
+    RTI("rti"), // TODO
+    RTS("rts"), // TODO
+    SBC("sbc"), // TODO
+    SEC("sec"), // TODO
+    SED("sed"), // TODO
+    SEI("sei"), // TODO
+    STA("sta"),
+    STX("stx"),
+    STY("sty"),
+    TAX("tax"), // TODO
+    TAY("tay"), // TODO
+    TSX("tsx"), // TODO
+    TXA("txa"), // TODO
+    TXS("txs"), // TODO
+    TYA("tya"), // TODO
     ;
 
-    private final String instructionName;
-    private final Class<? extends Instruction> instructionClass;
+    private final String identifier;
 
-    InstructionType(String instructionName, Class<? extends Instruction> instructionClass) {
-        this.instructionName = instructionName;
-        this.instructionClass = instructionClass;
+    InstructionType(String identifier) {
+        this.identifier = identifier;
     }
 
     public boolean isBranchInstruction() {
         return List.of(BCC, BCS, BEQ, BNE, BMI, BPL, BVC, BVS).contains(this);
     }
 
-    private static final Map<String, InstructionType> INSTRUCTION_TYPES_BY_NAME =
+    private static final Map<String, InstructionType> TYPES_BY_IDENTIFIER =
             Arrays.stream(InstructionType.values())
                     .collect(toUnmodifiableMap(
-                            InstructionType::getInstructionName,
-                            instruction -> instruction)
+                            InstructionType::getIdentifier,
+                            type -> type)
                     );
 
-    public static Optional<InstructionType> fromName(String string) {
-        return ofNullable(INSTRUCTION_TYPES_BY_NAME.get(string.toLowerCase()));
+    public static Optional<InstructionType> fromIdentifier(String string) {
+        return ofNullable(TYPES_BY_IDENTIFIER.get(string.toLowerCase()));
     }
 }
