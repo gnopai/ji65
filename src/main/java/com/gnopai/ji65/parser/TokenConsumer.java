@@ -45,6 +45,10 @@ public class TokenConsumer {
         return false;
     }
 
+    public Token peek() {
+        return next;
+    }
+
     public ParseException error(String message) {
         return error(current, message);
     }

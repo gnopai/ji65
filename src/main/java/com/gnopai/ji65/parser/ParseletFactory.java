@@ -1,8 +1,6 @@
 package com.gnopai.ji65.parser;
 
-import com.gnopai.ji65.parser.expression.InfixParselet;
-import com.gnopai.ji65.parser.expression.PrefixParselet;
-import com.gnopai.ji65.parser.expression.PrimaryParselet;
+import com.gnopai.ji65.parser.expression.*;
 import com.gnopai.ji65.parser.statement.InstructionStatementParselet;
 import com.gnopai.ji65.parser.statement.StatementParselet;
 import com.gnopai.ji65.scanner.TokenType;
@@ -16,10 +14,16 @@ public class ParseletFactory {
     );
 
     private final Map<TokenType, InfixParselet> infixParselets = Map.of(
+            TokenType.PLUS, new BinaryOperatorParselet(Precedence.SUM),
+            TokenType.MINUS, new BinaryOperatorParselet(Precedence.SUM),
+            TokenType.STAR, new BinaryOperatorParselet(Precedence.MULTIPLY),
+            TokenType.SLASH, new BinaryOperatorParselet(Precedence.MULTIPLY)
     );
 
     private final Map<TokenType, PrefixParselet> prefixParselets = Map.of(
-            TokenType.NUMBER, new PrimaryParselet()
+            TokenType.MINUS, new PrefixOperatorParselet(Precedence.UNARY),
+            TokenType.NUMBER, new PrimaryParselet(),
+            TokenType.STRING, new PrimaryParselet()
     );
 
     public Optional<StatementParselet> getStatementParselet(TokenType tokenType) {

@@ -1,8 +1,27 @@
 package com.gnopai.ji65.parser;
 
-// TODO fill this in
 public enum Precedence {
-    PRIMARY;
+    // Note that the order here controls the actual precedence order, where they go from first/lowest to last/highest
+    NONE,
+    ASSIGNMENT,
+    BOOLEAN_NOT,
+    BOOLEAN_OR,
+    BOOLEAN_AND,
+    COMPARISON,
+    SUM,
+    BIT_SHIFTS,
+    MULTIPLY,
+    UNARY,
+    PRIMARY,
+    ;
+
+    public boolean isHigherThan(Precedence other) {
+        return ordinal() > other.ordinal();
+    }
+
+    public boolean isLowerThan(Precedence other) {
+        return ordinal() < other.ordinal();
+    }
 
     public static Precedence lowest() {
         return values()[0];

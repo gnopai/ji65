@@ -31,7 +31,7 @@ class InstructionStatementParseletTest {
 
         InstructionStatement expectedResult = InstructionStatement.builder()
                 .instructionType(LDA)
-                .addressExpression(new PrimaryExpression(99))
+                .addressExpression(new PrimaryExpression(NUMBER, 99))
                 .addressingModeType(ABSOLUTE)
                 .build();
         assertEquals(expectedResult, result);
@@ -61,9 +61,9 @@ class InstructionStatementParseletTest {
 
     private Statement parse(Token... tokens) {
         Parser parser = new Parser(
-                new ParseletFactory(), // FIXME mock??
-                errorHandler,
-                List.of(tokens));
+                new ParseletFactory(),
+                new TokenConsumer(errorHandler, List.of(tokens))
+        );
 
         return parser.statement();
     }

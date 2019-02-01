@@ -3,49 +3,37 @@ package com.gnopai.ji65.parser;
 import com.gnopai.ji65.parser.expression.Expression;
 import com.gnopai.ji65.parser.expression.InfixParselet;
 import com.gnopai.ji65.parser.statement.Statement;
-import com.gnopai.ji65.scanner.ErrorHandler;
 import com.gnopai.ji65.scanner.Token;
 import com.gnopai.ji65.scanner.TokenType;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-// TODO unit tests, integration tests!
+/**
+ * A Pratt-style parser for creating statements and expressions out of tokens.
+ */
 public class Parser {
     private final ParseletFactory parseletFactory;
-    private final ErrorHandler errorHandler;
-    private final List<Token> tokens;
-    private final Iterator<Token> iterator;
+    private final TokenConsumer tokenConsumer;
 
-    private Token current;
-    private Token previous;
-    private boolean hasError = false;
-
-    public Parser(ParseletFactory parseletFactory, ErrorHandler errorHandler, List<Token> tokens) {
+    public Parser(ParseletFactory parseletFactory, TokenConsumer tokenConsumer) {
         this.parseletFactory = parseletFactory;
-        this.errorHandler = errorHandler;
-        this.tokens = tokens;
-        this.iterator = tokens.iterator();
+        this.tokenConsumer = tokenConsumer;
     }
 
     public List<Statement> parse() {
         List<Statement> statements = new ArrayList<>();
-        while (!isAtEnd()) {
+        while (tokenConsumer.hasMore()) {
             statements.add(statement());
         }
         return List.copyOf(statements);
     }
 
     public Statement statement() {
-        Token token = consume();
+        Token token = tokenConsumer.consume();
         return parseletFactory.getStatementParselet(token.getType())
                 .map(statementParselet -> statementParselet.parse(token, this))
-                .orElseThrow(() -> error(token, "Failed to parse token"));
-    }
-
-    private boolean isAtEnd() {
-        return !iterator.hasNext() || current == null || current.getType().equals(TokenType.EOF);
+                .orElseThrow(() -> error(token));
     }
 
     public Expression expression() {
@@ -53,57 +41,59 @@ public class Parser {
     }
 
     public Expression expression(Precedence precedence) {
-        Token firstToken = consume();
+        Token firstToken = tokenConsumer.consume();
 
-        Expression expression = parseletFactory.getPrefixParselet(firstToken.getType())
-                .map(prefixParselet -> prefixParselet.parse(firstToken, this))
-                .orElseThrow(() -> error(firstToken, "Failed to parse token"));
+        Expression expression = parsePrefixExpression(firstToken);
+        Precedence nextTokenPrecedence = getPrecedence(tokenConsumer.peek());
 
-        while (precedence.ordinal() < getPrecedence().ordinal()) {
-            Token token = consume();
-            Expression leftExpression = expression;
-            expression = parseletFactory.getInfixParselet(token.getType())
-                    .map(infixParselet -> infixParselet.parse(token, leftExpression, this))
-                    .orElseThrow(() -> error(token, "Failed to parse token"));
+        while (precedence.isLowerThan(nextTokenPrecedence)) {
+            Token currentToken = tokenConsumer.consume();
+            expression = parseInfixExpression(currentToken, expression);
+            nextTokenPrecedence = getPrecedence(tokenConsumer.peek());
         }
 
         return expression;
     }
 
-    private Precedence getPrecedence() {
-        return parseletFactory.getInfixParselet(current.getType())
+    private Expression parsePrefixExpression(Token token) {
+        return parseletFactory.getPrefixParselet(token.getType())
+                .map(prefixParselet -> prefixParselet.parse(token, this))
+                .orElseThrow(() -> error(token));
+    }
+
+    private Expression parseInfixExpression(Token token, Expression leftExpression) {
+        return parseletFactory.getInfixParselet(token.getType())
+                .map(infixParselet -> infixParselet.parse(token, leftExpression, this))
+                .orElseThrow(() -> error(token));
+    }
+
+    private Precedence getPrecedence(Token token) {
+        return parseletFactory.getInfixParselet(token.getType())
                 .map(InfixParselet::getPrecedence)
                 .orElse(Precedence.lowest());
     }
 
-    public Token consume() {
-        previous = current;
-        current = iterator.hasNext() ? iterator.next() : null;
-        return current;
-    }
-
-    public Token consume(TokenType tokenType, String message) {
-        if (match(tokenType)) {
-            return current;
-        }
-        throw error(message);
-    }
-
-    public boolean match(TokenType tokenType) {
-        if (tokenType.equals(current.getType())) {
-            consume();
-            return true;
-        }
-        return false;
+    private ParseException error(Token token) {
+        return tokenConsumer.error(token, "Failed to parse token");
     }
 
     public ParseException error(String message) {
-        return error(current, message);
+        return tokenConsumer.error(message);
     }
 
-    private ParseException error(Token token, String message) {
-        errorHandler.handleError(message, token.getLine());
-        hasError = true;
-        return new ParseException(token, message);
+    public Token consume() {
+        return tokenConsumer.consume();
+    }
+
+    public Token consume(TokenType tokenType, String errorMessage) {
+        return tokenConsumer.consume(tokenType, errorMessage);
+    }
+
+    public boolean match(TokenType tokenType) {
+        return tokenConsumer.match(tokenType);
+    }
+
+    public boolean hasError() {
+        return tokenConsumer.hasError();
     }
 }
