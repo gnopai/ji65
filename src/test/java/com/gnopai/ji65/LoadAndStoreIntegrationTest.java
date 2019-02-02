@@ -1,10 +1,7 @@
-package com.gnopai.ji65.instruction;
+package com.gnopai.ji65;
 
-import com.gnopai.ji65.Address;
-import com.gnopai.ji65.Cpu;
-import com.gnopai.ji65.Program;
-import com.gnopai.ji65.ProgramRunner;
 import com.gnopai.ji65.address.AddressingModeFactory;
+import com.gnopai.ji65.instruction.InstructionFactory;
 import com.gnopai.ji65.parser.InstructionParser;
 import com.gnopai.ji65.parser.InstructionResolver;
 import com.gnopai.ji65.parser.NumberParser;
