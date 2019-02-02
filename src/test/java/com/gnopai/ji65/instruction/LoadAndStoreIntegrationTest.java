@@ -27,6 +27,7 @@ class LoadAndStoreIntegrationTest {
         programRunner = new ProgramRunner(new AddressingModeFactory(), new InstructionFactory());
     }
 
+    // TODO break these out into tests for each individual opcode, at least for all currently supported addressing modes
     @Test
     void test() {
         List<String> rawInstructions = List.of(
