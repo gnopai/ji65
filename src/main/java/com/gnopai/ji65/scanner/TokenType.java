@@ -32,5 +32,6 @@ public enum TokenType {
 
     // TODO boolean operators? (!, <>, =, <=, >=, <, >, &&, ||)
 
+    EOL,
     EOF
 }

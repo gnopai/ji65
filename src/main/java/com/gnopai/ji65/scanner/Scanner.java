@@ -123,6 +123,7 @@ public class Scanner {
                 // ignore most whitespace
                 break;
             case '\n':
+                addToken(EOL);
                 line++;
                 break;
             default:

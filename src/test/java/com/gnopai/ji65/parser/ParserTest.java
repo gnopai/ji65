@@ -43,6 +43,27 @@ class ParserTest {
     }
 
     @Test
+    void testParse_singleStatement_withEmptyLinesBefore() {
+        ParseletFactory parseletFactory = mock(ParseletFactory.class);
+        StatementParselet instructionStatementParselet = mock(StatementParselet.class);
+        when(parseletFactory.getStatementParselet(TokenType.INSTRUCTION)).thenReturn(Optional.of(instructionStatementParselet));
+
+        Token token = token(TokenType.INSTRUCTION, InstructionType.LDA);
+        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, List.of(
+                token(TokenType.EOL),
+                token(TokenType.EOL),
+                token
+        ));
+        Parser parser = new Parser(parseletFactory, tokenConsumer);
+
+        Statement statement = instructionStatement(InstructionType.LDA);
+        when(instructionStatementParselet.parse(token, parser)).thenReturn(statement);
+
+        List<Statement> statements = parser.parse();
+        assertEquals(List.of(statement), statements);
+    }
+
+    @Test
     void testParse_multipleStatements() {
         ParseletFactory parseletFactory = mock(ParseletFactory.class);
         StatementParselet instructionStatementParselet = mock(StatementParselet.class);
@@ -54,6 +75,39 @@ class ParserTest {
         Token token2 = token(TokenType.DIRECTIVE);
         Token token3 = token(TokenType.INSTRUCTION, InstructionType.STA);
         TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, List.of(token1, token2, token3));
+        Parser parser = new Parser(parseletFactory, tokenConsumer);
+
+        Statement statement1 = instructionStatement(InstructionType.LDA);
+        when(instructionStatementParselet.parse(token1, parser)).thenReturn(statement1);
+        Statement statement2 = directiveStatement(DirectiveType.BYTE);
+        when(directiveParselet.parse(token2, parser)).thenReturn(statement2);
+        Statement statement3 = instructionStatement(InstructionType.STA);
+        when(instructionStatementParselet.parse(token3, parser)).thenReturn(statement3);
+
+        List<Statement> statements = parser.parse();
+        assertEquals(List.of(statement1, statement2, statement3), statements);
+    }
+
+    @Test
+    void testParse_multipleStatements_withEmptyLines() {
+        ParseletFactory parseletFactory = mock(ParseletFactory.class);
+        StatementParselet instructionStatementParselet = mock(StatementParselet.class);
+        when(parseletFactory.getStatementParselet(TokenType.INSTRUCTION)).thenReturn(Optional.of(instructionStatementParselet));
+        StatementParselet directiveParselet = mock(StatementParselet.class);
+        when(parseletFactory.getStatementParselet(TokenType.DIRECTIVE)).thenReturn(Optional.of(directiveParselet));
+
+        Token token1 = token(TokenType.INSTRUCTION, InstructionType.LDA);
+        Token token2 = token(TokenType.DIRECTIVE);
+        Token token3 = token(TokenType.INSTRUCTION, InstructionType.STA);
+        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, List.of(
+                token(TokenType.EOL),
+                token1,
+                token(TokenType.EOL),
+                token(TokenType.EOL),
+                token(TokenType.EOL),
+                token2,
+                token3
+        ));
         Parser parser = new Parser(parseletFactory, tokenConsumer);
 
         Statement statement1 = instructionStatement(InstructionType.LDA);

@@ -30,10 +30,18 @@ public class Parser {
     }
 
     public Statement statement() {
-        Token token = tokenConsumer.consume();
+        Token token = nextNonEndOfLineToken();
         return parseletFactory.getStatementParselet(token.getType())
                 .map(statementParselet -> statementParselet.parse(token, this))
                 .orElseThrow(() -> error(token));
+    }
+
+    private Token nextNonEndOfLineToken() {
+        Token token = tokenConsumer.consume();
+        while (TokenType.EOL.equals(token.getType())) {
+            token = tokenConsumer.consume();
+        }
+        return token;
     }
 
     public Expression expression() {

@@ -68,6 +68,7 @@ class ScannerTest {
         String text = "\"Ima String\n+\"";
         List<Token> tokens = runScanner(text);
         List<Token> expectedTokens = List.of(
+                new Token(EOL, "\n", null, 1),
                 new Token(PLUS, "+", null, 2),
                 new Token(EOF, "", null, 2)
         );
@@ -257,7 +258,9 @@ class ScannerTest {
                 runScanner("\t")
         );
         assertEquals(
-                List.of(new Token(EOF, "", null, 2)),
+                List.of(
+                        new Token(EOL, "\n", null, 1),
+                        new Token(EOF, "", null, 2)),
                 runScanner("\n")
         );
         verifyNoErrors();
@@ -279,6 +282,7 @@ class ScannerTest {
         String text = "; this is some stuff that is commented out\n+";
         List<Token> tokens = runScanner(text);
         List<Token> expectedTokens = List.of(
+                new Token(EOL, "\n", null, 1),
                 new Token(PLUS, "+", null, 2),
                 new Token(EOF, "", null, 2)
         );
@@ -293,6 +297,7 @@ class ScannerTest {
         List<Token> expectedTokens = List.of(
                 new Token(LEFT_PAREN, "(", null, 1),
                 new Token(RIGHT_PAREN, ")", null, 1),
+                new Token(EOL, "\n", null, 1),
                 new Token(PLUS, "+", null, 2),
                 new Token(EOF, "", null, 2)
         );
@@ -391,7 +396,9 @@ class ScannerTest {
         List<Token> expectedTokens = List.of(
                 new Token(LEFT_PAREN, "(", null, 1),
                 new Token(RIGHT_PAREN, ")", null, 1),
+                new Token(EOL, "\n", null, 1),
                 new Token(PLUS, "+", null, 2),
+                new Token(EOL, "\n", null, 2),
                 new Token(MINUS, "-", null, 3),
                 new Token(EOF, "", null, 3)
         );

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static com.gnopai.ji65.address.AddressingModeType.*;
-import static com.gnopai.ji65.instruction.InstructionType.LDA;
+import static com.gnopai.ji65.instruction.InstructionType.*;
 import static com.gnopai.ji65.scanner.TokenType.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,11 +21,25 @@ class InstructionStatementParseletTest {
     private final ErrorHandler errorHandler = mock(ErrorHandler.class);
 
     @Test
+    void testImplicit() {
+        Statement result = parse(
+                token(INSTRUCTION, SEI),
+                token(EOL)
+        );
+
+        InstructionStatement expectedResult = InstructionStatement.builder()
+                .instructionType(SEI)
+                .addressingModeType(IMPLICIT)
+                .build();
+        assertEquals(expectedResult, result);
+    }
+
+    @Test
     void testAbsolute() {
         Statement result = parse(
                 token(INSTRUCTION, LDA),
                 token(NUMBER, 99),
-                token(EOF)
+                token(EOL)
         );
 
         InstructionStatement expectedResult = InstructionStatement.builder()
@@ -37,11 +51,39 @@ class InstructionStatementParseletTest {
     }
 
     @Test
+    void testRelative() {
+        Statement result = parse(
+                token(INSTRUCTION, BNE),
+                token(STRING, "derp"),
+                token(EOL)
+        );
+
+        InstructionStatement expectedResult = InstructionStatement.builder()
+                .instructionType(BNE)
+                .addressExpression(new PrimaryExpression(STRING, "derp"))
+                .addressingModeType(RELATIVE)
+                .build();
+        assertEquals(expectedResult, result);
+    }
+
+    @Test
+    void testAbsolute_trailingCharacters() {
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+                token(INSTRUCTION, LDA),
+                token(NUMBER, 99),
+                token(NUMBER, 9),
+                token(EOL)
+        ));
+        assertEquals(token(NUMBER, 9), parseException.getToken());
+        assertEquals("Expected end of line", parseException.getMessage());
+    }
+
+    @Test
     void testAccumulator() {
         Statement result = parse(
                 token(INSTRUCTION, LDA),
                 token(A),
-                token(EOF)
+                token(EOL)
         );
 
         InstructionStatement expectedResult = InstructionStatement.builder()
@@ -52,13 +94,25 @@ class InstructionStatementParseletTest {
     }
 
     @Test
+    void testAccumulator_trailingCharacters() {
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+                token(INSTRUCTION, LDA),
+                token(A),
+                token(NUMBER, 9),
+                token(EOL)
+        ));
+        assertEquals(token(NUMBER, 9), parseException.getToken());
+        assertEquals("Expected end of line", parseException.getMessage());
+    }
+
+    @Test
     void testXIndexed() {
         Statement result = parse(
                 token(INSTRUCTION, LDA),
                 token(NUMBER, 50),
                 token(COMMA),
                 token(X),
-                token(EOF)
+                token(EOL)
         );
 
         InstructionStatement expectedResult = InstructionStatement.builder()
@@ -70,13 +124,27 @@ class InstructionStatementParseletTest {
     }
 
     @Test
+    void testXIndexed_trailingCharacters() {
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+                token(INSTRUCTION, LDA),
+                token(NUMBER, 50),
+                token(COMMA),
+                token(X),
+                token(NUMBER, 9),
+                token(EOL)
+        ));
+        assertEquals(token(NUMBER, 9), parseException.getToken());
+        assertEquals("Expected end of line", parseException.getMessage());
+    }
+
+    @Test
     void testYIndexed() {
         Statement result = parse(
                 token(INSTRUCTION, LDA),
                 token(NUMBER, 50),
                 token(COMMA),
                 token(Y),
-                token(EOF)
+                token(EOL)
         );
 
         InstructionStatement expectedResult = InstructionStatement.builder()
@@ -88,13 +156,27 @@ class InstructionStatementParseletTest {
     }
 
     @Test
+    void testYIndexed_trailingCharacters() {
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+                token(INSTRUCTION, LDA),
+                token(NUMBER, 50),
+                token(COMMA),
+                token(Y),
+                token(NUMBER, 9),
+                token(EOL)
+        ));
+        assertEquals(token(NUMBER, 9), parseException.getToken());
+        assertEquals("Expected end of line", parseException.getMessage());
+    }
+
+    @Test
     void testIndexed_invalid() {
         ParseException parseException = assertThrows(ParseException.class, () -> parse(
                 token(INSTRUCTION, LDA),
                 token(NUMBER, 50),
                 token(COMMA),
                 token(A),
-                token(EOF)
+                token(EOL)
         ));
         assertEquals(token(A), parseException.getToken());
         assertEquals("Expected X or Y for index", parseException.getMessage());
@@ -109,7 +191,7 @@ class InstructionStatementParseletTest {
                 token(COMMA),
                 token(X),
                 token(RIGHT_PAREN),
-                token(EOF)
+                token(EOL)
         );
 
         InstructionStatement expectedResult = InstructionStatement.builder()
@@ -121,6 +203,22 @@ class InstructionStatementParseletTest {
     }
 
     @Test
+    void testIndexedIndirect_trailingCharacters() {
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+                token(INSTRUCTION, LDA),
+                token(LEFT_PAREN),
+                token(NUMBER, 50),
+                token(COMMA),
+                token(X),
+                token(RIGHT_PAREN),
+                token(NUMBER, 9),
+                token(EOL)
+        ));
+        assertEquals(token(NUMBER, 9), parseException.getToken());
+        assertEquals("Expected end of line", parseException.getMessage());
+    }
+
+    @Test
     void testIndexedIndirect_missingClosingParen() {
         ParseException parseException = assertThrows(ParseException.class, () -> parse(
                 token(INSTRUCTION, LDA),
@@ -129,7 +227,7 @@ class InstructionStatementParseletTest {
                 token(COMMA),
                 token(X),
                 token(PLUS),
-                token(EOF)
+                token(EOL)
         ));
         assertEquals(token(PLUS), parseException.getToken());
         assertEquals("Expected closing parenthesis for indirect address", parseException.getMessage());
@@ -144,7 +242,7 @@ class InstructionStatementParseletTest {
                 token(COMMA),
                 token(Y),
                 token(RIGHT_PAREN),
-                token(EOF)
+                token(EOL)
         ));
         assertEquals(token(Y), parseException.getToken());
         assertEquals("Expected X for index", parseException.getMessage());
@@ -159,7 +257,7 @@ class InstructionStatementParseletTest {
                 token(RIGHT_PAREN),
                 token(COMMA),
                 token(Y),
-                token(EOF)
+                token(EOL)
         );
 
         InstructionStatement expectedResult = InstructionStatement.builder()
@@ -171,6 +269,22 @@ class InstructionStatementParseletTest {
     }
 
     @Test
+    void testIndirectIndexed_trailingCharacters() {
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+                token(INSTRUCTION, LDA),
+                token(LEFT_PAREN),
+                token(NUMBER, 50),
+                token(RIGHT_PAREN),
+                token(COMMA),
+                token(Y),
+                token(NUMBER, 9),
+                token(EOL)
+        ));
+        assertEquals(token(NUMBER, 9), parseException.getToken());
+        assertEquals("Expected end of line", parseException.getMessage());
+    }
+
+    @Test
     void testIndirectIndexed_invalidRegister() {
         ParseException parseException = assertThrows(ParseException.class, () -> parse(
                 token(INSTRUCTION, LDA),
@@ -179,7 +293,7 @@ class InstructionStatementParseletTest {
                 token(RIGHT_PAREN),
                 token(COMMA),
                 token(X),
-                token(EOF)
+                token(EOL)
         ));
         assertEquals(token(X), parseException.getToken());
         assertEquals("Expected Y for index", parseException.getMessage());
@@ -192,7 +306,7 @@ class InstructionStatementParseletTest {
                 token(LEFT_PAREN),
                 token(NUMBER, 50),
                 token(RIGHT_PAREN),
-                token(EOF)
+                token(EOL)
         );
 
         InstructionStatement expectedResult = InstructionStatement.builder()
@@ -204,14 +318,28 @@ class InstructionStatementParseletTest {
     }
 
     @Test
+    void testIndirect_trailingCharacters() {
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+                token(INSTRUCTION, LDA),
+                token(LEFT_PAREN),
+                token(NUMBER, 50),
+                token(RIGHT_PAREN),
+                token(NUMBER, 9),
+                token(EOL)
+        ));
+        assertEquals(token(NUMBER, 9), parseException.getToken());
+        assertEquals("Expected end of line", parseException.getMessage());
+    }
+
+    @Test
     void testIndirect_missingClosingParen() {
         ParseException parseException = assertThrows(ParseException.class, () -> parse(
                 token(INSTRUCTION, LDA),
                 token(LEFT_PAREN),
                 token(NUMBER, 50),
-                token(EOF)
+                token(EOL)
         ));
-        assertEquals(token(EOF), parseException.getToken());
+        assertEquals(token(EOL), parseException.getToken());
         assertEquals("Expected closing parenthesis for indirect address", parseException.getMessage());
     }
 
