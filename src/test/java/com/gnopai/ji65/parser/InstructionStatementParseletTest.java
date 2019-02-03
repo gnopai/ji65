@@ -35,6 +35,36 @@ class InstructionStatementParseletTest {
     }
 
     @Test
+    void testImmediate() {
+        Statement result = parse(
+                token(INSTRUCTION, LDA),
+                token(POUND),
+                token(NUMBER, 99),
+                token(EOL)
+        );
+
+        InstructionStatement expectedResult = InstructionStatement.builder()
+                .instructionType(LDA)
+                .addressExpression(new PrimaryExpression(NUMBER, 99))
+                .addressingModeType(IMMEDIATE)
+                .build();
+        assertEquals(expectedResult, result);
+    }
+
+    @Test
+    void testImmediate_trailingCharacters() {
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+                token(INSTRUCTION, LDA),
+                token(POUND),
+                token(NUMBER, 99),
+                token(NUMBER, 9),
+                token(EOL)
+        ));
+        assertEquals(token(NUMBER, 9), parseException.getToken());
+        assertEquals("Expected end of line", parseException.getMessage());
+    }
+
+    @Test
     void testAbsolute() {
         Statement result = parse(
                 token(INSTRUCTION, LDA),
@@ -51,6 +81,18 @@ class InstructionStatementParseletTest {
     }
 
     @Test
+    void testAbsolute_trailingCharacters() {
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+                token(INSTRUCTION, LDA),
+                token(NUMBER, 99),
+                token(NUMBER, 9),
+                token(EOL)
+        ));
+        assertEquals(token(NUMBER, 9), parseException.getToken());
+        assertEquals("Expected end of line", parseException.getMessage());
+    }
+
+    @Test
     void testRelative() {
         Statement result = parse(
                 token(INSTRUCTION, BNE),
@@ -64,18 +106,6 @@ class InstructionStatementParseletTest {
                 .addressingModeType(RELATIVE)
                 .build();
         assertEquals(expectedResult, result);
-    }
-
-    @Test
-    void testAbsolute_trailingCharacters() {
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(
-                token(INSTRUCTION, LDA),
-                token(NUMBER, 99),
-                token(NUMBER, 9),
-                token(EOL)
-        ));
-        assertEquals(token(NUMBER, 9), parseException.getToken());
-        assertEquals("Expected end of line", parseException.getMessage());
     }
 
     @Test

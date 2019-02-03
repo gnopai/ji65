@@ -26,6 +26,10 @@ public class InstructionStatementParselet implements StatementParselet {
             return indirect(builder, parser);
         }
 
+        if (parser.match(TokenType.POUND)) {
+            return immediate(builder, parser);
+        }
+
         Expression addressExpression = parser.expression();
         builder = builder.addressExpression(addressExpression);
 
@@ -58,6 +62,15 @@ public class InstructionStatementParselet implements StatementParselet {
 
         parser.consume(TokenType.EOL, "Expected end of line");
         return builder.addressingModeType(AddressingModeType.INDIRECT).build();
+    }
+
+    private Statement immediate(InstructionStatement.InstructionStatementBuilder builder, Parser parser) {
+        Expression addressExpression = parser.expression();
+        parser.consume(TokenType.EOL, "Expected end of line");
+        return builder
+                .addressingModeType(AddressingModeType.IMMEDIATE)
+                .addressExpression(addressExpression)
+                .build();
     }
 
     private Statement indexed(Parser parser, InstructionStatement.InstructionStatementBuilder builder) {
