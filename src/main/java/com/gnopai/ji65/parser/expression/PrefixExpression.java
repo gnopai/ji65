@@ -7,4 +7,9 @@ import lombok.Value;
 public class PrefixExpression implements Expression {
     TokenType operator;
     Expression expression;
+
+    @Override
+    public int accept(ExpressionVisitor visitor) {
+        return visitor.visit(this);
+    }
 }
