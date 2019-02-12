@@ -96,13 +96,13 @@ class InstructionStatementParseletTest {
     void testRelative() {
         Statement result = parse(
                 token(INSTRUCTION, BNE),
-                token(STRING, "derp"),
+                token(NUMBER, 5),
                 token(EOL)
         );
 
         InstructionStatement expectedResult = InstructionStatement.builder()
                 .instructionType(BNE)
-                .addressExpression(new PrimaryExpression(STRING, "derp"))
+                .addressExpression(new PrimaryExpression(NUMBER, 5))
                 .addressingModeType(RELATIVE)
                 .build();
         assertEquals(expectedResult, result);

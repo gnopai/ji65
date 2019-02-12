@@ -8,4 +8,9 @@ public class BinaryOperatorExpression implements Expression {
     Expression left;
     TokenType operator;
     Expression right;
+
+    @Override
+    public int accept(ExpressionVisitor visitor) {
+        return visitor.visit(this);
+    }
 }

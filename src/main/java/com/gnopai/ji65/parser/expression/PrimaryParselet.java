@@ -6,6 +6,6 @@ import com.gnopai.ji65.scanner.Token;
 public class PrimaryParselet implements PrefixParselet {
     @Override
     public Expression parse(Token token, Parser parser) {
-        return new PrimaryExpression(token.getType(), token.getValue());
+        return new PrimaryExpression(token.getType(), (Integer) token.getValue());
     }
 }

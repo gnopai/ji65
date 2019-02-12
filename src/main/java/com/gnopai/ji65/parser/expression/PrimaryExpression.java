@@ -6,5 +6,10 @@ import lombok.Value;
 @Value
 public class PrimaryExpression implements Expression {
     TokenType type;
-    Object value;
+    int value;
+
+    @Override
+    public int accept(ExpressionVisitor visitor) {
+        return visitor.visit(this);
+    }
 }
