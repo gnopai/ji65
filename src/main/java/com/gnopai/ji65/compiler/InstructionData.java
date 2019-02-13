@@ -15,4 +15,9 @@ public class InstructionData implements SegmentData {
     public InstructionData(Opcode opcode, Byte... bytes) {
         this(opcode, new RawData(List.of(bytes)));
     }
+
+    @Override
+    public List<Byte> accept(SegmentDataVisitor visitor) {
+        return visitor.visit(this);
+    }
 }

@@ -21,4 +21,9 @@ public class RawData implements SegmentData {
     public RawData(List<Byte> bytes) {
         this.bytes = bytes;
     }
+
+    @Override
+    public List<Byte> accept(SegmentDataVisitor visitor) {
+        return visitor.visit(this);
+    }
 }
