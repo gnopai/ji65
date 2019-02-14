@@ -1,4 +1,4 @@
-package com.gnopai.ji65.scanner;
+package com.gnopai.ji65.util;
 
 public class ErrorPrinter implements ErrorHandler {
     private boolean hasError = false;

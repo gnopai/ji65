@@ -1,6 +1,6 @@
 package com.gnopai.ji65;
 
-import com.gnopai.ji65.scanner.ErrorPrinter;
+import com.gnopai.ji65.util.ErrorPrinter;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
