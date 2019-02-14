@@ -3,12 +3,14 @@ package com.gnopai.ji65;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CpuTest {
+class CpuTest {
 
     @Test
-    public void testMemoryOperations() {
+    void testMemoryOperations() {
         Cpu cpu = Cpu.builder().build();
         Address address1 = new Address(0x1234);
         Address address2 = new Address(0x1235);
@@ -33,7 +35,25 @@ public class CpuTest {
     }
 
     @Test
-    public void testStackOperations() {
+    void testCopyToMemory() {
+        Cpu cpu = Cpu.builder().build();
+
+        List<Byte> bytes = List.of((byte) 1, (byte) 2, (byte) 3, (byte) 4, (byte) 5);
+        Address address = new Address(0x1234);
+
+        cpu.copyToMemory(address, bytes);
+
+        assertEquals((byte) 0, cpu.getMemoryValue(new Address(0x1233)));
+        assertEquals((byte) 1, cpu.getMemoryValue(new Address(0x1234)));
+        assertEquals((byte) 2, cpu.getMemoryValue(new Address(0x1235)));
+        assertEquals((byte) 3, cpu.getMemoryValue(new Address(0x1236)));
+        assertEquals((byte) 4, cpu.getMemoryValue(new Address(0x1237)));
+        assertEquals((byte) 5, cpu.getMemoryValue(new Address(0x1238)));
+        assertEquals((byte) 0, cpu.getMemoryValue(new Address(0x1239)));
+    }
+
+    @Test
+    void testStackOperations() {
         // initial state
         Cpu cpu = Cpu.builder().build();
         assertEquals((byte) 0xFF, cpu.getStackPointer());

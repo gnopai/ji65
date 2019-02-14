@@ -1,17 +1,19 @@
 package com.gnopai.ji65;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
 
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.List;
 
 @Data
 @Builder(toBuilder = true)
 public class Cpu {
     @Getter(AccessLevel.NONE)
-    private final Map<Address, Byte> memory = new HashMap<>();
+    private final byte[] memory = new byte[65536];
 
     @Getter(AccessLevel.NONE)
     private final Deque<Byte> stack = new LinkedList<>();
@@ -21,7 +23,7 @@ public class Cpu {
     private byte y;
     @Builder.Default
     private byte stackPointer = (byte) 0xFF;
-    private byte programCounter;
+    private int programCounter; // 2-byte value
 
     private boolean carryFlagSet;
     private boolean zeroFlagSet;
@@ -32,11 +34,18 @@ public class Cpu {
     private boolean negativeFlagSet;
 
     public void setMemoryValue(Address address, byte value) {
-        memory.put(address, value);
+        memory[address.getValue()] = value;
     }
 
     public byte getMemoryValue(Address address) {
-        return memory.getOrDefault(address, (byte) 0x00);
+        return memory[address.getValue()];
+    }
+
+    public void copyToMemory(Address address, List<Byte> bytes) {
+        int i = address.getValue();
+        for (byte b : bytes) {
+            memory[i++] = b;
+        }
     }
 
     public byte pullFromStack() {
@@ -56,5 +65,23 @@ public class Cpu {
 
     public void updateNegativeFlag(byte value) {
         negativeFlagSet = Byte.toUnsignedInt(value) >= 128;
+    }
+
+    private void incrementProgramCounter() {
+        programCounter = (programCounter + 1) % memory.length;
+    }
+
+    public void setProgramCounter(Address address) {
+        setProgramCounter(address.getValue());
+    }
+
+    public void setProgramCounter(int value) {
+        this.programCounter = value;
+    }
+
+    public byte nextProgramByte() {
+        byte nextByte = memory[programCounter];
+        incrementProgramCounter();
+        return nextByte;
     }
 }

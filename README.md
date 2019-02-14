@@ -4,8 +4,7 @@ ji65
 ji65 is a Java-based interpreter for running 6502 assembly code. I share a love of developing
 classic console games (the NES in particular) and for robust application testing, and became
 frustrated over time with the lack of testability in my 6502 development. So I decided to write
-this interpreter as a way to write and run test suites against my 6502 code. Maybe this is a
-somewhat crazy idea, but it also just happens to be a really fun thing to build, so why not?
+this interpreter as a way to write and run test suites against my 6502 code.
 
 Running It
 ----------
@@ -16,4 +15,4 @@ Github, import the project via the Gradle file, and then run...? This is current
 Things To Do
 ------------
 
-Most things, or more likely, all the things.
+Most things. Please update this.

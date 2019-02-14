@@ -1,7 +1,7 @@
 package com.gnopai.ji65.linker;
 
-import com.gnopai.ji65.NewProgram;
 import com.gnopai.ji65.Opcode;
+import com.gnopai.ji65.Program;
 import com.gnopai.ji65.compiler.*;
 import org.junit.jupiter.api.Test;
 
@@ -18,10 +18,10 @@ class LinkerTest {
         InstructionData instructionData = new InstructionData(Opcode.LDA_ABSOLUTE_X, new RawData((byte) 80, (byte) 4));
         CompiledSegments compiledSegments = compiledSegments(instructionData);
 
-        NewProgram program = new Linker().link(compiledSegments);
+        Program program = new Linker().link(compiledSegments);
 
         List<Byte> expectedBytes = List.of((byte) 0xBD, (byte) 80, (byte) 4);
-        assertEquals(new NewProgram(expectedBytes), program);
+        assertEquals(new Program(expectedBytes), program);
     }
 
     @Test
@@ -29,18 +29,18 @@ class LinkerTest {
         List<Byte> bytes = List.of((byte) 5, (byte) 7);
         CompiledSegments compiledSegments = compiledSegments(new RawData(bytes));
 
-        NewProgram program = new Linker().link(compiledSegments);
+        Program program = new Linker().link(compiledSegments);
 
-        assertEquals(new NewProgram(bytes), program);
+        assertEquals(new Program(bytes), program);
     }
 
     @Test
     void testVisitLabel() {
         CompiledSegments compiledSegments = compiledSegments(new Label("derp"));
 
-        NewProgram program = new Linker().link(compiledSegments);
+        Program program = new Linker().link(compiledSegments);
 
-        assertEquals(new NewProgram(List.of()), program);
+        assertEquals(new Program(List.of()), program);
     }
 
     @Test
@@ -60,7 +60,7 @@ class LinkerTest {
                 new InstructionData(Opcode.STX_ZERO_PAGE, new RawData((byte) 10))
         );
 
-        NewProgram program = new Linker().link(compiledSegments);
+        Program program = new Linker().link(compiledSegments);
 
         List<Byte> expectedBytes = List.of(
                 (byte) 0xA2, (byte) 77,
@@ -69,7 +69,7 @@ class LinkerTest {
                 (byte) 0xE8,
                 (byte) 0x86, (byte) 10
         );
-        assertEquals(new NewProgram(expectedBytes), program);
+        assertEquals(new Program(expectedBytes), program);
     }
 
     private CompiledSegments compiledSegments(SegmentData... segmentData) {
