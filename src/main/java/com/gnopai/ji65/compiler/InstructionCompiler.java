@@ -1,7 +1,7 @@
 package com.gnopai.ji65.compiler;
 
+import com.gnopai.ji65.AddressingModeType;
 import com.gnopai.ji65.Opcode;
-import com.gnopai.ji65.address.AddressingModeType;
 import com.gnopai.ji65.parser.statement.InstructionStatement;
 
 import java.util.Optional;

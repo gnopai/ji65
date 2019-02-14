@@ -1,4 +1,4 @@
-package com.gnopai.ji65.address;
+package com.gnopai.ji65;
 
 import lombok.Getter;
 

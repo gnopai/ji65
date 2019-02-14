@@ -1,5 +1,6 @@
-package com.gnopai.ji65;
+package com.gnopai.ji65.interpreter;
 
+import com.gnopai.ji65.Address;
 import lombok.Builder;
 import lombok.Value;
 

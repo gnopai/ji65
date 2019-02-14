@@ -1,7 +1,8 @@
-package com.gnopai.ji65.instruction;
+package com.gnopai.ji65.interpreter.instruction;
 
 import com.gnopai.ji65.Cpu;
-import com.gnopai.ji65.Operand;
+import com.gnopai.ji65.InstructionType;
+import com.gnopai.ji65.interpreter.Operand;
 
 import java.util.function.Function;
 

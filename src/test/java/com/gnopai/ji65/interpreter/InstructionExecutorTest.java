@@ -3,8 +3,8 @@ package com.gnopai.ji65.interpreter;
 import com.gnopai.ji65.Address;
 import com.gnopai.ji65.Cpu;
 import com.gnopai.ji65.Opcode;
-import com.gnopai.ji65.address.AddressingModeFactory;
-import com.gnopai.ji65.instruction.InstructionFactory;
+import com.gnopai.ji65.interpreter.address.AddressingModeFactory;
+import com.gnopai.ji65.interpreter.instruction.InstructionFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

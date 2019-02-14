@@ -1,8 +1,8 @@
 package com.gnopai.ji65.compiler;
 
+import com.gnopai.ji65.AddressingModeType;
+import com.gnopai.ji65.InstructionType;
 import com.gnopai.ji65.Opcode;
-import com.gnopai.ji65.address.AddressingModeType;
-import com.gnopai.ji65.instruction.InstructionType;
 import com.gnopai.ji65.parser.expression.PrimaryExpression;
 import com.gnopai.ji65.parser.statement.InstructionStatement;
 import com.gnopai.ji65.scanner.TokenType;

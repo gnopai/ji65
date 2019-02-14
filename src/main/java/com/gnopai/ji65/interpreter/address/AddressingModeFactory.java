@@ -1,5 +1,6 @@
-package com.gnopai.ji65.address;
+package com.gnopai.ji65.interpreter.address;
 
+import com.gnopai.ji65.AddressingModeType;
 import com.gnopai.ji65.util.TypeFactory;
 
 import java.util.List;

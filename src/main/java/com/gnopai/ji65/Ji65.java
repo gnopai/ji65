@@ -1,13 +1,13 @@
 package com.gnopai.ji65;
 
-import com.gnopai.ji65.address.AddressingModeFactory;
 import com.gnopai.ji65.compiler.CompiledSegments;
 import com.gnopai.ji65.compiler.Compiler;
 import com.gnopai.ji65.compiler.ExpressionEvaluator;
 import com.gnopai.ji65.compiler.InstructionCompiler;
-import com.gnopai.ji65.instruction.InstructionFactory;
 import com.gnopai.ji65.interpreter.InstructionExecutor;
 import com.gnopai.ji65.interpreter.Interpreter;
+import com.gnopai.ji65.interpreter.address.AddressingModeFactory;
+import com.gnopai.ji65.interpreter.instruction.InstructionFactory;
 import com.gnopai.ji65.linker.Linker;
 import com.gnopai.ji65.parser.ParseletFactory;
 import com.gnopai.ji65.parser.Parser;

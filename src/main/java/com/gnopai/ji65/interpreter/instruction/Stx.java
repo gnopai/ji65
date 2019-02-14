@@ -1,8 +1,8 @@
-package com.gnopai.ji65.instruction;
+package com.gnopai.ji65.interpreter.instruction;
 
 import com.gnopai.ji65.Cpu;
 
-import static com.gnopai.ji65.instruction.InstructionType.STX;
+import static com.gnopai.ji65.InstructionType.STX;
 
 public class Stx extends StoreInstruction {
     public Stx() {

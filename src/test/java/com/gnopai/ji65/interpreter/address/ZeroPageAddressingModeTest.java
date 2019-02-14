@@ -1,8 +1,8 @@
-package com.gnopai.ji65.address;
+package com.gnopai.ji65.interpreter.address;
 
 import com.gnopai.ji65.Address;
 import com.gnopai.ji65.Cpu;
-import com.gnopai.ji65.Operand;
+import com.gnopai.ji65.interpreter.Operand;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
