@@ -71,6 +71,14 @@ public class Cpu {
         programCounter = (programCounter + 1) % memory.length;
     }
 
+    public void setProgramCounter(Address address) {
+        setProgramCounter(address.getValue());
+    }
+
+    public void setProgramCounter(int value) {
+        this.programCounter = value;
+    }
+
     public byte nextProgramByte() {
         byte nextByte = memory[programCounter];
         incrementProgramCounter();
