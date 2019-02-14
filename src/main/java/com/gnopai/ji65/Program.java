@@ -6,5 +6,6 @@ import java.util.List;
 
 @Value
 public class Program {
-    List<RuntimeInstruction> instructions;
+    List<Byte> bytes;
+    // TODO add labels here as indexes into the data
 }
