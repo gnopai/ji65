@@ -1,8 +1,8 @@
 package com.gnopai.ji65.parser;
 
-import com.gnopai.ji65.scanner.ErrorHandler;
 import com.gnopai.ji65.scanner.Token;
 import com.gnopai.ji65.scanner.TokenType;
+import com.gnopai.ji65.util.ErrorHandler;
 
 import java.util.Iterator;
 import java.util.List;

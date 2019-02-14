@@ -9,9 +9,9 @@ import com.gnopai.ji65.parser.statement.DirectiveStatement;
 import com.gnopai.ji65.parser.statement.InstructionStatement;
 import com.gnopai.ji65.parser.statement.Statement;
 import com.gnopai.ji65.parser.statement.StatementParselet;
-import com.gnopai.ji65.scanner.ErrorHandler;
 import com.gnopai.ji65.scanner.Token;
 import com.gnopai.ji65.scanner.TokenType;
+import com.gnopai.ji65.util.ErrorHandler;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

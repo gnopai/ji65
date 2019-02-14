@@ -13,9 +13,9 @@ import com.gnopai.ji65.parser.ParseletFactory;
 import com.gnopai.ji65.parser.Parser;
 import com.gnopai.ji65.parser.TokenConsumer;
 import com.gnopai.ji65.parser.statement.Statement;
-import com.gnopai.ji65.scanner.ErrorHandler;
 import com.gnopai.ji65.scanner.Scanner;
 import com.gnopai.ji65.scanner.Token;
+import com.gnopai.ji65.util.ErrorHandler;
 
 import java.util.List;
 import java.util.Optional;
