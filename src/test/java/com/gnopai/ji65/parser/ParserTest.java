@@ -1,7 +1,7 @@
 package com.gnopai.ji65.parser;
 
+import com.gnopai.ji65.InstructionType;
 import com.gnopai.ji65.directive.DirectiveType;
-import com.gnopai.ji65.instruction.InstructionType;
 import com.gnopai.ji65.parser.expression.BinaryOperatorExpression;
 import com.gnopai.ji65.parser.expression.Expression;
 import com.gnopai.ji65.parser.expression.PrimaryExpression;

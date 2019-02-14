@@ -17,7 +17,7 @@ public class Interpreter {
         // TODO start executing instructions from a given address (or label)
         // TODO stop? how to know when to stop?
         List<Byte> programBytes = program.getBytes();
-        Address startAddress = new Address(0);
+        Address startAddress = new Address(0x8000);
         cpu.copyToMemory(startAddress, programBytes);
         cpu.setProgramCounter(startAddress.getValue());
 

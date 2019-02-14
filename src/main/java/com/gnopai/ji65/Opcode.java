@@ -1,7 +1,5 @@
 package com.gnopai.ji65;
 
-import com.gnopai.ji65.address.AddressingModeType;
-import com.gnopai.ji65.instruction.InstructionType;
 import lombok.Getter;
 import lombok.Value;
 
@@ -10,8 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static com.gnopai.ji65.address.AddressingModeType.*;
-import static com.gnopai.ji65.instruction.InstructionType.*;
+import static com.gnopai.ji65.AddressingModeType.*;
+import static com.gnopai.ji65.InstructionType.*;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toMap;
 

@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static com.gnopai.ji65.address.AddressingModeType.*;
-import static com.gnopai.ji65.instruction.InstructionType.*;
+import static com.gnopai.ji65.AddressingModeType.*;
+import static com.gnopai.ji65.InstructionType.*;
 import static com.gnopai.ji65.scanner.TokenType.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

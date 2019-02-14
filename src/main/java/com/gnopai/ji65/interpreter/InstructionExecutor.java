@@ -2,11 +2,10 @@ package com.gnopai.ji65.interpreter;
 
 import com.gnopai.ji65.Cpu;
 import com.gnopai.ji65.Opcode;
-import com.gnopai.ji65.Operand;
-import com.gnopai.ji65.address.AddressingMode;
-import com.gnopai.ji65.address.AddressingModeFactory;
-import com.gnopai.ji65.instruction.Instruction;
-import com.gnopai.ji65.instruction.InstructionFactory;
+import com.gnopai.ji65.interpreter.address.AddressingMode;
+import com.gnopai.ji65.interpreter.address.AddressingModeFactory;
+import com.gnopai.ji65.interpreter.instruction.Instruction;
+import com.gnopai.ji65.interpreter.instruction.InstructionFactory;
 
 public class InstructionExecutor {
     private final InstructionFactory instructionFactory;

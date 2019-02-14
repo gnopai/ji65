@@ -1,5 +1,6 @@
-package com.gnopai.ji65.instruction;
+package com.gnopai.ji65.interpreter.instruction;
 
+import com.gnopai.ji65.InstructionType;
 import com.gnopai.ji65.util.TypeFactory;
 
 import java.util.List;
