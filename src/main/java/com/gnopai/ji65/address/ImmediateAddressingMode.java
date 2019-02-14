@@ -1,6 +1,5 @@
 package com.gnopai.ji65.address;
 
-import com.gnopai.ji65.BytesValue;
 import com.gnopai.ji65.Cpu;
 import com.gnopai.ji65.Operand;
 
@@ -12,9 +11,9 @@ public class ImmediateAddressingMode implements AddressingMode {
     }
 
     @Override
-    public Operand determineRuntimeOperand(Cpu cpu, BytesValue argument) {
+    public Operand determineRuntimeOperand(Cpu cpu) {
         return Operand.builder()
-                .value(argument)
+                .lowByte(cpu.nextProgramByte())
                 .address(false)
                 .build();
     }

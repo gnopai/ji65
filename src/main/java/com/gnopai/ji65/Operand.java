@@ -6,18 +6,15 @@ import lombok.Value;
 @Value
 @Builder
 public class Operand {
-    BytesValue value;
+    byte highByte;
+    byte lowByte;
     boolean address;
 
     public static Operand of(Address address) {
-        return new Operand(BytesValue.of(address), true);
+        return new Operand(address.getHighByte(), address.getLowByte(), true);
     }
 
     public Address asAddress() {
-        return value.asAddress();
-    }
-
-    public byte getLowByte() {
-        return value.getLowByte();
+        return Address.of(highByte, lowByte);
     }
 }

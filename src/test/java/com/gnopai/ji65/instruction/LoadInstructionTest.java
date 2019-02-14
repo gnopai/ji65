@@ -1,7 +1,6 @@
 package com.gnopai.ji65.instruction;
 
 import com.gnopai.ji65.Address;
-import com.gnopai.ji65.BytesValue;
 import com.gnopai.ji65.Cpu;
 import com.gnopai.ji65.Operand;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +38,7 @@ class LoadInstructionTest {
         Cpu cpu = Cpu.builder().build();
         byte value = (byte) 0x7F;
         Operand operand = Operand.builder()
-                .value(new BytesValue(value))
+                .lowByte(value)
                 .address(false)
                 .build();
 
@@ -55,7 +54,7 @@ class LoadInstructionTest {
         Cpu cpu = Cpu.builder().build();
         byte value = (byte) 0x00;
         Operand operand = Operand.builder()
-                .value(new BytesValue(value))
+                .lowByte(value)
                 .address(false)
                 .build();
 
@@ -71,7 +70,7 @@ class LoadInstructionTest {
         Cpu cpu = Cpu.builder().build();
         byte value = (byte) 0x80;
         Operand operand = Operand.builder()
-                .value(new BytesValue(value))
+                .lowByte(value)
                 .address(false)
                 .build();
 
