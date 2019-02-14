@@ -6,6 +6,10 @@ import lombok.Value;
 public class Address {
     int value;
 
+    public Address(int value) {
+        this.value = value % (256 * 256);
+    }
+
     public static Address of(byte highByte, byte lowByte) {
         int value = Byte.toUnsignedInt(highByte) * 256 + Byte.toUnsignedInt(lowByte);
         return new Address(value);
