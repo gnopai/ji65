@@ -1,33 +1,20 @@
 package com.gnopai.ji65;
 
-import com.gnopai.ji65.address.AddressingModeFactory;
-import com.gnopai.ji65.instruction.InstructionFactory;
-import com.gnopai.ji65.parser.InstructionParser;
-import com.gnopai.ji65.parser.InstructionResolver;
-import com.gnopai.ji65.parser.NumberParser;
-import com.gnopai.ji65.parser.ProgramParser;
-import org.junit.jupiter.api.BeforeEach;
+import com.gnopai.ji65.scanner.ErrorPrinter;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class LoadAndStoreIntegrationTest {
-    private ProgramParser programParser;
-    private ProgramRunner programRunner;
-
-    @BeforeEach
-    void setUp() {
-        NumberParser numberParser = new NumberParser();
-        programParser = new ProgramParser(new InstructionParser(numberParser), new InstructionResolver(numberParser));
-        programRunner = new ProgramRunner(new AddressingModeFactory(), new InstructionFactory());
-    }
 
     // TODO break these out into tests for each individual opcode, at least for all currently supported addressing modes
     @Test
     void test() {
-        List<String> rawInstructions = List.of(
+        Cpu cpu = Cpu.builder().build();
+        compileAndRun(cpu,
                 "lda #$10",
                 "sta $05",
                 "ldx $05",
@@ -36,10 +23,6 @@ class LoadAndStoreIntegrationTest {
                 "sty $11"
         );
 
-        Program program = programParser.parseProgram(rawInstructions);
-        Cpu cpu = Cpu.builder().build();
-        programRunner.run(cpu, program);
-
         byte expectedValue = (byte) 0x10;
         assertEquals(expectedValue, cpu.getAccumulator());
         assertEquals(expectedValue, cpu.getX());
@@ -47,5 +30,19 @@ class LoadAndStoreIntegrationTest {
         assertEquals(expectedValue, cpu.getMemoryValue(new Address(0x05)));
         assertEquals(expectedValue, cpu.getMemoryValue(new Address(0x08)));
         assertEquals(expectedValue, cpu.getMemoryValue(new Address(0x11)));
+    }
+
+    private void compileAndRun(Cpu cpu, String... lines) {
+        String programText = buildProgramText(lines);
+        Ji65 ji65 = new Ji65(new ErrorPrinter());
+        Program program = ji65.compile(programText);
+        ji65.run(program, cpu);
+    }
+
+    private String buildProgramText(String... lines) {
+        return Arrays.stream(lines)
+                .map(line -> line + "\n")
+                .collect(Collectors.joining(""));
+
     }
 }
