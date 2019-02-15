@@ -7,7 +7,7 @@ import java.util.List;
 
 public class AddressingModeFactory extends TypeFactory<AddressingModeType, AddressingMode> {
     public AddressingModeFactory() {
-        super(AddressingMode::getType, List.of(
+        super(AddressingModeType.class, AddressingMode::getType, List.of(
                 new ImplicitAddressingMode(),
                 new ImmediateAddressingMode(),
                 new ZeroPageAddressingMode(),
