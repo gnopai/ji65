@@ -27,6 +27,11 @@ class InstructionCompilerTest {
     }
 
     @Test
+    void testAccumulatorFromImplicit() {
+        testSingleByteOpcode(InstructionType.ROL, AddressingModeType.IMPLICIT, Opcode.ROL_ACCUMULATOR);
+    }
+
+    @Test
     void testImmediate() {
         testTwoByteOpcode(InstructionType.LDA, AddressingModeType.IMMEDIATE, Opcode.LDA_IMMEDIATE);
     }
@@ -103,6 +108,11 @@ class InstructionCompilerTest {
     @Test
     void testZeroPageFromAbsolute() {
         testThreeByteOpcodeConvertedToTwoByteOpcode(InstructionType.LDA, AddressingModeType.ABSOLUTE, Opcode.LDA_ZERO_PAGE);
+    }
+
+    @Test
+    void testZeroPageFromAbsoluteWhenNoAbsoluteOpcodeExists() {
+        testThreeByteOpcodeConvertedToTwoByteOpcode(InstructionType.STY, AddressingModeType.ABSOLUTE_X, Opcode.STY_ZERO_PAGE_X);
     }
 
     @Test
