@@ -1,17 +1,16 @@
 package com.gnopai.ji65.util;
 
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import static java.util.stream.Collectors.toUnmodifiableMap;
-
-public class TypeFactory<K, V> {
+public class TypeFactory<K extends Enum<K>, V> {
     private final Map<K, V> valuesByType;
 
-    public TypeFactory(Function<V, K> typeFunction, List<V> values) {
-        valuesByType = values.stream()
-                .collect(toUnmodifiableMap(typeFunction, Function.identity()));
+    public TypeFactory(Class<K> keyClass, Function<V, K> typeFunction, List<V> values) {
+        valuesByType = new EnumMap<>(keyClass);
+        values.forEach(value -> valuesByType.put(typeFunction.apply(value), value));
     }
 
     public V get(K type) {

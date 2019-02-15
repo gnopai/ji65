@@ -7,7 +7,7 @@ import java.util.List;
 
 public class InstructionFactory extends TypeFactory<InstructionType, Instruction> {
     public InstructionFactory() {
-        super(Instruction::getInstructionType, List.of(
+        super(InstructionType.class, Instruction::getInstructionType, List.of(
                 new Clc(),
                 new Cld(),
                 new Cli(),
