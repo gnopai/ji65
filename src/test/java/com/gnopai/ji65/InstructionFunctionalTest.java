@@ -47,6 +47,15 @@ class InstructionFunctionalTest {
     }
 
     @Test
+    void testLdxZeroPageY() {
+        Cpu cpu = Cpu.builder().build();
+        cpu.setMemoryValue(new Address(7), (byte) 0x19);
+        cpu.setY((byte) 3);
+        compileAndRun(cpu, "ldx $04,y");
+        assertEquals((byte) 0x19, cpu.getX());
+    }
+
+    @Test
     void testLdyImmediate() {
         Cpu cpu = Cpu.builder().build();
         compileAndRun(cpu, "ldy #$10");
@@ -96,6 +105,16 @@ class InstructionFunctionalTest {
                 .build();
         compileAndRun(cpu, "stx $23");
         assertEquals((byte) 0x14, cpu.getMemoryValue(new Address(0x23)));
+    }
+
+    @Test
+    void testStxZeroPageY() {
+        Cpu cpu = Cpu.builder()
+                .x((byte) 0x14)
+                .y((byte) 3)
+                .build();
+        compileAndRun(cpu, "stx $23,y");
+        assertEquals((byte) 0x14, cpu.getMemoryValue(new Address(0x26)));
     }
 
     @Test

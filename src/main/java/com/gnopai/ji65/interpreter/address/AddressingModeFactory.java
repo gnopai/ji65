@@ -10,7 +10,8 @@ public class AddressingModeFactory extends TypeFactory<AddressingModeType, Addre
         super(AddressingMode::getType, List.of(
                 new ImmediateAddressingMode(),
                 new ZeroPageAddressingMode(),
-                new ZeroPageXAddressingMode()
+                new ZeroPageXAddressingMode(),
+                new ZeroPageYAddressingMode()
         ));
     }
 }
