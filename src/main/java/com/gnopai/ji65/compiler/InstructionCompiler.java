@@ -1,6 +1,7 @@
 package com.gnopai.ji65.compiler;
 
 import com.gnopai.ji65.AddressingModeType;
+import com.gnopai.ji65.InstructionType;
 import com.gnopai.ji65.Opcode;
 import com.gnopai.ji65.parser.statement.InstructionStatement;
 
@@ -14,17 +15,10 @@ public class InstructionCompiler {
     }
 
     public SegmentData compile(InstructionStatement instructionStatement) {
-        AddressingModeType addressingModeType = instructionStatement.getAddressingModeType();
-        // TODO try switching implicit to accumulator if possible
-        Opcode opcode = Opcode.of(instructionStatement.getInstructionType(), addressingModeType)
-                .orElseThrow(() -> new RuntimeException("Invalid addressing mode " + addressingModeType.name() +
-                        " for instruction \"" + instructionStatement.getInstructionType().getIdentifier() + "\"")
-                );
-
-        switch (addressingModeType) {
+        switch (instructionStatement.getAddressingModeType()) {
             case IMPLICIT:
             case ACCUMULATOR:
-                return new InstructionData(opcode);
+                return compileSingleByteInstruction(instructionStatement);
             case ZERO_PAGE:
             case ZERO_PAGE_X:
             case ZERO_PAGE_Y:
@@ -32,22 +26,31 @@ public class InstructionCompiler {
             case RELATIVE:
             case INDEXED_INDIRECT:
             case INDIRECT_INDEXED:
-                return compileTwoByteInstruction(instructionStatement, opcode);
+                return compileTwoByteInstruction(instructionStatement);
             case ABSOLUTE:
-                return compileThreeByteInstruction(instructionStatement, opcode, AddressingModeType.ZERO_PAGE);
+                return compileThreeByteInstruction(instructionStatement, AddressingModeType.ZERO_PAGE);
             case ABSOLUTE_X:
-                return compileThreeByteInstruction(instructionStatement, opcode, AddressingModeType.ZERO_PAGE_X);
+                return compileThreeByteInstruction(instructionStatement, AddressingModeType.ZERO_PAGE_X);
             case ABSOLUTE_Y:
-                return compileThreeByteInstruction(instructionStatement, opcode, AddressingModeType.ZERO_PAGE_Y);
+                return compileThreeByteInstruction(instructionStatement, AddressingModeType.ZERO_PAGE_Y);
             case INDIRECT:
-                return compileThreeByteInstruction(instructionStatement, opcode, null);
+                return compileThreeByteInstruction(instructionStatement, null);
             default:
                 // this should be unreachable
-                throw new IllegalStateException("Unknown address mode type encountered: " + addressingModeType.name());
+                throw new IllegalStateException("Unknown address mode type encountered: " + instructionStatement.getAddressingModeType().name());
         }
     }
 
-    private SegmentData compileTwoByteInstruction(InstructionStatement instructionStatement, Opcode opcode) {
+    private SegmentData compileSingleByteInstruction(InstructionStatement instructionStatement) {
+        InstructionType instructionType = instructionStatement.getInstructionType();
+        Opcode opcode = Opcode.of(instructionType, instructionStatement.getAddressingModeType())
+                .or(() -> Opcode.of(instructionType, AddressingModeType.ACCUMULATOR))
+                .orElseThrow(() -> invalidOpcode(instructionStatement));
+        return new InstructionData(opcode);
+    }
+
+    private SegmentData compileTwoByteInstruction(InstructionStatement instructionStatement) {
+        Opcode opcode = getOpcode(instructionStatement);
         int singleByteValue = expressionEvaluator.evaluate(instructionStatement.getAddressExpression());
         if (singleByteValue > 255) {
             throw new RuntimeException("Value too large for" +
@@ -57,7 +60,7 @@ public class InstructionCompiler {
         return new InstructionData(opcode, (byte) singleByteValue);
     }
 
-    private SegmentData compileThreeByteInstruction(InstructionStatement instructionStatement, Opcode opcode, AddressingModeType zeroPageAddressingModeType) {
+    private SegmentData compileThreeByteInstruction(InstructionStatement instructionStatement, AddressingModeType zeroPageAddressingModeType) {
         int twoByteValue = expressionEvaluator.evaluate(instructionStatement.getAddressExpression());
         if (twoByteValue < 256) {
             Optional<Opcode> zeroPageOpcode = Opcode.of(instructionStatement.getInstructionType(), zeroPageAddressingModeType);
@@ -65,6 +68,7 @@ public class InstructionCompiler {
                 return new InstructionData(zeroPageOpcode.get(), (byte) twoByteValue);
             }
         }
+        Opcode opcode = getOpcode(instructionStatement);
         return getBytesForThreeByteOpcode(opcode, twoByteValue);
     }
 
@@ -72,5 +76,15 @@ public class InstructionCompiler {
         byte highByte = (byte) (value / 256);
         byte lowByte = (byte) (value % 256);
         return new InstructionData(opcode, lowByte, highByte);
+    }
+
+    private Opcode getOpcode(InstructionStatement instructionStatement) {
+        return Opcode.of(instructionStatement.getInstructionType(), instructionStatement.getAddressingModeType())
+                .orElseThrow(() -> invalidOpcode(instructionStatement));
+    }
+
+    private RuntimeException invalidOpcode(InstructionStatement instructionStatement) {
+        return new RuntimeException("Invalid addressing mode " + instructionStatement.getAddressingModeType().name() +
+                " for instruction \"" + instructionStatement.getInstructionType().getIdentifier() + "\"");
     }
 }
