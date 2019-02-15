@@ -25,10 +25,10 @@ public enum InstructionType {
     BRK("brk"), // TODO
     BVC("bvc"), // TODO
     BVS("bvs"), // TODO
-    CLC("clc"), // TODO
-    CLD("cld"), // TODO
-    CLI("cli"), // TODO
-    CLV("clv"), // TODO
+    CLC("clc"),
+    CLD("cld"),
+    CLI("cli"),
+    CLV("clv"),
     CMP("cmp"), // TODO
     CPX("cpx"), // TODO
     CPY("cpy"), // TODO
@@ -56,9 +56,9 @@ public enum InstructionType {
     RTI("rti"), // TODO
     RTS("rts"), // TODO
     SBC("sbc"), // TODO
-    SEC("sec"), // TODO
-    SED("sed"), // TODO
-    SEI("sei"), // TODO
+    SEC("sec"),
+    SED("sed"),
+    SEI("sei"),
     STA("sta"),
     STX("stx"),
     STY("sty"),

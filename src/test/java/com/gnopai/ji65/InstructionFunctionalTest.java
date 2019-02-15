@@ -3,9 +3,37 @@ package com.gnopai.ji65;
 import org.junit.jupiter.api.Test;
 
 import static com.gnopai.ji65.TestUtil.compileAndRun;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class InstructionFunctionalTest {
+
+    @Test
+    void testClc() {
+        Cpu cpu = Cpu.builder().carryFlagSet(true).build();
+        compileAndRun(cpu, "clc");
+        assertFalse(cpu.isCarryFlagSet());
+    }
+
+    @Test
+    void testCld() {
+        Cpu cpu = Cpu.builder().decimalModeSet(true).build();
+        compileAndRun(cpu, "cld");
+        assertFalse(cpu.isDecimalModeSet());
+    }
+
+    @Test
+    void testCli() {
+        Cpu cpu = Cpu.builder().interruptDisableSet(true).build();
+        compileAndRun(cpu, "cli");
+        assertFalse(cpu.isInterruptDisableSet());
+    }
+
+    @Test
+    void testClv() {
+        Cpu cpu = Cpu.builder().overflowFlagSet(true).build();
+        compileAndRun(cpu, "clv");
+        assertFalse(cpu.isOverflowFlagSet());
+    }
 
     @Test
     void testLdaImmediate() {
@@ -77,6 +105,27 @@ class InstructionFunctionalTest {
         cpu.setX((byte) 4);
         compileAndRun(cpu, "ldy $04,X");
         assertEquals((byte) 0x19, cpu.getY());
+    }
+
+    @Test
+    void testSec() {
+        Cpu cpu = Cpu.builder().carryFlagSet(false).build();
+        compileAndRun(cpu, "sec");
+        assertTrue(cpu.isCarryFlagSet());
+    }
+
+    @Test
+    void testSed() {
+        Cpu cpu = Cpu.builder().decimalModeSet(false).build();
+        compileAndRun(cpu, "sed");
+        assertTrue(cpu.isDecimalModeSet());
+    }
+
+    @Test
+    void testSei() {
+        Cpu cpu = Cpu.builder().interruptDisableSet(false).build();
+        compileAndRun(cpu, "sei");
+        assertTrue(cpu.isInterruptDisableSet());
     }
 
     @Test

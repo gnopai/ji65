@@ -8,9 +8,16 @@ import java.util.List;
 public class InstructionFactory extends TypeFactory<InstructionType, Instruction> {
     public InstructionFactory() {
         super(Instruction::getInstructionType, List.of(
+                new Clc(),
+                new Cld(),
+                new Cli(),
+                new Clv(),
                 new Lda(),
                 new Ldx(),
                 new Ldy(),
+                new Sec(),
+                new Sed(),
+                new Sei(),
                 new Sta(),
                 new Stx(),
                 new Sty()
