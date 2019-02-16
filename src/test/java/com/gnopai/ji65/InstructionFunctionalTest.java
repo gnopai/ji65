@@ -60,6 +60,32 @@ class InstructionFunctionalTest {
     }
 
     @Test
+    void testLdaAbsolute() {
+        Cpu cpu = Cpu.builder().build();
+        cpu.setMemoryValue(new Address(0x5432), (byte) 0x17);
+        compileAndRun(cpu, "lda $5432");
+        assertEquals((byte) 0x17, cpu.getAccumulator());
+    }
+
+    @Test
+    void testLdaAbsoluteX() {
+        Cpu cpu = Cpu.builder().build();
+        cpu.setX((byte) 7);
+        cpu.setMemoryValue(new Address(0x5439), (byte) 0x17);
+        compileAndRun(cpu, "lda $5432,X");
+        assertEquals((byte) 0x17, cpu.getAccumulator());
+    }
+
+    @Test
+    void testLdaAbsoluteY() {
+        Cpu cpu = Cpu.builder().build();
+        cpu.setY((byte) 6);
+        cpu.setMemoryValue(new Address(0x5436), (byte) 0x12);
+        compileAndRun(cpu, "lda $5430,Y");
+        assertEquals((byte) 0x12, cpu.getAccumulator());
+    }
+
+    @Test
     void testLdxImmediate() {
         Cpu cpu = Cpu.builder().build();
         compileAndRun(cpu, "ldx #$10");
@@ -84,6 +110,23 @@ class InstructionFunctionalTest {
     }
 
     @Test
+    void testLdxAbsolute() {
+        Cpu cpu = Cpu.builder().build();
+        cpu.setMemoryValue(new Address(0x5432), (byte) 0x17);
+        compileAndRun(cpu, "ldx $5432");
+        assertEquals((byte) 0x17, cpu.getX());
+    }
+
+    @Test
+    void testLdxAbsoluteY() {
+        Cpu cpu = Cpu.builder().build();
+        cpu.setY((byte) 6);
+        cpu.setMemoryValue(new Address(0x5436), (byte) 0x12);
+        compileAndRun(cpu, "ldx $5430,Y");
+        assertEquals((byte) 0x12, cpu.getX());
+    }
+
+    @Test
     void testLdyImmediate() {
         Cpu cpu = Cpu.builder().build();
         compileAndRun(cpu, "ldy #$10");
@@ -105,6 +148,23 @@ class InstructionFunctionalTest {
         cpu.setX((byte) 4);
         compileAndRun(cpu, "ldy $04,X");
         assertEquals((byte) 0x19, cpu.getY());
+    }
+
+    @Test
+    void testLdyAbsolute() {
+        Cpu cpu = Cpu.builder().build();
+        cpu.setMemoryValue(new Address(0x5432), (byte) 0x17);
+        compileAndRun(cpu, "ldy $5432");
+        assertEquals((byte) 0x17, cpu.getY());
+    }
+
+    @Test
+    void testLdyAbsoluteX() {
+        Cpu cpu = Cpu.builder().build();
+        cpu.setX((byte) 6);
+        cpu.setMemoryValue(new Address(0x5436), (byte) 0x12);
+        compileAndRun(cpu, "ldy $5430,X");
+        assertEquals((byte) 0x12, cpu.getY());
     }
 
     @Test
@@ -148,6 +208,35 @@ class InstructionFunctionalTest {
     }
 
     @Test
+    void testStaAbsolute() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x14)
+                .build();
+        compileAndRun(cpu, "sta $2346");
+        assertEquals((byte) 0x14, cpu.getMemoryValue(new Address(0x2346)));
+    }
+
+    @Test
+    void testStaAbsoluteX() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x14)
+                .x((byte) 0x10)
+                .build();
+        compileAndRun(cpu, "sta $2346,X");
+        assertEquals((byte) 0x14, cpu.getMemoryValue(new Address(0x2356)));
+    }
+
+    @Test
+    void testStaAbsoluteY() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x15)
+                .y((byte) 0x11)
+                .build();
+        compileAndRun(cpu, "sta $2346,Y");
+        assertEquals((byte) 0x15, cpu.getMemoryValue(new Address(0x2357)));
+    }
+
+    @Test
     void testStxZeroPage() {
         Cpu cpu = Cpu.builder()
                 .x((byte) 0x14)
@@ -167,6 +256,15 @@ class InstructionFunctionalTest {
     }
 
     @Test
+    void testStxAbsolute() {
+        Cpu cpu = Cpu.builder()
+                .x((byte) 0x14)
+                .build();
+        compileAndRun(cpu, "stx $2310");
+        assertEquals((byte) 0x14, cpu.getMemoryValue(new Address(0x2310)));
+    }
+
+    @Test
     void testStyZeroPage() {
         Cpu cpu = Cpu.builder()
                 .y((byte) 0x14)
@@ -183,5 +281,14 @@ class InstructionFunctionalTest {
                 .build();
         compileAndRun(cpu, "sty $23,X");
         assertEquals((byte) 0x14, cpu.getMemoryValue(new Address(0x26)));
+    }
+
+    @Test
+    void testStyAbsolute() {
+        Cpu cpu = Cpu.builder()
+                .y((byte) 0x66)
+                .build();
+        compileAndRun(cpu, "sty $5432");
+        assertEquals((byte) 0x66, cpu.getMemoryValue(new Address(0x5432)));
     }
 }
