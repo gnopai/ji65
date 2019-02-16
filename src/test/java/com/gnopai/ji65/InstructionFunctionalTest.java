@@ -86,6 +86,30 @@ class InstructionFunctionalTest {
     }
 
     @Test
+    void testLdaIndexedIndirect() {
+        Cpu cpu = Cpu.builder()
+                .x((byte) 0x11)
+                .build();
+        cpu.setMemoryValue(new Address(0x56), (byte) 0x77);
+        cpu.setMemoryValue(new Address(0x57), (byte) 0x40);
+        cpu.setMemoryValue(new Address(0x4077), (byte) 0x99);
+        compileAndRun(cpu, "lda ($45,X)");
+        assertEquals((byte) 0x99, cpu.getAccumulator());
+    }
+
+    @Test
+    void testLdaIndirectIndexed() {
+        Cpu cpu = Cpu.builder()
+                .y((byte) 0x11)
+                .build();
+        cpu.setMemoryValue(new Address(0x45), (byte) 0x78);
+        cpu.setMemoryValue(new Address(0x46), (byte) 0x41);
+        cpu.setMemoryValue(new Address(0x4189), (byte) 0xBC);
+        compileAndRun(cpu, "lda ($45),Y");
+        assertEquals((byte) 0xBC, cpu.getAccumulator());
+    }
+
+    @Test
     void testLdxImmediate() {
         Cpu cpu = Cpu.builder().build();
         compileAndRun(cpu, "ldx #$10");
@@ -234,6 +258,31 @@ class InstructionFunctionalTest {
                 .build();
         compileAndRun(cpu, "sta $2346,Y");
         assertEquals((byte) 0x15, cpu.getMemoryValue(new Address(0x2357)));
+    }
+
+    @Test
+    void testStaIndexedIndirect() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x19)
+                .x((byte) 0x11)
+                .build();
+        cpu.setMemoryValue(new Address(0x56), (byte) 0x77);
+        cpu.setMemoryValue(new Address(0x57), (byte) 0x40);
+        compileAndRun(cpu, "sta ($45,X)");
+        assertEquals((byte) 0x19, cpu.getMemoryValue(new Address(0x4077)));
+    }
+
+    @Test
+    void testStaIndirectIndexed() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0xB9)
+                .y((byte) 0x11)
+                .build();
+        cpu.setMemoryValue(new Address(0x45), (byte) 0x78);
+        cpu.setMemoryValue(new Address(0x46), (byte) 0x41);
+        cpu.setMemoryValue(new Address(0x4189), (byte) 0xBC);
+        compileAndRun(cpu, "sta ($45),Y");
+        assertEquals((byte) 0xB9, cpu.getMemoryValue(new Address(0x4189)));
     }
 
     @Test
