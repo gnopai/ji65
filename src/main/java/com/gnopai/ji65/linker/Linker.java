@@ -2,47 +2,46 @@ package com.gnopai.ji65.linker;
 
 import com.gnopai.ji65.Program;
 import com.gnopai.ji65.compiler.*;
-import com.google.common.collect.ImmutableList;
-
-import java.util.Collections;
-import java.util.List;
-
-import static java.util.stream.Collectors.toUnmodifiableList;
+import com.google.common.annotations.VisibleForTesting;
 
 public class Linker implements SegmentDataVisitor {
+    private static final int PROGRAM_SIZE = 256 * 256; // TODO eventually get this from the config
+    private ProgramBuilder programBuilder;
 
-    // TODO take in a config object too that specifies how the segments should be laid out
     public Program link(CompiledSegments segments) {
-        List<Byte> bytes = segments.getSegment("CODE")
+        return link(segments, PROGRAM_SIZE);
+    }
+
+    // TODO take in a config object too that specifies how the segments should be laid out, including the program size
+    @VisibleForTesting
+    Program link(CompiledSegments segments, int programSize) {
+        programBuilder = new ProgramBuilder(programSize);
+
+        segments.getSegment("CODE")
                 .orElseThrow(() -> new RuntimeException("Expected at least a code segment for now"))
                 .getSegmentData()
-                .stream()
-                .flatMap(segmentData -> getBytes(segmentData).stream())
-                .collect(toUnmodifiableList());
-        return new Program(bytes);
+                .forEach(this::link);
+
+        return programBuilder.build();
     }
 
-    private List<Byte> getBytes(SegmentData segmentData) {
-        return segmentData.accept(this);
-    }
-
-    @Override
-    public List<Byte> visit(InstructionData instructionData) {
-        return List.copyOf(ImmutableList.<Byte>builder()
-                .add(instructionData.getOpcode().getOpcode())
-                .addAll(getBytes(instructionData.getOperand()))
-                .build()
-        );
+    private void link(SegmentData segmentData) {
+        segmentData.accept(this);
     }
 
     @Override
-    public List<Byte> visit(RawData rawData) {
-        return rawData.getBytes();
+    public void visit(InstructionData instructionData) {
+        programBuilder.bytes(instructionData.getOpcode().getOpcode());
+        link(instructionData.getOperand());
     }
 
     @Override
-    public List<Byte> visit(Label label) {
-        // TODO store label info in the program
-        return Collections.emptyList();
+    public void visit(RawData rawData) {
+        programBuilder.bytes(rawData.getBytes());
+    }
+
+    @Override
+    public void visit(Label label) {
+        programBuilder.label(label.getName());
     }
 }

@@ -18,7 +18,7 @@ class LinkerTest {
         InstructionData instructionData = new InstructionData(Opcode.LDA_ABSOLUTE_X, new RawData((byte) 80, (byte) 4));
         CompiledSegments compiledSegments = compiledSegments(instructionData);
 
-        Program program = new Linker().link(compiledSegments);
+        Program program = new Linker().link(compiledSegments, 3);
 
         List<Byte> expectedBytes = List.of((byte) 0xBD, (byte) 80, (byte) 4);
         assertEquals(new Program(expectedBytes), program);
@@ -29,7 +29,7 @@ class LinkerTest {
         List<Byte> bytes = List.of((byte) 5, (byte) 7);
         CompiledSegments compiledSegments = compiledSegments(new RawData(bytes));
 
-        Program program = new Linker().link(compiledSegments);
+        Program program = new Linker().link(compiledSegments, 2);
 
         assertEquals(new Program(bytes), program);
     }
@@ -38,9 +38,13 @@ class LinkerTest {
     void testVisitLabel() {
         CompiledSegments compiledSegments = compiledSegments(new Label("derp"));
 
-        Program program = new Linker().link(compiledSegments);
+        Program program = new Linker().link(compiledSegments, 2);
 
-        assertEquals(new Program(List.of()), program);
+        Program expectedProgram = new Program(
+                List.of((byte) 0, (byte) 0),
+                Map.of("derp", 0)
+        );
+        assertEquals(expectedProgram, program);
     }
 
     @Test
@@ -52,24 +56,26 @@ class LinkerTest {
     @Test
     void testLink_multipleSegmentData() {
         CompiledSegments compiledSegments = compiledSegments(
-                new Label("derp"),
                 new InstructionData(Opcode.LDX_IMMEDIATE, new RawData((byte) 77)),
                 new InstructionData(Opcode.LDX_ABSOLUTE, new RawData((byte) 80, (byte) 4)),
                 new InstructionData(Opcode.STX_ZERO_PAGE, new RawData((byte) 9)),
+                new Label("derp"),
                 new InstructionData(Opcode.INX_IMPLICIT),
                 new InstructionData(Opcode.STX_ZERO_PAGE, new RawData((byte) 10))
         );
 
-        Program program = new Linker().link(compiledSegments);
+        Program program = new Linker().link(compiledSegments, 12);
 
         List<Byte> expectedBytes = List.of(
                 (byte) 0xA2, (byte) 77,
                 (byte) 0xAE, (byte) 80, (byte) 4,
                 (byte) 0x86, (byte) 9,
                 (byte) 0xE8,
-                (byte) 0x86, (byte) 10
+                (byte) 0x86, (byte) 10,
+                (byte) 0, (byte) 0
         );
-        assertEquals(new Program(expectedBytes), program);
+        Map<String, Integer> expectedLabels = Map.of("derp", 7);
+        assertEquals(new Program(expectedBytes, expectedLabels), program);
     }
 
     private CompiledSegments compiledSegments(SegmentData... segmentData) {
