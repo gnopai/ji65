@@ -21,6 +21,7 @@ public class ParseletFactory {
     );
 
     private final Map<TokenType, PrefixParselet> prefixParselets = Map.of(
+            TokenType.LEFT_PAREN, new GroupParselet(),
             TokenType.MINUS, new PrefixOperatorParselet(Precedence.UNARY),
             TokenType.NUMBER, new PrimaryParselet()
     );
