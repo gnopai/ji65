@@ -130,6 +130,34 @@ class TokenConsumerTest {
     }
 
     @Test
+    void testPrevious() {
+        List<Token> tokens = List.of(
+                token(LEFT_PAREN),
+                token(NUMBER),
+                token(RIGHT_PAREN),
+                token(EOF)
+        );
+        TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
+
+        assertEquals(token(LEFT_PAREN), consumer.consume());
+        assertNull(consumer.getPrevious());
+
+        assertEquals(token(NUMBER), consumer.consume());
+        assertEquals(token(LEFT_PAREN), consumer.getPrevious());
+
+        assertEquals(token(RIGHT_PAREN), consumer.consume());
+        assertEquals(token(NUMBER), consumer.getPrevious());
+
+        assertEquals(token(EOF), consumer.consume());
+        assertEquals(token(RIGHT_PAREN), consumer.getPrevious());
+
+        assertNull(consumer.consume());
+        assertEquals(token(EOF), consumer.getPrevious());
+
+        assertFalse(consumer.hasError());
+    }
+
+    @Test
     void testMultipleTokensAndOperations() {
         List<Token> tokens = List.of(
                 token(LEFT_PAREN),

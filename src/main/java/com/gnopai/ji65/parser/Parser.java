@@ -101,6 +101,10 @@ public class Parser {
         return tokenConsumer.match(tokenType);
     }
 
+    public Token getPrevious() {
+        return tokenConsumer.getPrevious();
+    }
+
     public boolean hasError() {
         return tokenConsumer.hasError();
     }
