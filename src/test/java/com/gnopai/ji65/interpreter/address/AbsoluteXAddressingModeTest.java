@@ -50,4 +50,25 @@ class AbsoluteXAddressingModeTest {
                 .build();
         assertEquals(expectedResult, result);
     }
+
+    @Test
+    void testPageCrossedFromZeroToOne() {
+        byte addressLowByte = (byte) 0xFF;
+        byte addressHighByte = (byte) 0x00;
+        Cpu cpu = Cpu.builder().build();
+        cpu.setX((byte) 3);
+        cpu.setProgramCounter(50);
+        cpu.setMemoryValue(new Address(50), addressLowByte);
+        cpu.setMemoryValue(new Address(51), addressHighByte);
+        AbsoluteXAddressingMode testClass = new AbsoluteXAddressingMode();
+
+        Operand result = testClass.determineRuntimeOperand(cpu);
+
+        Operand expectedResult = Operand.builder()
+                .highByte((byte) 0x01)
+                .lowByte((byte) 0x02)
+                .address(true)
+                .build();
+        assertEquals(expectedResult, result);
+    }
 }

@@ -11,12 +11,12 @@ public enum AddressingModeType {
     ZERO_PAGE_X(2),
     ZERO_PAGE_Y(2),
     RELATIVE(2), // TODO
-    ABSOLUTE(3), // TODO
-    ABSOLUTE_X(3), // TODO
-    ABSOLUTE_Y(3), // TODO
+    ABSOLUTE(3),
+    ABSOLUTE_X(3),
+    ABSOLUTE_Y(3),
     INDIRECT(3), // TODO
-    INDEXED_INDIRECT(2), // TODO
-    INDIRECT_INDEXED(2); // TODO
+    INDEXED_INDIRECT(2),
+    INDIRECT_INDEXED(2);
 
     private final int byteCount;
 

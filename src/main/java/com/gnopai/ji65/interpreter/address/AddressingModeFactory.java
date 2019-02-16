@@ -15,7 +15,9 @@ public class AddressingModeFactory extends TypeFactory<AddressingModeType, Addre
                 new ZeroPageYAddressingMode(),
                 new AbsoluteAddressingMode(),
                 new AbsoluteXAddressingMode(),
-                new AbsoluteYAddressingMode()
+                new AbsoluteYAddressingMode(),
+                new IndexedIndirectAddressingMode(),
+                new IndirectIndexedAddressingMode()
         ));
     }
 }
