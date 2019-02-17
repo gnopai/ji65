@@ -17,7 +17,7 @@ public class Interpreter {
         // TODO start executing instructions from a given address (or label)
         // TODO stop? how to know when to stop?
         List<Byte> programBytes = program.getBytes();
-        Address startAddress = new Address(0x8000); // this matches up with the program size in the linker, currently filling up the second half of cpu memory
+        Address startAddress = program.getMemoryAddress();
         cpu.copyToMemory(startAddress, programBytes);
         cpu.setProgramCounter(startAddress.getValue());
 

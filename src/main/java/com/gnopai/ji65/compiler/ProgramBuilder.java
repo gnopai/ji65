@@ -1,5 +1,6 @@
 package com.gnopai.ji65.compiler;
 
+import com.gnopai.ji65.Address;
 import com.gnopai.ji65.Program;
 
 import java.util.ArrayList;
@@ -10,11 +11,13 @@ import java.util.Map;
 public class ProgramBuilder {
     private final byte[] bytes;
     private final Map<String, Integer> labels;
+    private final int startIndex;
     private int index;
 
-    public ProgramBuilder(int size) {
+    public ProgramBuilder(int size, int startIndex) {
         bytes = new byte[size];
         labels = new HashMap<>();
+        this.startIndex = startIndex;
         index = 0;
     }
 
@@ -31,7 +34,7 @@ public class ProgramBuilder {
     }
 
     public ProgramBuilder label(String name) {
-        labels.put(name, index);
+        labels.put(name, startIndex + index);
         return this;
     }
 
@@ -40,6 +43,6 @@ public class ProgramBuilder {
         for (byte b : bytes) {
             byteList.add(b);
         }
-        return new Program(List.copyOf(byteList), Map.copyOf(labels));
+        return new Program(List.copyOf(byteList), Map.copyOf(labels), new Address(startIndex));
     }
 }

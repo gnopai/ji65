@@ -1,5 +1,6 @@
 package com.gnopai.ji65.linker;
 
+import com.gnopai.ji65.Address;
 import com.gnopai.ji65.Opcode;
 import com.gnopai.ji65.Program;
 import com.gnopai.ji65.compiler.*;
@@ -18,7 +19,7 @@ class LinkerTest {
         InstructionData instructionData = new InstructionData(Opcode.LDA_ABSOLUTE_X, new RawData((byte) 80, (byte) 4));
         CompiledSegments compiledSegments = compiledSegments(instructionData);
 
-        Program program = new Linker().link(compiledSegments, 3);
+        Program program = new Linker().link(compiledSegments, 3, 0);
 
         List<Byte> expectedBytes = List.of((byte) 0xBD, (byte) 80, (byte) 4);
         assertEquals(new Program(expectedBytes), program);
@@ -29,7 +30,7 @@ class LinkerTest {
         List<Byte> bytes = List.of((byte) 5, (byte) 7);
         CompiledSegments compiledSegments = compiledSegments(new RawData(bytes));
 
-        Program program = new Linker().link(compiledSegments, 2);
+        Program program = new Linker().link(compiledSegments, 2, 0);
 
         assertEquals(new Program(bytes), program);
     }
@@ -38,11 +39,12 @@ class LinkerTest {
     void testVisitLabel() {
         CompiledSegments compiledSegments = compiledSegments(new Label("derp"));
 
-        Program program = new Linker().link(compiledSegments, 2);
+        Program program = new Linker().link(compiledSegments, 2, 0);
 
         Program expectedProgram = new Program(
                 List.of((byte) 0, (byte) 0),
-                Map.of("derp", 0)
+                Map.of("derp", 0),
+                new Address(0)
         );
         assertEquals(expectedProgram, program);
     }
@@ -64,7 +66,7 @@ class LinkerTest {
                 new InstructionData(Opcode.STX_ZERO_PAGE, new RawData((byte) 10))
         );
 
-        Program program = new Linker().link(compiledSegments, 12);
+        Program program = new Linker().link(compiledSegments, 12, 0);
 
         List<Byte> expectedBytes = List.of(
                 (byte) 0xA2, (byte) 77,
@@ -75,7 +77,7 @@ class LinkerTest {
                 (byte) 0, (byte) 0
         );
         Map<String, Integer> expectedLabels = Map.of("derp", 7);
-        assertEquals(new Program(expectedBytes, expectedLabels), program);
+        assertEquals(new Program(expectedBytes, expectedLabels, new Address(0)), program);
     }
 
     private CompiledSegments compiledSegments(SegmentData... segmentData) {

@@ -6,16 +6,17 @@ import com.google.common.annotations.VisibleForTesting;
 
 public class Linker implements SegmentDataVisitor {
     private static final int PROGRAM_SIZE = 256 * 128; // TODO eventually get this from the config
+    private static final int PROGRAM_START_INDEX = 0x8000; // TODO eventually get this from the config
     private ProgramBuilder programBuilder;
 
     public Program link(CompiledSegments segments) {
-        return link(segments, PROGRAM_SIZE);
+        return link(segments, PROGRAM_SIZE, PROGRAM_START_INDEX);
     }
 
     // TODO take in a config object too that specifies how the segments should be laid out, including the program size
     @VisibleForTesting
-    Program link(CompiledSegments segments, int programSize) {
-        programBuilder = new ProgramBuilder(programSize);
+    Program link(CompiledSegments segments, int programSize, int startIndex) {
+        programBuilder = new ProgramBuilder(programSize, startIndex);
 
         segments.getSegment("CODE")
                 .orElseThrow(() -> new RuntimeException("Expected at least a code segment for now"))
