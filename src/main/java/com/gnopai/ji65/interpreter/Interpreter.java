@@ -17,14 +17,15 @@ public class Interpreter {
         // TODO start executing instructions from a given address (or label)
         // TODO stop? how to know when to stop?
         List<Byte> programBytes = program.getBytes();
-        Address startAddress = new Address(0x8000);
+        Address startAddress = new Address(0x8000); // this matches up with the program size in the linker, currently filling up the second half of cpu memory
         cpu.copyToMemory(startAddress, programBytes);
         cpu.setProgramCounter(startAddress.getValue());
 
-        // FIXME obviously it doesn't really work to just linearly execute the given instructions, but it seems like a decent workaround until this thing gets more real
-        Address endAddress = new Address(startAddress.getValue() + programBytes.size());
-        while (cpu.getProgramCounter() < endAddress.getValue()) {
+        // FIXME this is a silly workaround to get the program to end
+        byte nextValue = cpu.getMemoryValue(new Address(cpu.getProgramCounter()));
+        while (nextValue != 0) {
             instructionExecutor.execute(cpu);
+            nextValue = cpu.getMemoryValue(new Address(cpu.getProgramCounter()));
         }
     }
 }

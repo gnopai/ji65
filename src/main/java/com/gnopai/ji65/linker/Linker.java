@@ -5,7 +5,7 @@ import com.gnopai.ji65.compiler.*;
 import com.google.common.annotations.VisibleForTesting;
 
 public class Linker implements SegmentDataVisitor {
-    private static final int PROGRAM_SIZE = 256 * 256; // TODO eventually get this from the config
+    private static final int PROGRAM_SIZE = 256 * 128; // TODO eventually get this from the config
     private ProgramBuilder programBuilder;
 
     public Program link(CompiledSegments segments) {
