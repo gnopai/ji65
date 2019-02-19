@@ -37,6 +37,11 @@ public class Compiler implements StatementVisitor {
     }
 
     @Override
+    public SegmentData visit(LabelStatement labelStatement) {
+        return new Label(labelStatement.getName());
+    }
+
+    @Override
     public SegmentData visit(DirectiveStatement directiveStatement) {
         // TODO
         return null;

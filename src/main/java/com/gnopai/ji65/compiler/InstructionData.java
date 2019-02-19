@@ -17,7 +17,7 @@ public class InstructionData implements SegmentData {
     }
 
     @Override
-    public List<Byte> accept(SegmentDataVisitor visitor) {
-        return visitor.visit(this);
+    public void accept(SegmentDataVisitor visitor) {
+        visitor.visit(this);
     }
 }

@@ -12,6 +12,7 @@ public class TokenConsumer {
     private final Iterator<Token> iterator;
     private Token next;
     private Token current;
+    private Token previous;
     private boolean hasError;
 
     public TokenConsumer(ErrorHandler errorHandler, List<Token> tokens) {
@@ -25,6 +26,7 @@ public class TokenConsumer {
     }
 
     public Token consume() {
+        previous = current;
         current = next;
         next = iterator.hasNext() ? iterator.next() : null;
         return current;
@@ -47,6 +49,10 @@ public class TokenConsumer {
 
     public Token peek() {
         return next;
+    }
+
+    public Token getPrevious() {
+        return previous;
     }
 
     public ParseException error(String message) {

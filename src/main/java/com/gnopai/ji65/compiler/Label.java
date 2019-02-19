@@ -2,8 +2,6 @@ package com.gnopai.ji65.compiler;
 
 import lombok.Value;
 
-import java.util.List;
-
 // TODO I think this will need splitting between label definition and label usage
 @Value
 public class Label implements SegmentData {
@@ -11,7 +9,7 @@ public class Label implements SegmentData {
     // TODO zero-page or not, cheap label, etc.
 
     @Override
-    public List<Byte> accept(SegmentDataVisitor visitor) {
-        return visitor.visit(this);
+    public void accept(SegmentDataVisitor visitor) {
+        visitor.visit(this);
     }
 }

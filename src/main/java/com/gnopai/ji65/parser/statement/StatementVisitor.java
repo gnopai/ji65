@@ -7,5 +7,7 @@ public interface StatementVisitor {
 
     SegmentData visit(ExpressionStatement expressionStatement);
 
+    SegmentData visit(LabelStatement labelStatement);
+
     SegmentData visit(DirectiveStatement directiveStatement);
 }

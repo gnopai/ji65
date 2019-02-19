@@ -2,6 +2,8 @@ package com.gnopai.ji65.parser;
 
 import com.gnopai.ji65.parser.expression.*;
 import com.gnopai.ji65.parser.statement.InstructionStatementParselet;
+import com.gnopai.ji65.parser.statement.LabelStatementParselet;
+import com.gnopai.ji65.parser.statement.MultiTokenStatementParselet;
 import com.gnopai.ji65.parser.statement.StatementParselet;
 import com.gnopai.ji65.scanner.TokenType;
 
@@ -10,7 +12,10 @@ import java.util.Optional;
 
 public class ParseletFactory {
     private final Map<TokenType, StatementParselet> statementParsers = Map.of(
-            TokenType.INSTRUCTION, new InstructionStatementParselet()
+            TokenType.INSTRUCTION, new InstructionStatementParselet(),
+            TokenType.IDENTIFIER, new MultiTokenStatementParselet(Map.of(
+                    TokenType.COLON, new LabelStatementParselet()
+            ))
     );
 
     private final Map<TokenType, InfixParselet> infixParselets = Map.of(
