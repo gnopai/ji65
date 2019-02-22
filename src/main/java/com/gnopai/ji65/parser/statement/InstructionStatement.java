@@ -7,6 +7,8 @@ import com.gnopai.ji65.parser.expression.Expression;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.Optional;
+
 @Value
 @Builder
 public class InstructionStatement implements Statement {
@@ -15,7 +17,7 @@ public class InstructionStatement implements Statement {
     AddressingModeType addressingModeType;
 
     @Override
-    public SegmentData accept(StatementVisitor statementVisitor) {
+    public Optional<SegmentData> accept(StatementVisitor statementVisitor) {
         return statementVisitor.visit(this);
     }
 }

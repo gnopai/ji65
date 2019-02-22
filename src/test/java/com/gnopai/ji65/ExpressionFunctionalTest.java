@@ -1,6 +1,7 @@
 package com.gnopai.ji65;
 
 import com.gnopai.ji65.parser.ParseException;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -17,7 +18,7 @@ class ExpressionFunctionalTest {
     @MethodSource("validExpressionProvider")
     void testExpression(String programText, int expectedValue) {
         Cpu cpu = Cpu.builder().build();
-        compileAndRun(cpu, "lda " + programText);
+        compileAndRun(cpu, "five = 5", "seven = 7", "lda " + programText);
         assertEquals((byte) expectedValue, cpu.getAccumulator());
     }
 
@@ -34,7 +35,10 @@ class ExpressionFunctionalTest {
                 arguments("#(5 + 2 * 3)", 11),
                 arguments("#((5 + 2) * 3)", 21),
                 arguments("#5 + 2", 7),
-                arguments("#(2 * (3 * (13 - (3 + 6))) - 1)", 23)
+                arguments("#(2 * (3 * (13 - (3 + 6))) - 1)", 23),
+                arguments("#five", 5),
+                arguments("#(five + 4)", 9),
+                arguments("#(seven - five)", 2)
         );
     }
 
@@ -55,5 +59,14 @@ class ExpressionFunctionalTest {
                 arguments("#("),
                 arguments("#(5 + 2) * 4 )")
         );
+    }
+
+    @Test
+    void testDuplicateAssignment() {
+        Cpu cpu = Cpu.builder().build();
+        RuntimeException exception = assertThrows(RuntimeException.class, () ->
+                compileAndRun(cpu, "derp = 5", "derp = 7")
+        );
+        assertEquals("Duplicate assignment of \"derp\"", exception.getMessage());
     }
 }

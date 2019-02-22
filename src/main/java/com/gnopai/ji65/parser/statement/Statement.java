@@ -2,6 +2,8 @@ package com.gnopai.ji65.parser.statement;
 
 import com.gnopai.ji65.compiler.SegmentData;
 
+import java.util.Optional;
+
 public interface Statement {
-    SegmentData accept(StatementVisitor statementVisitor);
+    Optional<SegmentData> accept(StatementVisitor statementVisitor);
 }
