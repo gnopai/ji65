@@ -18,27 +18,35 @@ class ExpressionFunctionalTest {
     @MethodSource("validExpressionProvider")
     void testExpression(String programText, int expectedValue) {
         Cpu cpu = Cpu.builder().build();
-        compileAndRun(cpu, "five = 5", "seven = 7", "lda " + programText);
+        compileAndRun(cpu, "five = 5", "seven = 7", "lda #" + programText);
+        assertEquals((byte) expectedValue, cpu.getAccumulator());
+    }
+
+    @ParameterizedTest
+    @MethodSource("validExpressionProvider")
+    void testAssignment(String programText, int expectedValue) {
+        Cpu cpu = Cpu.builder().build();
+        compileAndRun(cpu, "five = 5", "seven = 7", "testy = " + programText, "lda #testy");
         assertEquals((byte) expectedValue, cpu.getAccumulator());
     }
 
     static Stream<Arguments> validExpressionProvider() {
         return Stream.of(
-                arguments("#15", 15),
-                arguments("#-15", -15),
-                arguments("#(15)", 15),
-                arguments("#(15 + 2)", 17),
-                arguments("#(15 - 3)", 12),
-                arguments("#(7 * 2)", 14),
-                arguments("#(12 / 4)", 3),
-                arguments("#(-(-5))", 5),
-                arguments("#(5 + 2 * 3)", 11),
-                arguments("#((5 + 2) * 3)", 21),
-                arguments("#5 + 2", 7),
-                arguments("#(2 * (3 * (13 - (3 + 6))) - 1)", 23),
-                arguments("#five", 5),
-                arguments("#(five + 4)", 9),
-                arguments("#(seven - five)", 2)
+                arguments("15", 15),
+                arguments("-15", -15),
+                arguments("(15)", 15),
+                arguments("(15 + 2)", 17),
+                arguments("(15 - 3)", 12),
+                arguments("(7 * 2)", 14),
+                arguments("(12 / 4)", 3),
+                arguments("(-(-5))", 5),
+                arguments("(5 + 2 * 3)", 11),
+                arguments("((5 + 2) * 3)", 21),
+                arguments("5 + 2", 7),
+                arguments("(2 * (3 * (13 - (3 + 6))) - 1)", 23),
+                arguments("five", 5),
+                arguments("(five + 4)", 9),
+                arguments("(seven - five)", 2)
         );
     }
 
