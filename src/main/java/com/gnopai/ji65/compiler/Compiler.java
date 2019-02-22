@@ -3,57 +3,56 @@ package com.gnopai.ji65.compiler;
 import com.gnopai.ji65.parser.statement.*;
 
 import java.util.List;
-import java.util.Optional;
 
 public class Compiler implements StatementVisitor {
     private final InstructionCompiler instructionCompiler;
     private final ExpressionEvaluator expressionEvaluator;
-    private final Environment environment;
+    private Environment environment;
+    private CompiledSegments compiledSegments;
     private String currentSegment = "CODE";
 
-    public Compiler(InstructionCompiler instructionCompiler, ExpressionEvaluator expressionEvaluator, Environment environment) {
+    public Compiler(InstructionCompiler instructionCompiler, ExpressionEvaluator expressionEvaluator) {
         this.instructionCompiler = instructionCompiler;
         this.expressionEvaluator = expressionEvaluator;
-        this.environment = environment;
     }
 
-    public CompiledSegments compile(List<Statement> statements) {
-        CompiledSegments compiledSegments = new CompiledSegments();
-        for (Statement statement : statements) {
-            Optional<SegmentData> segmentData = statement.accept(this);
-            segmentData.ifPresent(data -> compiledSegments.add(currentSegment, data));
-        }
+    public CompiledSegments compile(List<Statement> statements, Environment environment) {
+        this.environment = environment;
+        compiledSegments = new CompiledSegments();
+        statements.forEach(statement -> statement.accept(this));
         return compiledSegments;
     }
 
     @Override
-    public Optional<SegmentData> visit(InstructionStatement instructionStatement) {
-        return Optional.of(instructionCompiler.compile(instructionStatement));
+    public void visit(InstructionStatement instructionStatement) {
+        SegmentData segmentData = instructionCompiler.compile(instructionStatement, environment);
+        compiledSegments.add(currentSegment, segmentData);
     }
 
     @Override
-    public Optional<SegmentData> visit(ExpressionStatement expressionStatement) {
-        int value = expressionEvaluator.evaluate(expressionStatement.getExpression());
+    public void visit(ExpressionStatement expressionStatement) {
+        // FIXME not used yet -- and maybe this should be single-byte anyway?
+        int value = expressionEvaluator.evaluate(expressionStatement.getExpression(), environment);
         byte highByte = (byte) (value / 256);
         byte lowByte = (byte) (value % 256);
-        return Optional.of(new RawData(List.of(lowByte, highByte)));
+        RawData rawData = new RawData(List.of(lowByte, highByte));
+        compiledSegments.add(currentSegment, rawData);
     }
 
     @Override
-    public Optional<SegmentData> visit(LabelStatement labelStatement) {
-        return Optional.of(new Label(labelStatement.getName()));
+    public void visit(LabelStatement labelStatement) {
+        Label label = new Label(labelStatement.getName());
+        compiledSegments.add(currentSegment, label);
     }
 
     @Override
-    public Optional<SegmentData> visit(DirectiveStatement directiveStatement) {
+    public void visit(DirectiveStatement directiveStatement) {
         // TODO
-        return Optional.empty();
     }
 
     @Override
-    public Optional<SegmentData> visit(AssignmentStatement assignmentStatement) {
-        int value = expressionEvaluator.evaluate(assignmentStatement.getExpression());
+    public void visit(AssignmentStatement assignmentStatement) {
+        int value = expressionEvaluator.evaluate(assignmentStatement.getExpression(), environment);
         environment.define(assignmentStatement.getName(), value);
-        return Optional.empty();
     }
 }

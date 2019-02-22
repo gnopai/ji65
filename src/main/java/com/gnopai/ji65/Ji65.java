@@ -56,9 +56,9 @@ public class Ji65 {
 
     private CompiledSegments compile(List<Statement> statements) {
         Environment environment = new Environment();
-        ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator(environment);
-        Compiler compiler = new Compiler(new InstructionCompiler(expressionEvaluator), expressionEvaluator, environment);
-        return compiler.compile(statements);
+        ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator();
+        Compiler compiler = new Compiler(new InstructionCompiler(expressionEvaluator), expressionEvaluator);
+        return compiler.compile(statements, environment);
     }
 
     private Program link(CompiledSegments compiledSegments) {

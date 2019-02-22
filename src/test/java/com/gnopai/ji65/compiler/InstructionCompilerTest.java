@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 class InstructionCompilerTest {
     private final ExpressionEvaluator expressionEvaluator = mock(ExpressionEvaluator.class);
+    private final Environment environment = mock(Environment.class);
 
     @Test
     void testImplicit() {
@@ -74,7 +75,7 @@ class InstructionCompilerTest {
                 .addressingModeType(AddressingModeType.IMMEDIATE)
                 .addressExpression(addressExpression)
                 .build();
-        when(expressionEvaluator.evaluate(addressExpression)).thenReturn(257);
+        when(expressionEvaluator.evaluate(addressExpression, environment)).thenReturn(257);
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> compile(instructionStatement));
         assertEquals("Value too large for addressing mode \"IMMEDIATE\" on instruction \"ldx\"", exception.getMessage());
@@ -164,7 +165,7 @@ class InstructionCompilerTest {
                 .addressingModeType(addressingModeType)
                 .addressExpression(addressExpression)
                 .build();
-        when(expressionEvaluator.evaluate(addressExpression)).thenReturn(63);
+        when(expressionEvaluator.evaluate(addressExpression, environment)).thenReturn(63);
 
         SegmentData segmentData = compile(instructionStatement);
 
@@ -178,7 +179,7 @@ class InstructionCompilerTest {
                 .addressingModeType(addressingModeType)
                 .addressExpression(addressExpression)
                 .build();
-        when(expressionEvaluator.evaluate(addressExpression)).thenReturn(261);
+        when(expressionEvaluator.evaluate(addressExpression, environment)).thenReturn(261);
 
         SegmentData segmentData = compile(instructionStatement);
 
@@ -192,7 +193,7 @@ class InstructionCompilerTest {
                 .addressingModeType(addressingModeType)
                 .addressExpression(addressExpression)
                 .build();
-        when(expressionEvaluator.evaluate(addressExpression)).thenReturn(4);
+        when(expressionEvaluator.evaluate(addressExpression, environment)).thenReturn(4);
 
         SegmentData segmentData = compile(instructionStatement);
 
@@ -206,7 +207,7 @@ class InstructionCompilerTest {
                 .addressingModeType(addressingModeType)
                 .addressExpression(addressExpression)
                 .build();
-        when(expressionEvaluator.evaluate(addressExpression)).thenReturn(4);
+        when(expressionEvaluator.evaluate(addressExpression, environment)).thenReturn(4);
 
         SegmentData segmentData = compile(instructionStatement);
 
@@ -214,6 +215,6 @@ class InstructionCompilerTest {
     }
 
     private SegmentData compile(InstructionStatement instructionStatement) {
-        return new InstructionCompiler(expressionEvaluator).compile(instructionStatement);
+        return new InstructionCompiler(expressionEvaluator).compile(instructionStatement, environment);
     }
 }

@@ -1,5 +1,6 @@
 package com.gnopai.ji65.parser.expression;
 
+import com.gnopai.ji65.compiler.Environment;
 import com.gnopai.ji65.scanner.TokenType;
 import lombok.Value;
 
@@ -10,7 +11,7 @@ public class BinaryOperatorExpression implements Expression {
     Expression right;
 
     @Override
-    public int accept(ExpressionVisitor visitor) {
-        return visitor.visit(this);
+    public int accept(ExpressionVisitor visitor, Environment environment) {
+        return visitor.visit(this, environment);
     }
 }

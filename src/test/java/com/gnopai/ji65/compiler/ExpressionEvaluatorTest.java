@@ -21,7 +21,7 @@ class ExpressionEvaluatorTest {
         Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 17);
         PrefixExpression prefixExpression = new PrefixExpression(TokenType.MINUS, rightSideExpression);
 
-        int result = new ExpressionEvaluator(environment).evaluate(prefixExpression);
+        int result = new ExpressionEvaluator().evaluate(prefixExpression, environment);
         assertEquals(-17, result);
     }
 
@@ -30,7 +30,7 @@ class ExpressionEvaluatorTest {
         Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 17);
         PrefixExpression prefixExpression = new PrefixExpression(TokenType.COMMA, rightSideExpression);
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> new ExpressionEvaluator(environment).evaluate(prefixExpression));
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> new ExpressionEvaluator().evaluate(prefixExpression, environment));
         assertEquals("Unsupported prefix expression: " + TokenType.COMMA.name(), exception.getMessage());
     }
 
@@ -40,7 +40,7 @@ class ExpressionEvaluatorTest {
         Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 8);
         BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, TokenType.PLUS, rightSideExpression);
 
-        int result = new ExpressionEvaluator(environment).evaluate(binaryExpression);
+        int result = new ExpressionEvaluator().evaluate(binaryExpression, environment);
         assertEquals(15, result);
     }
 
@@ -50,7 +50,7 @@ class ExpressionEvaluatorTest {
         Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 2);
         BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, TokenType.MINUS, rightSideExpression);
 
-        int result = new ExpressionEvaluator(environment).evaluate(binaryExpression);
+        int result = new ExpressionEvaluator().evaluate(binaryExpression, environment);
         assertEquals(6, result);
     }
 
@@ -60,7 +60,7 @@ class ExpressionEvaluatorTest {
         Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 8);
         BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, TokenType.STAR, rightSideExpression);
 
-        int result = new ExpressionEvaluator(environment).evaluate(binaryExpression);
+        int result = new ExpressionEvaluator().evaluate(binaryExpression, environment);
         assertEquals(56, result);
     }
 
@@ -70,7 +70,7 @@ class ExpressionEvaluatorTest {
         Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 3);
         BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, TokenType.SLASH, rightSideExpression);
 
-        int result = new ExpressionEvaluator(environment).evaluate(binaryExpression);
+        int result = new ExpressionEvaluator().evaluate(binaryExpression, environment);
         assertEquals(8, result);
     }
 
@@ -80,7 +80,7 @@ class ExpressionEvaluatorTest {
         environment.define(constant, 6);
         IdentifierExpression identifierExpression = new IdentifierExpression(constant);
 
-        int result = new ExpressionEvaluator(environment).evaluate(identifierExpression);
+        int result = new ExpressionEvaluator().evaluate(identifierExpression, environment);
         assertEquals(6, result);
     }
 
@@ -94,7 +94,7 @@ class ExpressionEvaluatorTest {
                 new IdentifierExpression("two")
         );
 
-        int result = new ExpressionEvaluator(environment).evaluate(expression);
+        int result = new ExpressionEvaluator().evaluate(expression, environment);
         assertEquals(3, result);
     }
 
@@ -104,7 +104,7 @@ class ExpressionEvaluatorTest {
         Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 3);
         BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, TokenType.POUND, rightSideExpression);
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> new ExpressionEvaluator(environment).evaluate(binaryExpression));
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> new ExpressionEvaluator().evaluate(binaryExpression, environment));
         assertEquals("Unsupported binary expression: " + TokenType.POUND.name(), exception.getMessage());
     }
 
@@ -112,7 +112,7 @@ class ExpressionEvaluatorTest {
     void testUndefinedConstantReferenced() {
         IdentifierExpression identifierExpression = new IdentifierExpression("nope");
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> new ExpressionEvaluator(environment).evaluate(identifierExpression));
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> new ExpressionEvaluator().evaluate(identifierExpression, environment));
         assertEquals("Unknown identifier referenced \"nope\"", exception.getMessage());
     }
 }

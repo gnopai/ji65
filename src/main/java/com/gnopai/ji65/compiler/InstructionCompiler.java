@@ -14,7 +14,7 @@ public class InstructionCompiler {
         this.expressionEvaluator = expressionEvaluator;
     }
 
-    public SegmentData compile(InstructionStatement instructionStatement) {
+    public SegmentData compile(InstructionStatement instructionStatement, Environment environment) {
         switch (instructionStatement.getAddressingModeType()) {
             case IMPLICIT:
             case ACCUMULATOR:
@@ -26,15 +26,15 @@ public class InstructionCompiler {
             case RELATIVE:
             case INDEXED_INDIRECT:
             case INDIRECT_INDEXED:
-                return compileTwoByteInstruction(instructionStatement);
+                return compileTwoByteInstruction(instructionStatement, environment);
             case ABSOLUTE:
-                return compileThreeByteInstruction(instructionStatement, AddressingModeType.ZERO_PAGE);
+                return compileThreeByteInstruction(instructionStatement, AddressingModeType.ZERO_PAGE, environment);
             case ABSOLUTE_X:
-                return compileThreeByteInstruction(instructionStatement, AddressingModeType.ZERO_PAGE_X);
+                return compileThreeByteInstruction(instructionStatement, AddressingModeType.ZERO_PAGE_X, environment);
             case ABSOLUTE_Y:
-                return compileThreeByteInstruction(instructionStatement, AddressingModeType.ZERO_PAGE_Y);
+                return compileThreeByteInstruction(instructionStatement, AddressingModeType.ZERO_PAGE_Y, environment);
             case INDIRECT:
-                return compileThreeByteInstruction(instructionStatement, null);
+                return compileThreeByteInstruction(instructionStatement, null, environment);
             default:
                 // this should be unreachable
                 throw new IllegalStateException("Unknown address mode type encountered: " + instructionStatement.getAddressingModeType().name());
@@ -49,9 +49,9 @@ public class InstructionCompiler {
         return new InstructionData(opcode);
     }
 
-    private SegmentData compileTwoByteInstruction(InstructionStatement instructionStatement) {
+    private SegmentData compileTwoByteInstruction(InstructionStatement instructionStatement, Environment environment) {
         Opcode opcode = getOpcode(instructionStatement);
-        int singleByteValue = expressionEvaluator.evaluate(instructionStatement.getAddressExpression());
+        int singleByteValue = expressionEvaluator.evaluate(instructionStatement.getAddressExpression(), environment);
         if (singleByteValue > 255) {
             throw new RuntimeException("Value too large for" +
                     " addressing mode \"" + instructionStatement.getAddressingModeType().name() + "\"" +
@@ -60,8 +60,8 @@ public class InstructionCompiler {
         return new InstructionData(opcode, (byte) singleByteValue);
     }
 
-    private SegmentData compileThreeByteInstruction(InstructionStatement instructionStatement, AddressingModeType zeroPageAddressingModeType) {
-        int twoByteValue = expressionEvaluator.evaluate(instructionStatement.getAddressExpression());
+    private SegmentData compileThreeByteInstruction(InstructionStatement instructionStatement, AddressingModeType zeroPageAddressingModeType, Environment environment) {
+        int twoByteValue = expressionEvaluator.evaluate(instructionStatement.getAddressExpression(), environment);
         if (twoByteValue < 256) {
             Optional<Opcode> zeroPageOpcode = Opcode.of(instructionStatement.getInstructionType(), zeroPageAddressingModeType);
             if (zeroPageOpcode.isPresent()) {

@@ -3,24 +3,19 @@ package com.gnopai.ji65.compiler;
 import com.gnopai.ji65.parser.expression.*;
 
 public class ExpressionEvaluator implements ExpressionVisitor {
-    private final Environment environment;
 
-    public ExpressionEvaluator(Environment environment) {
-        this.environment = environment;
-    }
-
-    public int evaluate(Expression expression) {
-        return expression.accept(this);
+    public int evaluate(Expression expression, Environment environment) {
+        return expression.accept(this, environment);
     }
 
     @Override
-    public int visit(PrimaryExpression primaryExpression) {
+    public int visit(PrimaryExpression primaryExpression, Environment environment) {
         return primaryExpression.getValue();
     }
 
     @Override
-    public int visit(PrefixExpression expression) {
-        int rightSideValue = evaluate(expression.getExpression());
+    public int visit(PrefixExpression expression, Environment environment) {
+        int rightSideValue = evaluate(expression.getExpression(), environment);
 
         switch (expression.getOperator()) {
             case MINUS:
@@ -31,9 +26,9 @@ public class ExpressionEvaluator implements ExpressionVisitor {
     }
 
     @Override
-    public int visit(BinaryOperatorExpression expression) {
-        int leftSideValue = evaluate(expression.getLeft());
-        int rightSideValue = evaluate(expression.getRight());
+    public int visit(BinaryOperatorExpression expression, Environment environment) {
+        int leftSideValue = evaluate(expression.getLeft(), environment);
+        int rightSideValue = evaluate(expression.getRight(), environment);
         switch (expression.getOperator()) {
             case PLUS:
                 return leftSideValue + rightSideValue;
@@ -49,7 +44,7 @@ public class ExpressionEvaluator implements ExpressionVisitor {
     }
 
     @Override
-    public int visit(IdentifierExpression identifierExpression) {
+    public int visit(IdentifierExpression identifierExpression, Environment environment) {
         return environment.get(identifierExpression.getName())
                 .orElseThrow(() ->
                         new RuntimeException("Unknown identifier referenced \"" + identifierExpression.getName() + "\"")

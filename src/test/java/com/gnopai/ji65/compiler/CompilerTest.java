@@ -13,9 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class CompilerTest {
     private final InstructionCompiler instructionCompiler = mock(InstructionCompiler.class);
@@ -28,29 +26,37 @@ class CompilerTest {
     }
 
     @Test
-    void testVisitExpressionStatement() {
+    void testExpressionStatement() {
         PrimaryExpression expression = new PrimaryExpression(TokenType.NUMBER, 19);
         ExpressionStatement expressionStatement = new ExpressionStatement(expression);
 
         int expressionValue = 259;
-        when(expressionEvaluator.evaluate(expression)).thenReturn(expressionValue);
+        when(expressionEvaluator.evaluate(expression, environment)).thenReturn(expressionValue);
 
-        Compiler compiler = new Compiler(instructionCompiler, expressionEvaluator, environment);
-        Optional<SegmentData> result = compiler.visit(expressionStatement);
-        assertEquals(new RawData((byte) 3, (byte) 1), result.get());
+        Compiler compiler = new Compiler(instructionCompiler, expressionEvaluator);
+
+        CompiledSegments result = compiler.compile(List.of(expressionStatement), environment);
+
+        CompiledSegments expectedResult = new CompiledSegments(Map.of(
+                "CODE", new Segment("CODE", List.of(
+                        new RawData((byte) 3, (byte) 1)
+                ))
+        ));
+        assertEquals(expectedResult, result);
     }
 
     @Test
-    void testVisitAssignmentStatement() {
+    void testAssignmentStatement() {
         PrimaryExpression expression = new PrimaryExpression(TokenType.NUMBER, 55);
-        when(expressionEvaluator.evaluate(expression)).thenReturn(55);
+        when(expressionEvaluator.evaluate(expression, environment)).thenReturn(55);
 
         AssignmentStatement statement = new AssignmentStatement("derp", expression);
 
-        Compiler compiler = new Compiler(instructionCompiler, expressionEvaluator, environment);
+        Compiler compiler = new Compiler(instructionCompiler, expressionEvaluator);
 
-        Optional<SegmentData> result = compiler.visit(statement);
-        assertFalse(result.isPresent());
+        CompiledSegments result = compiler.compile(List.of(statement), environment);
+
+        assertEquals(new CompiledSegments(), result);
         assertEquals(Optional.of(55), environment.get("derp"));
     }
 
@@ -60,21 +66,13 @@ class CompilerTest {
         Statement statement2 = mock(Statement.class);
         Statement statement3 = mock(Statement.class);
 
-        SegmentData segmentData1 = new RawData((byte) 1);
-        SegmentData segmentData2 = new RawData((byte) 2);
-        SegmentData segmentData3 = new RawData((byte) 3);
+        Compiler compiler = new Compiler(instructionCompiler, expressionEvaluator);
 
-        Compiler compiler = new Compiler(instructionCompiler, expressionEvaluator, environment);
+        CompiledSegments result = compiler.compile(List.of(statement1, statement2, statement3), environment);
 
-        when(statement1.accept(compiler)).thenReturn(Optional.of(segmentData1));
-        when(statement2.accept(compiler)).thenReturn(Optional.of(segmentData2));
-        when(statement3.accept(compiler)).thenReturn(Optional.of(segmentData3));
-
-        CompiledSegments result = compiler.compile(List.of(statement1, statement2, statement3));
-
-        CompiledSegments expectedResult = new CompiledSegments(Map.of(
-                "CODE", new Segment("CODE", List.of(segmentData1, segmentData2, segmentData3))
-        ));
-        assertEquals(expectedResult, result);
+        assertEquals(new CompiledSegments(), result);
+        verify(statement1).accept(compiler);
+        verify(statement2).accept(compiler);
+        verify(statement3).accept(compiler);
     }
 }
