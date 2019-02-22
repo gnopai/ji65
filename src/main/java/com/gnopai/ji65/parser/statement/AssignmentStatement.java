@@ -1,16 +1,15 @@
 package com.gnopai.ji65.parser.statement;
 
 import com.gnopai.ji65.compiler.SegmentData;
-import com.gnopai.ji65.directive.DirectiveType;
-import lombok.Builder;
+import com.gnopai.ji65.parser.expression.Expression;
 import lombok.Value;
 
 import java.util.Optional;
 
 @Value
-@Builder
-public class DirectiveStatement implements Statement {
-    DirectiveType type;
+public class AssignmentStatement implements Statement {
+    String name;
+    Expression expression;
 
     @Override
     public Optional<SegmentData> accept(StatementVisitor statementVisitor) {

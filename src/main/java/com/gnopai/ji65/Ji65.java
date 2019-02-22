@@ -1,9 +1,7 @@
 package com.gnopai.ji65;
 
-import com.gnopai.ji65.compiler.CompiledSegments;
 import com.gnopai.ji65.compiler.Compiler;
-import com.gnopai.ji65.compiler.ExpressionEvaluator;
-import com.gnopai.ji65.compiler.InstructionCompiler;
+import com.gnopai.ji65.compiler.*;
 import com.gnopai.ji65.interpreter.InstructionExecutor;
 import com.gnopai.ji65.interpreter.Interpreter;
 import com.gnopai.ji65.interpreter.address.AddressingModeFactory;
@@ -57,8 +55,9 @@ public class Ji65 {
     }
 
     private CompiledSegments compile(List<Statement> statements) {
-        ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator();
-        Compiler compiler = new Compiler(new InstructionCompiler(expressionEvaluator), expressionEvaluator);
+        Environment environment = new Environment();
+        ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator(environment);
+        Compiler compiler = new Compiler(new InstructionCompiler(expressionEvaluator), expressionEvaluator, environment);
         return compiler.compile(statements);
     }
 

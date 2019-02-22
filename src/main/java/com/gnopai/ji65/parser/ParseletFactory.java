@@ -1,10 +1,7 @@
 package com.gnopai.ji65.parser;
 
 import com.gnopai.ji65.parser.expression.*;
-import com.gnopai.ji65.parser.statement.InstructionStatementParselet;
-import com.gnopai.ji65.parser.statement.LabelStatementParselet;
-import com.gnopai.ji65.parser.statement.MultiTokenStatementParselet;
-import com.gnopai.ji65.parser.statement.StatementParselet;
+import com.gnopai.ji65.parser.statement.*;
 import com.gnopai.ji65.scanner.TokenType;
 
 import java.util.Map;
@@ -14,7 +11,8 @@ public class ParseletFactory {
     private final Map<TokenType, StatementParselet> statementParsers = Map.of(
             TokenType.INSTRUCTION, new InstructionStatementParselet(),
             TokenType.IDENTIFIER, new MultiTokenStatementParselet(Map.of(
-                    TokenType.COLON, new LabelStatementParselet()
+                    TokenType.COLON, new LabelStatementParselet(),
+                    TokenType.EQUAL, new AssignmentStatementParselet()
             ))
     );
 
@@ -28,7 +26,8 @@ public class ParseletFactory {
     private final Map<TokenType, PrefixParselet> prefixParselets = Map.of(
             TokenType.LEFT_PAREN, new GroupParselet(),
             TokenType.MINUS, new PrefixOperatorParselet(Precedence.UNARY),
-            TokenType.NUMBER, new PrimaryParselet()
+            TokenType.NUMBER, new PrimaryParselet(),
+            TokenType.IDENTIFIER, new IdentifierParselet()
     );
 
     public Optional<StatementParselet> getStatementParselet(TokenType tokenType) {

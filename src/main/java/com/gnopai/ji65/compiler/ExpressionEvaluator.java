@@ -3,6 +3,11 @@ package com.gnopai.ji65.compiler;
 import com.gnopai.ji65.parser.expression.*;
 
 public class ExpressionEvaluator implements ExpressionVisitor {
+    private final Environment environment;
+
+    public ExpressionEvaluator(Environment environment) {
+        this.environment = environment;
+    }
 
     public int evaluate(Expression expression) {
         return expression.accept(this);
@@ -41,5 +46,13 @@ public class ExpressionEvaluator implements ExpressionVisitor {
             default:
                 throw new RuntimeException("Unsupported binary expression: " + expression.getOperator());
         }
+    }
+
+    @Override
+    public int visit(IdentifierExpression identifierExpression) {
+        return environment.get(identifierExpression.getName())
+                .orElseThrow(() ->
+                        new RuntimeException("Unknown identifier referenced \"" + identifierExpression.getName() + "\"")
+                );
     }
 }

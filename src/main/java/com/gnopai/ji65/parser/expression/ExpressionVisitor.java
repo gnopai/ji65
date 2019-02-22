@@ -6,4 +6,6 @@ public interface ExpressionVisitor {
     int visit(PrefixExpression prefixExpression);
 
     int visit(BinaryOperatorExpression binaryOperatorExpression);
+
+    int visit(IdentifierExpression identifierExpression);
 }
