@@ -1,6 +1,6 @@
-package com.gnopai.ji65.compiler;
+package com.gnopai.ji65.parser.expression;
 
-import com.gnopai.ji65.parser.expression.*;
+import com.gnopai.ji65.compiler.Environment;
 import com.gnopai.ji65.scanner.TokenType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

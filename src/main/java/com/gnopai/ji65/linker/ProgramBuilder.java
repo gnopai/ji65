@@ -1,4 +1,4 @@
-package com.gnopai.ji65.compiler;
+package com.gnopai.ji65.linker;
 
 import com.gnopai.ji65.Address;
 import com.gnopai.ji65.Program;
