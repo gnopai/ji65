@@ -8,10 +8,10 @@ import com.gnopai.ji65.parser.statement.InstructionStatement;
 import java.util.Optional;
 
 public class InstructionCompiler {
-    private final ExpressionEvaluator expressionEvaluator;
+    private final ExpressionZeroPageChecker expressionZeroPageChecker;
 
-    public InstructionCompiler(ExpressionEvaluator expressionEvaluator) {
-        this.expressionEvaluator = expressionEvaluator;
+    public InstructionCompiler(ExpressionZeroPageChecker expressionZeroPageChecker) {
+        this.expressionZeroPageChecker = expressionZeroPageChecker;
     }
 
     public SegmentData compile(InstructionStatement instructionStatement, Environment environment) {
@@ -51,31 +51,21 @@ public class InstructionCompiler {
 
     private SegmentData compileTwoByteInstruction(InstructionStatement instructionStatement, Environment environment) {
         Opcode opcode = getOpcode(instructionStatement);
-        int singleByteValue = expressionEvaluator.evaluate(instructionStatement.getAddressExpression(), environment);
-        if (singleByteValue > 255) {
-            throw new RuntimeException("Value too large for" +
-                    " addressing mode \"" + instructionStatement.getAddressingModeType().name() + "\"" +
-                    " on instruction \"" + instructionStatement.getInstructionType().getIdentifier() + "\"");
-        }
-        return new InstructionData(opcode, (byte) singleByteValue);
+        boolean isZeroPage = expressionZeroPageChecker.isZeroPage(instructionStatement.getAddressExpression(), environment);
+        return new InstructionData(opcode, new UnresolvedExpression(instructionStatement.getAddressExpression(), isZeroPage));
     }
 
     private SegmentData compileThreeByteInstruction(InstructionStatement instructionStatement, AddressingModeType zeroPageAddressingModeType, Environment environment) {
-        int twoByteValue = expressionEvaluator.evaluate(instructionStatement.getAddressExpression(), environment);
-        if (twoByteValue < 256) {
+        boolean isZeroPage = expressionZeroPageChecker.isZeroPage(instructionStatement.getAddressExpression(), environment);
+        UnresolvedExpression operand = new UnresolvedExpression(instructionStatement.getAddressExpression(), isZeroPage);
+        if (operand.isZeroPage()) {
             Optional<Opcode> zeroPageOpcode = Opcode.of(instructionStatement.getInstructionType(), zeroPageAddressingModeType);
             if (zeroPageOpcode.isPresent()) {
-                return new InstructionData(zeroPageOpcode.get(), (byte) twoByteValue);
+                return new InstructionData(zeroPageOpcode.get(), operand);
             }
         }
         Opcode opcode = getOpcode(instructionStatement);
-        return getBytesForThreeByteOpcode(opcode, twoByteValue);
-    }
-
-    private SegmentData getBytesForThreeByteOpcode(Opcode opcode, int value) {
-        byte highByte = (byte) (value / 256);
-        byte lowByte = (byte) (value % 256);
-        return new InstructionData(opcode, lowByte, highByte);
+        return new InstructionData(opcode, operand);
     }
 
     private Opcode getOpcode(InstructionStatement instructionStatement) {

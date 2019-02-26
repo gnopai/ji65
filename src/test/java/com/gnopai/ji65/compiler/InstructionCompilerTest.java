@@ -14,7 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class InstructionCompilerTest {
-    private final ExpressionEvaluator expressionEvaluator = mock(ExpressionEvaluator.class);
+    private final ExpressionZeroPageChecker expressionZeroPageChecker = mock(ExpressionZeroPageChecker.class);
     private final Environment environment = mock(Environment.class);
 
     @Test
@@ -65,20 +65,6 @@ class InstructionCompilerTest {
     @Test
     void testIndirectIndexed() {
         testTwoByteOpcode(InstructionType.LDA, AddressingModeType.INDIRECT_INDEXED, Opcode.LDA_INDIRECT_INDEXED);
-    }
-
-    @Test
-    void testInvalidAddressForTwoByteInstruction() {
-        PrimaryExpression addressExpression = new PrimaryExpression(TokenType.NUMBER, 257);
-        InstructionStatement instructionStatement = InstructionStatement.builder()
-                .instructionType(InstructionType.LDX)
-                .addressingModeType(AddressingModeType.IMMEDIATE)
-                .addressExpression(addressExpression)
-                .build();
-        when(expressionEvaluator.evaluate(addressExpression, environment)).thenReturn(257);
-
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> compile(instructionStatement));
-        assertEquals("Value too large for addressing mode \"IMMEDIATE\" on instruction \"ldx\"", exception.getMessage());
     }
 
     @Test
@@ -165,11 +151,12 @@ class InstructionCompilerTest {
                 .addressingModeType(addressingModeType)
                 .addressExpression(addressExpression)
                 .build();
-        when(expressionEvaluator.evaluate(addressExpression, environment)).thenReturn(63);
+        when(expressionZeroPageChecker.isZeroPage(addressExpression, environment)).thenReturn(true);
 
         SegmentData segmentData = compile(instructionStatement);
 
-        assertEquals(new InstructionData(expectedOpcode, (byte) 63), segmentData);
+        InstructionData expectedData = new InstructionData(expectedOpcode, new UnresolvedExpression(addressExpression, true));
+        assertEquals(expectedData, segmentData);
     }
 
     private void testThreeByteOpcode_twoByteValue(InstructionType instructionType, AddressingModeType addressingModeType, Opcode expectedOpcode) {
@@ -179,11 +166,12 @@ class InstructionCompilerTest {
                 .addressingModeType(addressingModeType)
                 .addressExpression(addressExpression)
                 .build();
-        when(expressionEvaluator.evaluate(addressExpression, environment)).thenReturn(261);
+        when(expressionZeroPageChecker.isZeroPage(addressExpression, environment)).thenReturn(false);
 
         SegmentData segmentData = compile(instructionStatement);
 
-        assertEquals(new InstructionData(expectedOpcode, (byte) 5, (byte) 1), segmentData);
+        InstructionData expectedData = new InstructionData(expectedOpcode, new UnresolvedExpression(addressExpression, false));
+        assertEquals(expectedData, segmentData);
     }
 
     private void testThreeByteOpcode_singleByteValue(InstructionType instructionType, AddressingModeType addressingModeType, Opcode expectedOpcode) {
@@ -193,11 +181,12 @@ class InstructionCompilerTest {
                 .addressingModeType(addressingModeType)
                 .addressExpression(addressExpression)
                 .build();
-        when(expressionEvaluator.evaluate(addressExpression, environment)).thenReturn(4);
+        when(expressionZeroPageChecker.isZeroPage(addressExpression, environment)).thenReturn(true);
 
         SegmentData segmentData = compile(instructionStatement);
 
-        assertEquals(new InstructionData(expectedOpcode, (byte) 4, (byte) 0), segmentData);
+        InstructionData expectedData = new InstructionData(expectedOpcode, new UnresolvedExpression(addressExpression, true));
+        assertEquals(expectedData, segmentData);
     }
 
     private void testThreeByteOpcodeConvertedToTwoByteOpcode(InstructionType instructionType, AddressingModeType addressingModeType, Opcode expectedOpcode) {
@@ -207,14 +196,15 @@ class InstructionCompilerTest {
                 .addressingModeType(addressingModeType)
                 .addressExpression(addressExpression)
                 .build();
-        when(expressionEvaluator.evaluate(addressExpression, environment)).thenReturn(4);
+        when(expressionZeroPageChecker.isZeroPage(addressExpression, environment)).thenReturn(true);
 
         SegmentData segmentData = compile(instructionStatement);
 
-        assertEquals(new InstructionData(expectedOpcode, (byte) 4), segmentData);
+        InstructionData expectedData = new InstructionData(expectedOpcode, new UnresolvedExpression(addressExpression, true));
+        assertEquals(expectedData, segmentData);
     }
 
     private SegmentData compile(InstructionStatement instructionStatement) {
-        return new InstructionCompiler(expressionEvaluator).compile(instructionStatement, environment);
+        return new InstructionCompiler(expressionZeroPageChecker).compile(instructionStatement, environment);
     }
 }
