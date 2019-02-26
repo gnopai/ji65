@@ -75,6 +75,6 @@ class ExpressionFunctionalTest {
         RuntimeException exception = assertThrows(RuntimeException.class, () ->
                 compileAndRun(cpu, "derp = 5", "derp = 7")
         );
-        assertEquals("Duplicate assignment of \"derp\"", exception.getMessage());
+        assertEquals("Duplicate declaration of \"derp\"", exception.getMessage());
     }
 }

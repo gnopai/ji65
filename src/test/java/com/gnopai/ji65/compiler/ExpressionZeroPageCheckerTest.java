@@ -78,16 +78,16 @@ class ExpressionZeroPageCheckerTest {
 
     @Test
     void testIdentifierExpression_zeroPage() {
-        Environment environment = new Environment();
-        environment.define("derp", 0x0012);
+        Environment<Expression> environment = new Environment<>();
+        environment.define("derp", new PrimaryExpression(TokenType.NUMBER, 0x0012));
         IdentifierExpression expression = new IdentifierExpression("derp");
         assertTrue(isZeroPage(expression, environment));
     }
 
     @Test
     void testIdentifierExpression_notZeroPage() {
-        Environment environment = new Environment();
-        environment.define("derp", 0x0112);
+        Environment<Expression> environment = new Environment<>();
+        environment.define("derp", new PrimaryExpression(TokenType.NUMBER, 0x0212));
         IdentifierExpression expression = new IdentifierExpression("derp");
         assertFalse(isZeroPage(expression, environment));
     }
@@ -99,11 +99,23 @@ class ExpressionZeroPageCheckerTest {
         assertEquals("Unknown identifier referenced \"nope\"", exception.getMessage());
     }
 
-    private boolean isZeroPage(Expression expression) {
-        return isZeroPage(expression, new Environment());
+    @Test
+    void testLabel_zeroPage() {
+        Label label = new Label("derp", true);
+        assertTrue(isZeroPage(label));
     }
 
-    private boolean isZeroPage(Expression expression, Environment environment) {
+    @Test
+    void testLabel_notZeroPage() {
+        Label label = new Label("derp", false);
+        assertFalse(isZeroPage(label));
+    }
+
+    private boolean isZeroPage(Expression expression) {
+        return isZeroPage(expression, new Environment<>());
+    }
+
+    private boolean isZeroPage(Expression expression, Environment<Expression> environment) {
         return new ExpressionZeroPageChecker().isZeroPage(expression, environment);
     }
 }

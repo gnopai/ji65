@@ -11,7 +11,7 @@ public class BinaryOperatorExpression implements Expression {
     Expression right;
 
     @Override
-    public <T> T accept(ExpressionVisitor<T> visitor, Environment environment) {
+    public <T, E> T accept(ExpressionVisitor<T, E> visitor, Environment<E> environment) {
         return visitor.visit(this, environment);
     }
 }

@@ -1,22 +1,21 @@
 package com.gnopai.ji65.parser.expression;
 
 import com.gnopai.ji65.compiler.Environment;
+import com.gnopai.ji65.compiler.Label;
 
-public class ExpressionEvaluator implements ExpressionVisitor<Integer> {
+public class ExpressionEvaluator implements ExpressionVisitor<Integer, Integer> {
 
-    // TODO I don't think we should use this until linking -- another compile-stage process is needed
-    // that returns what kind of value: raw value, zero page address, absolute address
-    public int evaluate(Expression expression, Environment environment) {
+    public int evaluate(Expression expression, Environment<Integer> environment) {
         return expression.accept(this, environment);
     }
 
     @Override
-    public Integer visit(PrimaryExpression primaryExpression, Environment environment) {
+    public Integer visit(PrimaryExpression primaryExpression, Environment<Integer> environment) {
         return primaryExpression.getValue();
     }
 
     @Override
-    public Integer visit(PrefixExpression expression, Environment environment) {
+    public Integer visit(PrefixExpression expression, Environment<Integer> environment) {
         int rightSideValue = evaluate(expression.getExpression(), environment);
 
         switch (expression.getOperator()) {
@@ -28,7 +27,7 @@ public class ExpressionEvaluator implements ExpressionVisitor<Integer> {
     }
 
     @Override
-    public Integer visit(BinaryOperatorExpression expression, Environment environment) {
+    public Integer visit(BinaryOperatorExpression expression, Environment<Integer> environment) {
         int leftSideValue = evaluate(expression.getLeft(), environment);
         int rightSideValue = evaluate(expression.getRight(), environment);
         switch (expression.getOperator()) {
@@ -46,8 +45,16 @@ public class ExpressionEvaluator implements ExpressionVisitor<Integer> {
     }
 
     @Override
-    public Integer visit(IdentifierExpression identifierExpression, Environment environment) {
-        String name = identifierExpression.getName();
+    public Integer visit(IdentifierExpression identifierExpression, Environment<Integer> environment) {
+        return getValueFromEnvironment(identifierExpression.getName(), environment);
+    }
+
+    @Override
+    public Integer visit(Label label, Environment<Integer> environment) {
+        return getValueFromEnvironment(label.getName(), environment);
+    }
+
+    private Integer getValueFromEnvironment(String name, Environment<Integer> environment) {
         return environment.get(name)
                 .orElseThrow(() ->
                         new RuntimeException("Unknown identifier referenced \"" + name + "\"")

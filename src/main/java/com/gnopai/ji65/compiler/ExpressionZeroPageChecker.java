@@ -2,14 +2,14 @@ package com.gnopai.ji65.compiler;
 
 import com.gnopai.ji65.parser.expression.*;
 
-public class ExpressionZeroPageChecker implements ExpressionVisitor<Boolean> {
+public class ExpressionZeroPageChecker implements ExpressionVisitor<Boolean, Expression> {
     public boolean isZeroPage(Expression expression, Environment environment) {
         return expression.accept(this, environment);
     }
 
     @Override
     public Boolean visit(PrimaryExpression primaryExpression, Environment environment) {
-        return isZeroPage(primaryExpression.getValue());
+        return primaryExpression.getValue() < 256;
     }
 
     @Override
@@ -23,16 +23,17 @@ public class ExpressionZeroPageChecker implements ExpressionVisitor<Boolean> {
     }
 
     @Override
-    public Boolean visit(IdentifierExpression identifierExpression, Environment environment) {
+    public Boolean visit(IdentifierExpression identifierExpression, Environment<Expression> environment) {
         String name = identifierExpression.getName();
         return environment.get(name)
-                .map(this::isZeroPage)
+                .map(expression -> isZeroPage(expression, environment))
                 .orElseThrow(() ->
                         new RuntimeException("Unknown identifier referenced \"" + name + "\"")
                 );
     }
 
-    private boolean isZeroPage(int value) {
-        return value < 256;
+    @Override
+    public Boolean visit(Label label, Environment environment) {
+        return label.isZeroPage();
     }
 }

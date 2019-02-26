@@ -9,11 +9,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ExpressionEvaluatorTest {
-    private Environment environment;
+    private Environment<Integer> environment;
 
     @BeforeEach
     void setUp() {
-        environment = new Environment();
+        environment = new Environment<>();
     }
 
     @Test
