@@ -1,6 +1,6 @@
 package com.gnopai.ji65;
 
-import com.gnopai.ji65.compiler.*;
+import com.gnopai.ji65.assembler.*;
 import com.gnopai.ji65.interpreter.InstructionExecutor;
 import com.gnopai.ji65.interpreter.Interpreter;
 import com.gnopai.ji65.interpreter.address.AddressingModeFactory;

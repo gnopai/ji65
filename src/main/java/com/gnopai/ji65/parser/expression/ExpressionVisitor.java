@@ -1,7 +1,7 @@
 package com.gnopai.ji65.parser.expression;
 
-import com.gnopai.ji65.compiler.Environment;
-import com.gnopai.ji65.compiler.Label;
+import com.gnopai.ji65.assembler.Environment;
+import com.gnopai.ji65.assembler.Label;
 
 public interface ExpressionVisitor<T, E> {
     T visit(PrimaryExpression primaryExpression, Environment<E> environment);

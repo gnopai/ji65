@@ -1,6 +1,6 @@
 package com.gnopai.ji65.parser.expression;
 
-import com.gnopai.ji65.compiler.Environment;
+import com.gnopai.ji65.assembler.Environment;
 import com.gnopai.ji65.scanner.TokenType;
 import lombok.Value;
 

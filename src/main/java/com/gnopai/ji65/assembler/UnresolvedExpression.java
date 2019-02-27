@@ -1,4 +1,4 @@
-package com.gnopai.ji65.compiler;
+package com.gnopai.ji65.assembler;
 
 import com.gnopai.ji65.parser.expression.Expression;
 import lombok.Value;

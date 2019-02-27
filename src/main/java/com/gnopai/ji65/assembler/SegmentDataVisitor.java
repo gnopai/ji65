@@ -1,4 +1,4 @@
-package com.gnopai.ji65.compiler;
+package com.gnopai.ji65.assembler;
 
 public interface SegmentDataVisitor {
     void visit(InstructionData instructionData);

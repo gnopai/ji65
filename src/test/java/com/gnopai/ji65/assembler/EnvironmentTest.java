@@ -1,4 +1,4 @@
-package com.gnopai.ji65.compiler;
+package com.gnopai.ji65.assembler;
 
 import org.junit.jupiter.api.Test;
 

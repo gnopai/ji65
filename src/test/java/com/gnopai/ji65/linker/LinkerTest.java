@@ -3,7 +3,7 @@ package com.gnopai.ji65.linker;
 import com.gnopai.ji65.Address;
 import com.gnopai.ji65.Opcode;
 import com.gnopai.ji65.Program;
-import com.gnopai.ji65.compiler.*;
+import com.gnopai.ji65.assembler.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -17,9 +17,9 @@ class LinkerTest {
     @Test
     void testVisitInstructionData() {
         InstructionData instructionData = new InstructionData(Opcode.LDA_ABSOLUTE_X, new RawData((byte) 80, (byte) 4));
-        CompiledSegments compiledSegments = compiledSegments(instructionData);
+        AssembledSegments assembledSegments = assembledSegments(instructionData);
 
-        Program program = new Linker().link(compiledSegments, 3, 0);
+        Program program = new Linker().link(assembledSegments, 3, 0);
 
         List<Byte> expectedBytes = List.of((byte) 0xBD, (byte) 80, (byte) 4);
         assertEquals(new Program(expectedBytes), program);
@@ -28,18 +28,18 @@ class LinkerTest {
     @Test
     void testVisitRawData() {
         List<Byte> bytes = List.of((byte) 5, (byte) 7);
-        CompiledSegments compiledSegments = compiledSegments(new RawData(bytes));
+        AssembledSegments assembledSegments = assembledSegments(new RawData(bytes));
 
-        Program program = new Linker().link(compiledSegments, 2, 0);
+        Program program = new Linker().link(assembledSegments, 2, 0);
 
         assertEquals(new Program(bytes), program);
     }
 
     @Test
     void testVisitLabel() {
-        CompiledSegments compiledSegments = compiledSegments(new Label("derp"));
+        AssembledSegments assembledSegments = assembledSegments(new Label("derp", false));
 
-        Program program = new Linker().link(compiledSegments, 2, 0);
+        Program program = new Linker().link(assembledSegments, 2, 0);
 
         Program expectedProgram = new Program(
                 List.of((byte) 0, (byte) 0),
@@ -51,22 +51,22 @@ class LinkerTest {
 
     @Test
     void testMissingCodeSegment() {
-        RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> new Linker().link(new CompiledSegments()));
+        RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> new Linker().link(new AssembledSegments()));
         assertEquals("Expected at least a code segment for now", runtimeException.getMessage());
     }
 
     @Test
     void testLink_multipleSegmentData() {
-        CompiledSegments compiledSegments = compiledSegments(
+        AssembledSegments assembledSegments = assembledSegments(
                 new InstructionData(Opcode.LDX_IMMEDIATE, new RawData((byte) 77)),
                 new InstructionData(Opcode.LDX_ABSOLUTE, new RawData((byte) 80, (byte) 4)),
                 new InstructionData(Opcode.STX_ZERO_PAGE, new RawData((byte) 9)),
-                new Label("derp"),
+                new Label("derp", false),
                 new InstructionData(Opcode.INX_IMPLICIT),
                 new InstructionData(Opcode.STX_ZERO_PAGE, new RawData((byte) 10))
         );
 
-        Program program = new Linker().link(compiledSegments, 12, 0);
+        Program program = new Linker().link(assembledSegments, 12, 0);
 
         List<Byte> expectedBytes = List.of(
                 (byte) 0xA2, (byte) 77,
@@ -80,9 +80,9 @@ class LinkerTest {
         assertEquals(new Program(expectedBytes, expectedLabels, new Address(0)), program);
     }
 
-    private CompiledSegments compiledSegments(SegmentData... segmentData) {
-        return new CompiledSegments(Map.of("CODE",
-                new Segment("CODE", List.of(segmentData))
+    private AssembledSegments assembledSegments(SegmentData... segmentData) {
+        return new AssembledSegments(Map.of("CODE",
+                new Segment("CODE", false, List.of(segmentData))
         ));
     }
 }
