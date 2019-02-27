@@ -13,14 +13,14 @@ import java.util.Set;
  **/
 @EqualsAndHashCode
 @ToString
-public class CompiledSegments {
+public class AssembledSegments {
     private final Map<String, Segment> segments;
 
-    public CompiledSegments() {
+    public AssembledSegments() {
         this.segments = new HashMap<>();
     }
 
-    public CompiledSegments(Map<String, Segment> segments) {
+    public AssembledSegments(Map<String, Segment> segments) {
         this.segments = segments;
     }
 

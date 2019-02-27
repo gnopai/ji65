@@ -7,18 +7,18 @@ import com.gnopai.ji65.parser.statement.InstructionStatement;
 
 import java.util.Optional;
 
-public class InstructionCompiler {
+public class InstructionAssembler {
     private final ExpressionZeroPageChecker expressionZeroPageChecker;
 
-    public InstructionCompiler(ExpressionZeroPageChecker expressionZeroPageChecker) {
+    public InstructionAssembler(ExpressionZeroPageChecker expressionZeroPageChecker) {
         this.expressionZeroPageChecker = expressionZeroPageChecker;
     }
 
-    public SegmentData compile(InstructionStatement instructionStatement, Environment environment) {
+    public SegmentData assemble(InstructionStatement instructionStatement, Environment environment) {
         switch (instructionStatement.getAddressingModeType()) {
             case IMPLICIT:
             case ACCUMULATOR:
-                return compileSingleByteInstruction(instructionStatement);
+                return assembleSingleByteInstruction(instructionStatement);
             case ZERO_PAGE:
             case ZERO_PAGE_X:
             case ZERO_PAGE_Y:
@@ -26,22 +26,22 @@ public class InstructionCompiler {
             case RELATIVE:
             case INDEXED_INDIRECT:
             case INDIRECT_INDEXED:
-                return compileTwoByteInstruction(instructionStatement, environment);
+                return assembleTwoByteInstruction(instructionStatement, environment);
             case ABSOLUTE:
-                return compileThreeByteInstruction(instructionStatement, AddressingModeType.ZERO_PAGE, environment);
+                return assembleThreeByteInstruction(instructionStatement, AddressingModeType.ZERO_PAGE, environment);
             case ABSOLUTE_X:
-                return compileThreeByteInstruction(instructionStatement, AddressingModeType.ZERO_PAGE_X, environment);
+                return assembleThreeByteInstruction(instructionStatement, AddressingModeType.ZERO_PAGE_X, environment);
             case ABSOLUTE_Y:
-                return compileThreeByteInstruction(instructionStatement, AddressingModeType.ZERO_PAGE_Y, environment);
+                return assembleThreeByteInstruction(instructionStatement, AddressingModeType.ZERO_PAGE_Y, environment);
             case INDIRECT:
-                return compileThreeByteInstruction(instructionStatement, null, environment);
+                return assembleThreeByteInstruction(instructionStatement, null, environment);
             default:
                 // this should be unreachable
                 throw new IllegalStateException("Unknown address mode type encountered: " + instructionStatement.getAddressingModeType().name());
         }
     }
 
-    private SegmentData compileSingleByteInstruction(InstructionStatement instructionStatement) {
+    private SegmentData assembleSingleByteInstruction(InstructionStatement instructionStatement) {
         InstructionType instructionType = instructionStatement.getInstructionType();
         Opcode opcode = Opcode.of(instructionType, instructionStatement.getAddressingModeType())
                 .or(() -> Opcode.of(instructionType, AddressingModeType.ACCUMULATOR))
@@ -49,13 +49,13 @@ public class InstructionCompiler {
         return new InstructionData(opcode);
     }
 
-    private SegmentData compileTwoByteInstruction(InstructionStatement instructionStatement, Environment environment) {
+    private SegmentData assembleTwoByteInstruction(InstructionStatement instructionStatement, Environment environment) {
         Opcode opcode = getOpcode(instructionStatement);
         boolean isZeroPage = expressionZeroPageChecker.isZeroPage(instructionStatement.getAddressExpression(), environment);
         return new InstructionData(opcode, new UnresolvedExpression(instructionStatement.getAddressExpression(), isZeroPage));
     }
 
-    private SegmentData compileThreeByteInstruction(InstructionStatement instructionStatement, AddressingModeType zeroPageAddressingModeType, Environment environment) {
+    private SegmentData assembleThreeByteInstruction(InstructionStatement instructionStatement, AddressingModeType zeroPageAddressingModeType, Environment environment) {
         boolean isZeroPage = expressionZeroPageChecker.isZeroPage(instructionStatement.getAddressExpression(), environment);
         UnresolvedExpression operand = new UnresolvedExpression(instructionStatement.getAddressExpression(), isZeroPage);
         if (operand.isZeroPage()) {

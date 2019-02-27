@@ -5,30 +5,29 @@ import com.gnopai.ji65.parser.statement.*;
 
 import java.util.List;
 
-// TODO rename this and associated classes to "assembler" -- it's an assembler not a compiler...
-public class Compiler implements StatementVisitor {
-    private final InstructionCompiler instructionCompiler;
+public class Assembler implements StatementVisitor {
+    private final InstructionAssembler instructionAssembler;
     private final FirstPassResolver firstPassResolver;
     private Environment<Expression> environment;
-    private CompiledSegments compiledSegments;
+    private AssembledSegments assembledSegments;
     private String currentSegment = "CODE";
 
-    public Compiler(FirstPassResolver firstPassResolver, InstructionCompiler instructionCompiler) {
-        this.instructionCompiler = instructionCompiler;
+    public Assembler(FirstPassResolver firstPassResolver, InstructionAssembler instructionAssembler) {
+        this.instructionAssembler = instructionAssembler;
         this.firstPassResolver = firstPassResolver;
     }
 
-    public CompiledSegments compile(List<Statement> statements) {
+    public AssembledSegments assemble(List<Statement> statements) {
         environment = firstPassResolver.resolve(statements);
-        compiledSegments = new CompiledSegments();
+        assembledSegments = new AssembledSegments();
         statements.forEach(statement -> statement.accept(this));
-        return compiledSegments;
+        return assembledSegments;
     }
 
     @Override
     public void visit(InstructionStatement instructionStatement) {
-        SegmentData segmentData = instructionCompiler.compile(instructionStatement, environment);
-        compiledSegments.add(currentSegment, segmentData);
+        SegmentData segmentData = instructionAssembler.assemble(instructionStatement, environment);
+        assembledSegments.add(currentSegment, segmentData);
     }
 
     @Override
@@ -38,7 +37,7 @@ public class Compiler implements StatementVisitor {
                 .filter(l -> l instanceof Label)
                 .map(l -> (Label) l)
                 .orElseThrow(() -> new RuntimeException("Expected label named \"" + name + "\""));
-        compiledSegments.add(currentSegment, label);
+        assembledSegments.add(currentSegment, label);
     }
 
     @Override

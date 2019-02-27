@@ -1,6 +1,5 @@
 package com.gnopai.ji65;
 
-import com.gnopai.ji65.compiler.Compiler;
 import com.gnopai.ji65.compiler.*;
 import com.gnopai.ji65.interpreter.InstructionExecutor;
 import com.gnopai.ji65.interpreter.Interpreter;
@@ -36,11 +35,11 @@ public class Ji65 {
         interpreter.run(program, cpu);
     }
 
-    public Program compile(String programText) {
+    public Program assemble(String programText) {
         return Optional.of(programText)
                 .map(this::scan)
                 .map(this::parse)
-                .map(this::compile)
+                .map(this::assemble)
                 .map(this::link)
                 .orElseThrow();
     }
@@ -54,15 +53,15 @@ public class Ji65 {
         return parser.parse();
     }
 
-    private CompiledSegments compile(List<Statement> statements) {
-        Environment environment = new Environment();
-        ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator();
-        Compiler compiler = new Compiler(new InstructionCompiler(expressionEvaluator), expressionEvaluator);
-        return compiler.compile(statements, environment);
+    private AssembledSegments assemble(List<Statement> statements) {
+        Assembler assembler = new Assembler(
+                new FirstPassResolver(),
+                new InstructionAssembler(new ExpressionZeroPageChecker()));
+        return assembler.assemble(statements);
     }
 
-    private Program link(CompiledSegments compiledSegments) {
+    private Program link(AssembledSegments assembledSegments) {
         Linker linker = new Linker();
-        return linker.link(compiledSegments);
+        return linker.link(assembledSegments);
     }
 }

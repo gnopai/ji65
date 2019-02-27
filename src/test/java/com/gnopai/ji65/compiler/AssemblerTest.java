@@ -11,12 +11,12 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-class CompilerTest {
+class AssemblerTest {
     private final FirstPassResolver firstPassResolver = mock(FirstPassResolver.class);
-    private final InstructionCompiler instructionCompiler = mock(InstructionCompiler.class);
+    private final InstructionAssembler instructionAssembler = mock(InstructionAssembler.class);
 
     @Test
-    void testCompile() {
+    void testAssemble() {
         Statement statement1 = mock(Statement.class);
         Statement statement2 = mock(Statement.class);
         Statement statement3 = mock(Statement.class);
@@ -25,14 +25,14 @@ class CompilerTest {
         Environment<Expression> environment = new Environment<>();
         when(firstPassResolver.resolve(statements)).thenReturn(environment);
 
-        Compiler compiler = new Compiler(firstPassResolver, instructionCompiler);
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler);
 
-        CompiledSegments result = compiler.compile(statements);
+        AssembledSegments result = assembler.assemble(statements);
 
-        assertEquals(new CompiledSegments(), result);
-        verify(statement1).accept(compiler);
-        verify(statement2).accept(compiler);
-        verify(statement3).accept(compiler);
+        assertEquals(new AssembledSegments(), result);
+        verify(statement1).accept(assembler);
+        verify(statement2).accept(assembler);
+        verify(statement3).accept(assembler);
     }
 
     @Test
@@ -46,12 +46,12 @@ class CompilerTest {
 
         when(firstPassResolver.resolve(statements)).thenReturn(environment);
 
-        Compiler compiler = new Compiler(firstPassResolver, instructionCompiler);
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler);
 
-        CompiledSegments result = compiler.compile(statements);
+        AssembledSegments result = assembler.assemble(statements);
 
         Segment expectedSegment = new Segment("CODE", false, List.of(expectedLabel));
-        CompiledSegments expectedResult = new CompiledSegments(Map.of("CODE", expectedSegment));
+        AssembledSegments expectedResult = new AssembledSegments(Map.of("CODE", expectedSegment));
         assertEquals(expectedResult, result);
     }
 }

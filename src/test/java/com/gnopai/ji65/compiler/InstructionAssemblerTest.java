@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class InstructionCompilerTest {
+class InstructionAssemblerTest {
     private final ExpressionZeroPageChecker expressionZeroPageChecker = mock(ExpressionZeroPageChecker.class);
     private final Environment environment = mock(Environment.class);
 
@@ -129,7 +129,7 @@ class InstructionCompilerTest {
                 .instructionType(InstructionType.CLC)
                 .addressingModeType(AddressingModeType.ZERO_PAGE_X)
                 .build();
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> compile(instructionStatement));
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> assemble(instructionStatement));
         assertEquals("Invalid addressing mode ZERO_PAGE_X for instruction \"clc\"", exception.getMessage());
     }
 
@@ -139,7 +139,7 @@ class InstructionCompilerTest {
                 .addressingModeType(addressingModeType)
                 .build();
 
-        SegmentData segmentData = compile(instructionStatement);
+        SegmentData segmentData = assemble(instructionStatement);
 
         assertEquals(new InstructionData(expectedOpcode), segmentData);
     }
@@ -153,7 +153,7 @@ class InstructionCompilerTest {
                 .build();
         when(expressionZeroPageChecker.isZeroPage(addressExpression, environment)).thenReturn(true);
 
-        SegmentData segmentData = compile(instructionStatement);
+        SegmentData segmentData = assemble(instructionStatement);
 
         InstructionData expectedData = new InstructionData(expectedOpcode, new UnresolvedExpression(addressExpression, true));
         assertEquals(expectedData, segmentData);
@@ -168,7 +168,7 @@ class InstructionCompilerTest {
                 .build();
         when(expressionZeroPageChecker.isZeroPage(addressExpression, environment)).thenReturn(false);
 
-        SegmentData segmentData = compile(instructionStatement);
+        SegmentData segmentData = assemble(instructionStatement);
 
         InstructionData expectedData = new InstructionData(expectedOpcode, new UnresolvedExpression(addressExpression, false));
         assertEquals(expectedData, segmentData);
@@ -183,7 +183,7 @@ class InstructionCompilerTest {
                 .build();
         when(expressionZeroPageChecker.isZeroPage(addressExpression, environment)).thenReturn(true);
 
-        SegmentData segmentData = compile(instructionStatement);
+        SegmentData segmentData = assemble(instructionStatement);
 
         InstructionData expectedData = new InstructionData(expectedOpcode, new UnresolvedExpression(addressExpression, true));
         assertEquals(expectedData, segmentData);
@@ -198,13 +198,13 @@ class InstructionCompilerTest {
                 .build();
         when(expressionZeroPageChecker.isZeroPage(addressExpression, environment)).thenReturn(true);
 
-        SegmentData segmentData = compile(instructionStatement);
+        SegmentData segmentData = assemble(instructionStatement);
 
         InstructionData expectedData = new InstructionData(expectedOpcode, new UnresolvedExpression(addressExpression, true));
         assertEquals(expectedData, segmentData);
     }
 
-    private SegmentData compile(InstructionStatement instructionStatement) {
-        return new InstructionCompiler(expressionZeroPageChecker).compile(instructionStatement, environment);
+    private SegmentData assemble(InstructionStatement instructionStatement) {
+        return new InstructionAssembler(expressionZeroPageChecker).assemble(instructionStatement, environment);
     }
 }
