@@ -1,23 +1,25 @@
 package com.gnopai.ji65.compiler;
 
+import com.gnopai.ji65.parser.expression.Expression;
 import com.gnopai.ji65.parser.statement.*;
 
 import java.util.List;
 
+// TODO rename this and associated classes to "assembler" -- it's an assembler not a compiler...
 public class Compiler implements StatementVisitor {
     private final InstructionCompiler instructionCompiler;
-    private final ExpressionEvaluator expressionEvaluator;
-    private Environment environment;
+    private final FirstPassResolver firstPassResolver;
+    private Environment<Expression> environment;
     private CompiledSegments compiledSegments;
     private String currentSegment = "CODE";
 
-    public Compiler(InstructionCompiler instructionCompiler, ExpressionEvaluator expressionEvaluator) {
+    public Compiler(FirstPassResolver firstPassResolver, InstructionCompiler instructionCompiler) {
         this.instructionCompiler = instructionCompiler;
-        this.expressionEvaluator = expressionEvaluator;
+        this.firstPassResolver = firstPassResolver;
     }
 
-    public CompiledSegments compile(List<Statement> statements, Environment environment) {
-        this.environment = environment;
+    public CompiledSegments compile(List<Statement> statements) {
+        environment = firstPassResolver.resolve(statements);
         compiledSegments = new CompiledSegments();
         statements.forEach(statement -> statement.accept(this));
         return compiledSegments;
@@ -30,29 +32,22 @@ public class Compiler implements StatementVisitor {
     }
 
     @Override
-    public void visit(ExpressionStatement expressionStatement) {
-        // FIXME not used yet -- and maybe this should be single-byte anyway?
-        int value = expressionEvaluator.evaluate(expressionStatement.getExpression(), environment);
-        byte highByte = (byte) (value / 256);
-        byte lowByte = (byte) (value % 256);
-        RawData rawData = new RawData(List.of(lowByte, highByte));
-        compiledSegments.add(currentSegment, rawData);
-    }
-
-    @Override
     public void visit(LabelStatement labelStatement) {
-        Label label = new Label(labelStatement.getName());
+        String name = labelStatement.getName();
+        Label label = environment.get(name)
+                .filter(l -> l instanceof Label)
+                .map(l -> (Label) l)
+                .orElseThrow(() -> new RuntimeException("Expected label named \"" + name + "\""));
         compiledSegments.add(currentSegment, label);
     }
 
     @Override
     public void visit(DirectiveStatement directiveStatement) {
-        // TODO
+        // TODO I think this is needed in both passes
     }
 
     @Override
     public void visit(AssignmentStatement assignmentStatement) {
-        int value = expressionEvaluator.evaluate(assignmentStatement.getExpression(), environment);
-        environment.define(assignmentStatement.getName(), value);
+        // first pass only
     }
 }
