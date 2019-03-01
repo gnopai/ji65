@@ -7,12 +7,12 @@ import java.util.stream.Collectors;
 
 public class TestUtil {
 
-    public static void compileAndRun(Cpu cpu, String... lines) {
+    public static void assembleAndRun(Cpu cpu, String... lines) {
         String programText = Arrays.stream(lines)
                 .map(line -> line + "\n")
                 .collect(Collectors.joining(""));
         Ji65 ji65 = new Ji65(new ErrorPrinter());
-        Program program = ji65.compile(programText);
+        Program program = ji65.assemble(programText);
         ji65.run(program, cpu);
     }
 }

@@ -1,11 +1,16 @@
 package com.gnopai.ji65.parser.expression;
 
-public interface ExpressionVisitor {
-    int visit(PrimaryExpression primaryExpression);
+import com.gnopai.ji65.assembler.Environment;
+import com.gnopai.ji65.assembler.Label;
 
-    int visit(PrefixExpression prefixExpression);
+public interface ExpressionVisitor<T> {
+    T visit(PrimaryExpression primaryExpression, Environment environment);
 
-    int visit(BinaryOperatorExpression binaryOperatorExpression);
+    T visit(PrefixExpression prefixExpression, Environment environment);
 
-    int visit(IdentifierExpression identifierExpression);
+    T visit(BinaryOperatorExpression binaryOperatorExpression, Environment environment);
+
+    T visit(IdentifierExpression identifierExpression, Environment environment);
+
+    T visit(Label label, Environment environment);
 }

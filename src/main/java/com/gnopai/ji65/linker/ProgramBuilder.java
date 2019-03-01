@@ -1,4 +1,4 @@
-package com.gnopai.ji65.compiler;
+package com.gnopai.ji65.linker;
 
 import com.gnopai.ji65.Address;
 import com.gnopai.ji65.Program;
@@ -33,8 +33,8 @@ public class ProgramBuilder {
         return this;
     }
 
-    public ProgramBuilder label(String name) {
-        labels.put(name, startIndex + index);
+    public ProgramBuilder label(String name, int address) {
+        labels.put(name, address);
         return this;
     }
 

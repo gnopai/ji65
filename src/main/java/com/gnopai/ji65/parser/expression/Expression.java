@@ -1,5 +1,7 @@
 package com.gnopai.ji65.parser.expression;
 
+import com.gnopai.ji65.assembler.Environment;
+
 public interface Expression {
-    int accept(ExpressionVisitor visitor);
+    <T> T accept(ExpressionVisitor<T> visitor, Environment environment);
 }

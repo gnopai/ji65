@@ -2,7 +2,7 @@ package com.gnopai.ji65;
 
 import org.junit.jupiter.api.Test;
 
-import static com.gnopai.ji65.TestUtil.compileAndRun;
+import static com.gnopai.ji65.TestUtil.assembleAndRun;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InstructionFunctionalTest {
@@ -10,35 +10,42 @@ class InstructionFunctionalTest {
     @Test
     void testClc() {
         Cpu cpu = Cpu.builder().carryFlagSet(true).build();
-        compileAndRun(cpu, "clc");
+        assembleAndRun(cpu, "clc");
         assertFalse(cpu.isCarryFlagSet());
     }
 
     @Test
     void testCld() {
         Cpu cpu = Cpu.builder().decimalModeSet(true).build();
-        compileAndRun(cpu, "cld");
+        assembleAndRun(cpu, "cld");
         assertFalse(cpu.isDecimalModeSet());
     }
 
     @Test
     void testCli() {
         Cpu cpu = Cpu.builder().interruptDisableSet(true).build();
-        compileAndRun(cpu, "cli");
+        assembleAndRun(cpu, "cli");
         assertFalse(cpu.isInterruptDisableSet());
     }
 
     @Test
     void testClv() {
         Cpu cpu = Cpu.builder().overflowFlagSet(true).build();
-        compileAndRun(cpu, "clv");
+        assembleAndRun(cpu, "clv");
         assertFalse(cpu.isOverflowFlagSet());
+    }
+
+    @Test
+    void testJmp() {
+        Cpu cpu = Cpu.builder().build();
+        assembleAndRun(cpu, "jmp $1234");
+        assertEquals(0x1234, cpu.getProgramCounter());
     }
 
     @Test
     void testLdaImmediate() {
         Cpu cpu = Cpu.builder().build();
-        compileAndRun(cpu, "lda #$10");
+        assembleAndRun(cpu, "lda #$10");
         assertEquals((byte) 0x10, cpu.getAccumulator());
     }
 
@@ -46,7 +53,7 @@ class InstructionFunctionalTest {
     void testLdaZeroPage() {
         Cpu cpu = Cpu.builder().build();
         cpu.setMemoryValue(new Address(8), (byte) 0x17);
-        compileAndRun(cpu, "lda $08");
+        assembleAndRun(cpu, "lda $08");
         assertEquals((byte) 0x17, cpu.getAccumulator());
     }
 
@@ -55,7 +62,7 @@ class InstructionFunctionalTest {
         Cpu cpu = Cpu.builder().build();
         cpu.setMemoryValue(new Address(8), (byte) 0x19);
         cpu.setX((byte) 4);
-        compileAndRun(cpu, "lda $04,X");
+        assembleAndRun(cpu, "lda $04,X");
         assertEquals((byte) 0x19, cpu.getAccumulator());
     }
 
@@ -63,7 +70,7 @@ class InstructionFunctionalTest {
     void testLdaAbsolute() {
         Cpu cpu = Cpu.builder().build();
         cpu.setMemoryValue(new Address(0x5432), (byte) 0x17);
-        compileAndRun(cpu, "lda $5432");
+        assembleAndRun(cpu, "lda $5432");
         assertEquals((byte) 0x17, cpu.getAccumulator());
     }
 
@@ -72,7 +79,7 @@ class InstructionFunctionalTest {
         Cpu cpu = Cpu.builder().build();
         cpu.setX((byte) 7);
         cpu.setMemoryValue(new Address(0x5439), (byte) 0x17);
-        compileAndRun(cpu, "lda $5432,X");
+        assembleAndRun(cpu, "lda $5432,X");
         assertEquals((byte) 0x17, cpu.getAccumulator());
     }
 
@@ -81,7 +88,7 @@ class InstructionFunctionalTest {
         Cpu cpu = Cpu.builder().build();
         cpu.setY((byte) 6);
         cpu.setMemoryValue(new Address(0x5436), (byte) 0x12);
-        compileAndRun(cpu, "lda $5430,Y");
+        assembleAndRun(cpu, "lda $5430,Y");
         assertEquals((byte) 0x12, cpu.getAccumulator());
     }
 
@@ -93,7 +100,7 @@ class InstructionFunctionalTest {
         cpu.setMemoryValue(new Address(0x56), (byte) 0x77);
         cpu.setMemoryValue(new Address(0x57), (byte) 0x40);
         cpu.setMemoryValue(new Address(0x4077), (byte) 0x99);
-        compileAndRun(cpu, "lda ($45,X)");
+        assembleAndRun(cpu, "lda ($45,X)");
         assertEquals((byte) 0x99, cpu.getAccumulator());
     }
 
@@ -105,14 +112,14 @@ class InstructionFunctionalTest {
         cpu.setMemoryValue(new Address(0x45), (byte) 0x78);
         cpu.setMemoryValue(new Address(0x46), (byte) 0x41);
         cpu.setMemoryValue(new Address(0x4189), (byte) 0xBC);
-        compileAndRun(cpu, "lda ($45),Y");
+        assembleAndRun(cpu, "lda ($45),Y");
         assertEquals((byte) 0xBC, cpu.getAccumulator());
     }
 
     @Test
     void testLdxImmediate() {
         Cpu cpu = Cpu.builder().build();
-        compileAndRun(cpu, "ldx #$10");
+        assembleAndRun(cpu, "ldx #$10");
         assertEquals((byte) 0x10, cpu.getX());
     }
 
@@ -120,7 +127,7 @@ class InstructionFunctionalTest {
     void testLdxZeroPage() {
         Cpu cpu = Cpu.builder().build();
         cpu.setMemoryValue(new Address(8), (byte) 0x17);
-        compileAndRun(cpu, "ldx $08");
+        assembleAndRun(cpu, "ldx $08");
         assertEquals((byte) 0x17, cpu.getX());
     }
 
@@ -129,7 +136,7 @@ class InstructionFunctionalTest {
         Cpu cpu = Cpu.builder().build();
         cpu.setMemoryValue(new Address(7), (byte) 0x19);
         cpu.setY((byte) 3);
-        compileAndRun(cpu, "ldx $04,y");
+        assembleAndRun(cpu, "ldx $04,y");
         assertEquals((byte) 0x19, cpu.getX());
     }
 
@@ -137,7 +144,7 @@ class InstructionFunctionalTest {
     void testLdxAbsolute() {
         Cpu cpu = Cpu.builder().build();
         cpu.setMemoryValue(new Address(0x5432), (byte) 0x17);
-        compileAndRun(cpu, "ldx $5432");
+        assembleAndRun(cpu, "ldx $5432");
         assertEquals((byte) 0x17, cpu.getX());
     }
 
@@ -146,14 +153,14 @@ class InstructionFunctionalTest {
         Cpu cpu = Cpu.builder().build();
         cpu.setY((byte) 6);
         cpu.setMemoryValue(new Address(0x5436), (byte) 0x12);
-        compileAndRun(cpu, "ldx $5430,Y");
+        assembleAndRun(cpu, "ldx $5430,Y");
         assertEquals((byte) 0x12, cpu.getX());
     }
 
     @Test
     void testLdyImmediate() {
         Cpu cpu = Cpu.builder().build();
-        compileAndRun(cpu, "ldy #$10");
+        assembleAndRun(cpu, "ldy #$10");
         assertEquals((byte) 0x10, cpu.getY());
     }
 
@@ -161,7 +168,7 @@ class InstructionFunctionalTest {
     void testLdyZeroPage() {
         Cpu cpu = Cpu.builder().build();
         cpu.setMemoryValue(new Address(8), (byte) 0x17);
-        compileAndRun(cpu, "ldy $08");
+        assembleAndRun(cpu, "ldy $08");
         assertEquals((byte) 0x17, cpu.getY());
     }
 
@@ -170,7 +177,7 @@ class InstructionFunctionalTest {
         Cpu cpu = Cpu.builder().build();
         cpu.setMemoryValue(new Address(8), (byte) 0x19);
         cpu.setX((byte) 4);
-        compileAndRun(cpu, "ldy $04,X");
+        assembleAndRun(cpu, "ldy $04,X");
         assertEquals((byte) 0x19, cpu.getY());
     }
 
@@ -178,7 +185,7 @@ class InstructionFunctionalTest {
     void testLdyAbsolute() {
         Cpu cpu = Cpu.builder().build();
         cpu.setMemoryValue(new Address(0x5432), (byte) 0x17);
-        compileAndRun(cpu, "ldy $5432");
+        assembleAndRun(cpu, "ldy $5432");
         assertEquals((byte) 0x17, cpu.getY());
     }
 
@@ -187,28 +194,28 @@ class InstructionFunctionalTest {
         Cpu cpu = Cpu.builder().build();
         cpu.setX((byte) 6);
         cpu.setMemoryValue(new Address(0x5436), (byte) 0x12);
-        compileAndRun(cpu, "ldy $5430,X");
+        assembleAndRun(cpu, "ldy $5430,X");
         assertEquals((byte) 0x12, cpu.getY());
     }
 
     @Test
     void testSec() {
         Cpu cpu = Cpu.builder().carryFlagSet(false).build();
-        compileAndRun(cpu, "sec");
+        assembleAndRun(cpu, "sec");
         assertTrue(cpu.isCarryFlagSet());
     }
 
     @Test
     void testSed() {
         Cpu cpu = Cpu.builder().decimalModeSet(false).build();
-        compileAndRun(cpu, "sed");
+        assembleAndRun(cpu, "sed");
         assertTrue(cpu.isDecimalModeSet());
     }
 
     @Test
     void testSei() {
         Cpu cpu = Cpu.builder().interruptDisableSet(false).build();
-        compileAndRun(cpu, "sei");
+        assembleAndRun(cpu, "sei");
         assertTrue(cpu.isInterruptDisableSet());
     }
 
@@ -217,7 +224,7 @@ class InstructionFunctionalTest {
         Cpu cpu = Cpu.builder()
                 .accumulator((byte) 0x14)
                 .build();
-        compileAndRun(cpu, "sta $23");
+        assembleAndRun(cpu, "sta $23");
         assertEquals((byte) 0x14, cpu.getMemoryValue(new Address(0x23)));
     }
 
@@ -227,7 +234,7 @@ class InstructionFunctionalTest {
                 .accumulator((byte) 0x14)
                 .x((byte) 3)
                 .build();
-        compileAndRun(cpu, "sta $23,X");
+        assembleAndRun(cpu, "sta $23,X");
         assertEquals((byte) 0x14, cpu.getMemoryValue(new Address(0x26)));
     }
 
@@ -236,7 +243,7 @@ class InstructionFunctionalTest {
         Cpu cpu = Cpu.builder()
                 .accumulator((byte) 0x14)
                 .build();
-        compileAndRun(cpu, "sta $2346");
+        assembleAndRun(cpu, "sta $2346");
         assertEquals((byte) 0x14, cpu.getMemoryValue(new Address(0x2346)));
     }
 
@@ -246,7 +253,7 @@ class InstructionFunctionalTest {
                 .accumulator((byte) 0x14)
                 .x((byte) 0x10)
                 .build();
-        compileAndRun(cpu, "sta $2346,X");
+        assembleAndRun(cpu, "sta $2346,X");
         assertEquals((byte) 0x14, cpu.getMemoryValue(new Address(0x2356)));
     }
 
@@ -256,7 +263,7 @@ class InstructionFunctionalTest {
                 .accumulator((byte) 0x15)
                 .y((byte) 0x11)
                 .build();
-        compileAndRun(cpu, "sta $2346,Y");
+        assembleAndRun(cpu, "sta $2346,Y");
         assertEquals((byte) 0x15, cpu.getMemoryValue(new Address(0x2357)));
     }
 
@@ -268,7 +275,7 @@ class InstructionFunctionalTest {
                 .build();
         cpu.setMemoryValue(new Address(0x56), (byte) 0x77);
         cpu.setMemoryValue(new Address(0x57), (byte) 0x40);
-        compileAndRun(cpu, "sta ($45,X)");
+        assembleAndRun(cpu, "sta ($45,X)");
         assertEquals((byte) 0x19, cpu.getMemoryValue(new Address(0x4077)));
     }
 
@@ -281,7 +288,7 @@ class InstructionFunctionalTest {
         cpu.setMemoryValue(new Address(0x45), (byte) 0x78);
         cpu.setMemoryValue(new Address(0x46), (byte) 0x41);
         cpu.setMemoryValue(new Address(0x4189), (byte) 0xBC);
-        compileAndRun(cpu, "sta ($45),Y");
+        assembleAndRun(cpu, "sta ($45),Y");
         assertEquals((byte) 0xB9, cpu.getMemoryValue(new Address(0x4189)));
     }
 
@@ -290,7 +297,7 @@ class InstructionFunctionalTest {
         Cpu cpu = Cpu.builder()
                 .x((byte) 0x14)
                 .build();
-        compileAndRun(cpu, "stx $23");
+        assembleAndRun(cpu, "stx $23");
         assertEquals((byte) 0x14, cpu.getMemoryValue(new Address(0x23)));
     }
 
@@ -300,7 +307,7 @@ class InstructionFunctionalTest {
                 .x((byte) 0x14)
                 .y((byte) 3)
                 .build();
-        compileAndRun(cpu, "stx $23,y");
+        assembleAndRun(cpu, "stx $23,y");
         assertEquals((byte) 0x14, cpu.getMemoryValue(new Address(0x26)));
     }
 
@@ -309,7 +316,7 @@ class InstructionFunctionalTest {
         Cpu cpu = Cpu.builder()
                 .x((byte) 0x14)
                 .build();
-        compileAndRun(cpu, "stx $2310");
+        assembleAndRun(cpu, "stx $2310");
         assertEquals((byte) 0x14, cpu.getMemoryValue(new Address(0x2310)));
     }
 
@@ -318,7 +325,7 @@ class InstructionFunctionalTest {
         Cpu cpu = Cpu.builder()
                 .y((byte) 0x14)
                 .build();
-        compileAndRun(cpu, "sty $23");
+        assembleAndRun(cpu, "sty $23");
         assertEquals((byte) 0x14, cpu.getMemoryValue(new Address(0x23)));
     }
 
@@ -328,7 +335,7 @@ class InstructionFunctionalTest {
                 .y((byte) 0x14)
                 .x((byte) 3)
                 .build();
-        compileAndRun(cpu, "sty $23,X");
+        assembleAndRun(cpu, "sty $23,X");
         assertEquals((byte) 0x14, cpu.getMemoryValue(new Address(0x26)));
     }
 
@@ -337,7 +344,7 @@ class InstructionFunctionalTest {
         Cpu cpu = Cpu.builder()
                 .y((byte) 0x66)
                 .build();
-        compileAndRun(cpu, "sty $5432");
+        assembleAndRun(cpu, "sty $5432");
         assertEquals((byte) 0x66, cpu.getMemoryValue(new Address(0x5432)));
     }
 }

@@ -1,14 +1,13 @@
 package com.gnopai.ji65;
 
 import com.gnopai.ji65.parser.ParseException;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static com.gnopai.ji65.TestUtil.compileAndRun;
+import static com.gnopai.ji65.TestUtil.assembleAndRun;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
@@ -18,7 +17,7 @@ class ExpressionFunctionalTest {
     @MethodSource("validExpressionProvider")
     void testExpression(String programText, int expectedValue) {
         Cpu cpu = Cpu.builder().build();
-        compileAndRun(cpu, "five = 5", "seven = 7", "lda #" + programText);
+        assembleAndRun(cpu, "five = 5", "seven = 7", "lda #" + programText);
         assertEquals((byte) expectedValue, cpu.getAccumulator());
     }
 
@@ -26,7 +25,7 @@ class ExpressionFunctionalTest {
     @MethodSource("validExpressionProvider")
     void testAssignment(String programText, int expectedValue) {
         Cpu cpu = Cpu.builder().build();
-        compileAndRun(cpu, "five = 5", "seven = 7", "testy = " + programText, "lda #testy");
+        assembleAndRun(cpu, "five = 5", "seven = 7", "testy = " + programText, "lda #testy");
         assertEquals((byte) expectedValue, cpu.getAccumulator());
     }
 
@@ -55,7 +54,7 @@ class ExpressionFunctionalTest {
     void testInvalidExpressions(String programText) {
         Cpu cpu = Cpu.builder().build();
         ParseException exception = assertThrows(ParseException.class, () ->
-                compileAndRun(cpu, "lda " + programText)
+                assembleAndRun(cpu, "lda " + programText)
         );
         assertNotNull(exception.getMessage());
         assertNotNull(exception.getToken());
@@ -67,14 +66,5 @@ class ExpressionFunctionalTest {
                 arguments("#("),
                 arguments("#(5 + 2) * 4 )")
         );
-    }
-
-    @Test
-    void testDuplicateAssignment() {
-        Cpu cpu = Cpu.builder().build();
-        RuntimeException exception = assertThrows(RuntimeException.class, () ->
-                compileAndRun(cpu, "derp = 5", "derp = 7")
-        );
-        assertEquals("Duplicate assignment of \"derp\"", exception.getMessage());
     }
 }

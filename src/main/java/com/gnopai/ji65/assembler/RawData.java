@@ -1,4 +1,4 @@
-package com.gnopai.ji65.compiler;
+package com.gnopai.ji65.assembler;
 
 import lombok.Value;
 
@@ -20,6 +20,11 @@ public class RawData implements SegmentData {
 
     public RawData(List<Byte> bytes) {
         this.bytes = bytes;
+    }
+
+    @Override
+    public int getByteCount() {
+        return bytes.size();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.gnopai.ji65.compiler;
+package com.gnopai.ji65.assembler;
 
 import com.gnopai.ji65.Opcode;
 import lombok.AllArgsConstructor;
@@ -14,6 +14,11 @@ public class InstructionData implements SegmentData {
 
     public InstructionData(Opcode opcode, Byte... bytes) {
         this(opcode, new RawData(List.of(bytes)));
+    }
+
+    @Override
+    public int getByteCount() {
+        return opcode.getByteCount();
     }
 
     @Override
