@@ -1,7 +1,6 @@
 package com.gnopai.ji65;
 
 import com.gnopai.ji65.parser.ParseException;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -67,14 +66,5 @@ class ExpressionFunctionalTest {
                 arguments("#("),
                 arguments("#(5 + 2) * 4 )")
         );
-    }
-
-    @Test
-    void testDuplicateAssignment() {
-        Cpu cpu = Cpu.builder().build();
-        RuntimeException exception = assertThrows(RuntimeException.class, () ->
-                assembleAndRun(cpu, "derp = 5", "derp = 7")
-        );
-        assertEquals("Duplicate declaration of \"derp\"", exception.getMessage());
     }
 }

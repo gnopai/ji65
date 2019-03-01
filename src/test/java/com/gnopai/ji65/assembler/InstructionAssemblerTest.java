@@ -151,7 +151,6 @@ class InstructionAssemblerTest {
                 .addressingModeType(addressingModeType)
                 .addressExpression(addressExpression)
                 .build();
-        when(expressionZeroPageChecker.isZeroPage(addressExpression, environment)).thenReturn(true);
 
         SegmentData segmentData = assemble(instructionStatement);
 

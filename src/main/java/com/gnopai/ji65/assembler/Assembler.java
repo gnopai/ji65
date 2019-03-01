@@ -1,6 +1,5 @@
 package com.gnopai.ji65.assembler;
 
-import com.gnopai.ji65.parser.expression.Expression;
 import com.gnopai.ji65.parser.statement.*;
 
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.List;
 public class Assembler implements StatementVisitor {
     private final InstructionAssembler instructionAssembler;
     private final FirstPassResolver firstPassResolver;
-    private Environment<Expression> environment;
     private AssembledSegments assembledSegments;
     private String currentSegment = "CODE";
 
@@ -17,21 +15,22 @@ public class Assembler implements StatementVisitor {
         this.firstPassResolver = firstPassResolver;
     }
 
-    public AssembledSegments assemble(List<Statement> statements) {
-        environment = firstPassResolver.resolve(statements);
-        assembledSegments = new AssembledSegments();
+    public AssembledSegments assemble(List<Statement> statements, Environment environment) {
+        firstPassResolver.resolve(statements, environment);
+        assembledSegments = new AssembledSegments(environment);
         statements.forEach(statement -> statement.accept(this));
         return assembledSegments;
     }
 
     @Override
     public void visit(InstructionStatement instructionStatement) {
-        SegmentData segmentData = instructionAssembler.assemble(instructionStatement, environment);
+        SegmentData segmentData = instructionAssembler.assemble(instructionStatement, assembledSegments.getEnvironment());
         assembledSegments.add(currentSegment, segmentData);
     }
 
     @Override
     public void visit(LabelStatement labelStatement) {
+        Environment environment = assembledSegments.getEnvironment();
         String name = labelStatement.getName();
         Label label = environment.get(name)
                 .filter(l -> l instanceof Label)

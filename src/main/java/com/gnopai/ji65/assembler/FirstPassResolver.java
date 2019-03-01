@@ -1,19 +1,25 @@
 package com.gnopai.ji65.assembler;
 
-import com.gnopai.ji65.parser.expression.Expression;
+import com.gnopai.ji65.parser.expression.ExpressionEvaluator;
+import com.gnopai.ji65.parser.expression.PrimaryExpression;
 import com.gnopai.ji65.parser.statement.*;
+import com.gnopai.ji65.scanner.TokenType;
 
 import java.util.List;
 
 public class FirstPassResolver implements StatementVisitor {
-    private Environment<Expression> environment;
+    private final ExpressionEvaluator expressionEvaluator;
+    private Environment environment;
     private String currentSegment;
 
-    public Environment<Expression> resolve(List<Statement> statements) {
-        environment = new Environment<>();
+    public FirstPassResolver(ExpressionEvaluator expressionEvaluator) {
+        this.expressionEvaluator = expressionEvaluator;
+    }
+
+    public void resolve(List<Statement> statements, Environment environment) {
+        this.environment = environment;
         currentSegment = "CODE";
         statements.forEach(statement -> statement.accept(this));
-        return environment;
     }
 
     @Override
@@ -36,6 +42,8 @@ public class FirstPassResolver implements StatementVisitor {
 
     @Override
     public void visit(AssignmentStatement assignmentStatement) {
-        environment.define(assignmentStatement.getName(), assignmentStatement.getExpression());
+        // TODO support labels here? We'll error out on them as it is now.
+        int value = expressionEvaluator.evaluate(assignmentStatement.getExpression(), environment);
+        environment.define(assignmentStatement.getName(), new PrimaryExpression(TokenType.NUMBER, value));
     }
 }

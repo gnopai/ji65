@@ -26,7 +26,7 @@ public class InstructionAssembler {
             case RELATIVE:
             case INDEXED_INDIRECT:
             case INDIRECT_INDEXED:
-                return assembleTwoByteInstruction(instructionStatement, environment);
+                return assembleTwoByteInstruction(instructionStatement);
             case ABSOLUTE:
                 return assembleThreeByteInstruction(instructionStatement, AddressingModeType.ZERO_PAGE, environment);
             case ABSOLUTE_X:
@@ -49,10 +49,9 @@ public class InstructionAssembler {
         return new InstructionData(opcode);
     }
 
-    private SegmentData assembleTwoByteInstruction(InstructionStatement instructionStatement, Environment environment) {
+    private SegmentData assembleTwoByteInstruction(InstructionStatement instructionStatement) {
         Opcode opcode = getOpcode(instructionStatement);
-        boolean isZeroPage = expressionZeroPageChecker.isZeroPage(instructionStatement.getAddressExpression(), environment);
-        return new InstructionData(opcode, new UnresolvedExpression(instructionStatement.getAddressExpression(), isZeroPage));
+        return new InstructionData(opcode, new UnresolvedExpression(instructionStatement.getAddressExpression(), true));
     }
 
     private SegmentData assembleThreeByteInstruction(InstructionStatement instructionStatement, AddressingModeType zeroPageAddressingModeType, Environment environment) {

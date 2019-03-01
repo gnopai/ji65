@@ -9,19 +9,21 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Output object of the compilation stage.
+ * Output object of the assembly stage.
  **/
 @EqualsAndHashCode
 @ToString
 public class AssembledSegments {
     private final Map<String, Segment> segments;
+    private final Environment environment;
 
-    public AssembledSegments() {
-        this.segments = new HashMap<>();
+    public AssembledSegments(Environment environment) {
+        this(new HashMap<>(), environment);
     }
 
-    public AssembledSegments(Map<String, Segment> segments) {
+    public AssembledSegments(Map<String, Segment> segments, Environment environment) {
         this.segments = segments;
+        this.environment = environment;
     }
 
     public void add(String segmentName, SegmentData segmentData) {
@@ -35,5 +37,9 @@ public class AssembledSegments {
 
     public Optional<Segment> getSegment(String segmentName) {
         return Optional.ofNullable(segments.get(segmentName));
+    }
+
+    public Environment getEnvironment() {
+        return environment;
     }
 }
