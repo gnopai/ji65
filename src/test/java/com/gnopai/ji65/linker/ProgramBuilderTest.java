@@ -13,10 +13,10 @@ class ProgramBuilderTest {
     @Test
     void test() {
         Program program = new ProgramBuilder(10, 2)
-                .label("zero")
+                .label("zero", 0x02)
                 .bytes((byte) 0x15)
                 .bytes(List.of((byte) 0xEF, (byte) 0x44, (byte) 0x01))
-                .label("four")
+                .label("four", 0x06)
                 .bytes((byte) 0xBC)
                 .build();
 

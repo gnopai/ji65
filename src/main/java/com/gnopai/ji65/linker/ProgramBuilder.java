@@ -33,8 +33,8 @@ public class ProgramBuilder {
         return this;
     }
 
-    public ProgramBuilder label(String name) {
-        labels.put(name, startIndex + index);
+    public ProgramBuilder label(String name, int address) {
+        labels.put(name, address);
         return this;
     }
 

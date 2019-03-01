@@ -5,10 +5,12 @@ import com.gnopai.ji65.interpreter.InstructionExecutor;
 import com.gnopai.ji65.interpreter.Interpreter;
 import com.gnopai.ji65.interpreter.address.AddressingModeFactory;
 import com.gnopai.ji65.interpreter.instruction.InstructionFactory;
+import com.gnopai.ji65.linker.LabelResolver;
 import com.gnopai.ji65.linker.Linker;
 import com.gnopai.ji65.parser.ParseletFactory;
 import com.gnopai.ji65.parser.Parser;
 import com.gnopai.ji65.parser.TokenConsumer;
+import com.gnopai.ji65.parser.expression.ExpressionEvaluator;
 import com.gnopai.ji65.parser.statement.Statement;
 import com.gnopai.ji65.scanner.Scanner;
 import com.gnopai.ji65.scanner.Token;
@@ -54,14 +56,15 @@ public class Ji65 {
     }
 
     private AssembledSegments assemble(List<Statement> statements) {
+        Environment environment = new Environment();
         Assembler assembler = new Assembler(
-                new FirstPassResolver(),
+                new FirstPassResolver(new ExpressionEvaluator()),
                 new InstructionAssembler(new ExpressionZeroPageChecker()));
-        return assembler.assemble(statements);
+        return assembler.assemble(statements, environment);
     }
 
     private Program link(AssembledSegments assembledSegments) {
-        Linker linker = new Linker();
+        Linker linker = new Linker(new LabelResolver(), new ExpressionEvaluator());
         return linker.link(assembledSegments);
     }
 }
