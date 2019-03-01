@@ -62,10 +62,12 @@ class CpuTest {
         byte value1 = 0x55;
         cpu.pushOntoStack(value1);
         assertEquals((byte) 0xFE, cpu.getStackPointer());
+        assertEquals(value1, cpu.getMemoryValue(new Address(0x01FF)));
 
         byte value2 = 0x77;
         cpu.pushOntoStack(value2);
         assertEquals((byte) 0xFD, cpu.getStackPointer());
+        assertEquals(value2, cpu.getMemoryValue(new Address(0x01FE)));
 
         // pull stuff
         assertEquals(value2, cpu.pullFromStack());

@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
 
 @Data
@@ -14,9 +12,6 @@ import java.util.List;
 public class Cpu {
     @Getter(AccessLevel.NONE)
     private final byte[] memory = new byte[65536];
-
-    @Getter(AccessLevel.NONE)
-    private final Deque<Byte> stack = new LinkedList<>();
 
     private byte accumulator;
     private byte x;
@@ -49,14 +44,17 @@ public class Cpu {
     }
 
     public byte pullFromStack() {
-        byte value = stack.pop();
         stackPointer = (byte) (stackPointer + 1);
-        return value;
+        return memory[getStackMemoryIndex()];
     }
 
     public void pushOntoStack(byte value) {
-        stack.push(value);
+        memory[getStackMemoryIndex()] = value;
         stackPointer = (byte) (stackPointer - 1);
+    }
+
+    private int getStackMemoryIndex() {
+        return 0x0100 + Byte.toUnsignedInt(stackPointer);
     }
 
     public void updateZeroFlag(byte value) {

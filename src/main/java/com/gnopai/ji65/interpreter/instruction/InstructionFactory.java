@@ -13,6 +13,7 @@ public class InstructionFactory extends TypeFactory<InstructionType, Instruction
                 new Cli(),
                 new Clv(),
                 new Jmp(),
+                new Jsr(),
                 new Lda(),
                 new Ldx(),
                 new Ldy(),

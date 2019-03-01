@@ -43,6 +43,15 @@ class InstructionFunctionalTest {
     }
 
     @Test
+    void testJsr() {
+        Cpu cpu = Cpu.builder().build();
+        assembleAndRun(cpu, "jsr derp", "sec", "sei", "derp:");
+        assertFalse(cpu.isInterruptDisableSet());
+        assertFalse(cpu.isCarryFlagSet());
+        assertEquals((byte) 0xFD, cpu.getStackPointer());
+    }
+
+    @Test
     void testLdaImmediate() {
         Cpu cpu = Cpu.builder().build();
         assembleAndRun(cpu, "lda #$10");
