@@ -36,6 +36,13 @@ class InstructionFunctionalTest {
     }
 
     @Test
+    void testJmp() {
+        Cpu cpu = Cpu.builder().build();
+        assembleAndRun(cpu, "jmp $1234");
+        assertEquals(0x1234, cpu.getProgramCounter());
+    }
+
+    @Test
     void testLdaImmediate() {
         Cpu cpu = Cpu.builder().build();
         assembleAndRun(cpu, "lda #$10");
