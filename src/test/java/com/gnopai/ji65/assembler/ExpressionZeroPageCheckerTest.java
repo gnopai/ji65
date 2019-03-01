@@ -78,7 +78,7 @@ class ExpressionZeroPageCheckerTest {
 
     @Test
     void testIdentifierExpression_zeroPage() {
-        Environment<Expression> environment = new Environment<>();
+        Environment environment = new Environment();
         environment.define("derp", new PrimaryExpression(TokenType.NUMBER, 0x0012));
         IdentifierExpression expression = new IdentifierExpression("derp");
         assertTrue(isZeroPage(expression, environment));
@@ -86,7 +86,7 @@ class ExpressionZeroPageCheckerTest {
 
     @Test
     void testIdentifierExpression_notZeroPage() {
-        Environment<Expression> environment = new Environment<>();
+        Environment environment = new Environment();
         environment.define("derp", new PrimaryExpression(TokenType.NUMBER, 0x0212));
         IdentifierExpression expression = new IdentifierExpression("derp");
         assertFalse(isZeroPage(expression, environment));
@@ -112,10 +112,10 @@ class ExpressionZeroPageCheckerTest {
     }
 
     private boolean isZeroPage(Expression expression) {
-        return isZeroPage(expression, new Environment<>());
+        return isZeroPage(expression, new Environment());
     }
 
-    private boolean isZeroPage(Expression expression, Environment<Expression> environment) {
+    private boolean isZeroPage(Expression expression, Environment environment) {
         return new ExpressionZeroPageChecker().isZeroPage(expression, environment);
     }
 }

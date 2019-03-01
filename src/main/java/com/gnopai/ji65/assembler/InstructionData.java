@@ -17,6 +17,11 @@ public class InstructionData implements SegmentData {
     }
 
     @Override
+    public int getByteCount() {
+        return opcode.getByteCount();
+    }
+
+    @Override
     public void accept(SegmentDataVisitor visitor) {
         visitor.visit(this);
     }

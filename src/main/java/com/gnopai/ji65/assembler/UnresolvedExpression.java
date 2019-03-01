@@ -9,6 +9,11 @@ public class UnresolvedExpression implements SegmentData {
     boolean zeroPage;
 
     @Override
+    public int getByteCount() {
+        return zeroPage ? 1 : 2;
+    }
+
+    @Override
     public void accept(SegmentDataVisitor visitor) {
         visitor.visit(this);
     }

@@ -8,7 +8,7 @@ public class IdentifierExpression implements Expression {
     String name;
 
     @Override
-    public <T, E> T accept(ExpressionVisitor<T, E> visitor, Environment<E> environment) {
+    public <T> T accept(ExpressionVisitor<T> visitor, Environment environment) {
         return visitor.visit(this, environment);
     }
 }

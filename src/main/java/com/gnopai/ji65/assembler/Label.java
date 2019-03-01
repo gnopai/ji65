@@ -10,12 +10,17 @@ public class Label implements Expression, SegmentData {
     boolean zeroPage;
 
     @Override
+    public int getByteCount() {
+        return 0;
+    }
+
+    @Override
     public void accept(SegmentDataVisitor visitor) {
         visitor.visit(this);
     }
 
     @Override
-    public <T, E> T accept(ExpressionVisitor<T, E> visitor, Environment<E> environment) {
+    public <T> T accept(ExpressionVisitor<T> visitor, Environment environment) {
         return visitor.visit(this, environment);
     }
 }

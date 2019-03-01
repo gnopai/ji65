@@ -1,5 +1,8 @@
 package com.gnopai.ji65.assembler;
 
+import com.gnopai.ji65.parser.expression.Expression;
+import com.gnopai.ji65.parser.expression.PrimaryExpression;
+import com.gnopai.ji65.scanner.TokenType;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
@@ -9,21 +12,18 @@ import java.util.Optional;
 
 @EqualsAndHashCode
 @ToString
-public class Environment<T> {
-    private final Map<String, T> values = new HashMap<>();
+public class Environment {
+    private final Map<String, Expression> values = new HashMap<>();
 
-    public Optional<T> get(String name) {
+    public Optional<Expression> get(String name) {
         return Optional.ofNullable(values.get(name));
     }
 
-    public void define(String name, T value) {
-        validateNotAlreadyDefined(name);
+    public void define(String name, Expression value) {
         values.put(name, value);
     }
 
-    private void validateNotAlreadyDefined(String name) {
-        if (values.containsKey(name)) {
-            throw new RuntimeException("Duplicate declaration of \"" + name + "\"");
-        }
+    public void define(String name, int value) {
+        values.put(name, new PrimaryExpression(TokenType.NUMBER, value));
     }
 }

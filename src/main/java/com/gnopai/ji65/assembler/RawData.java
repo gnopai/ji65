@@ -23,6 +23,11 @@ public class RawData implements SegmentData {
     }
 
     @Override
+    public int getByteCount() {
+        return bytes.size();
+    }
+
+    @Override
     public void accept(SegmentDataVisitor visitor) {
         visitor.visit(this);
     }

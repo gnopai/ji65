@@ -1,6 +1,7 @@
 package com.gnopai.ji65.parser.expression;
 
 import com.gnopai.ji65.assembler.Environment;
+import com.gnopai.ji65.assembler.Label;
 import com.gnopai.ji65.scanner.TokenType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,11 +10,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ExpressionEvaluatorTest {
-    private Environment<Integer> environment;
+    private Environment environment;
 
     @BeforeEach
     void setUp() {
-        environment = new Environment<>();
+        environment = new Environment();
     }
 
     @Test
@@ -114,5 +115,23 @@ class ExpressionEvaluatorTest {
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> new ExpressionEvaluator().evaluate(identifierExpression, environment));
         assertEquals("Unknown identifier referenced \"nope\"", exception.getMessage());
+    }
+
+    @Test
+    void testLabel() {
+        Label label = new Label("derp", false);
+        environment.define("derp", new PrimaryExpression(TokenType.NUMBER, 17));
+
+        int result = new ExpressionEvaluator().evaluate(label, environment);
+        assertEquals(17, result);
+    }
+
+    @Test
+    void testUnresolvedLabel() {
+        Label label = new Label("derp", false);
+        environment.define("derp", label);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> new ExpressionEvaluator().evaluate(label, environment));
+        assertEquals("Unresolved label encountered: \"derp\"", exception.getMessage());
     }
 }
