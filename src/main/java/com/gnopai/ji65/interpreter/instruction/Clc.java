@@ -12,6 +12,6 @@ public class Clc implements Instruction {
 
     @Override
     public void run(Cpu cpu, Operand operand) {
-        cpu.setCarryFlagSet(false);
+        cpu.setCarryFlag(false);
     }
 }

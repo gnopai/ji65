@@ -12,6 +12,6 @@ public class Sei implements Instruction {
 
     @Override
     public void run(Cpu cpu, Operand operand) {
-        cpu.setInterruptDisableSet(true);
+        cpu.setInterruptDisable(true);
     }
 }

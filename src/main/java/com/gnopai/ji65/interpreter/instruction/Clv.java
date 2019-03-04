@@ -12,6 +12,6 @@ public class Clv implements Instruction {
 
     @Override
     public void run(Cpu cpu, Operand operand) {
-        cpu.setOverflowFlagSet(false);
+        cpu.setOverflowFlag(false);
     }
 }

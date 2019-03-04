@@ -12,6 +12,6 @@ public class Cli implements Instruction {
 
     @Override
     public void run(Cpu cpu, Operand operand) {
-        cpu.setInterruptDisableSet(false);
+        cpu.setInterruptDisable(false);
     }
 }

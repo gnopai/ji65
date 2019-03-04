@@ -9,28 +9,32 @@ class InstructionFunctionalTest {
 
     @Test
     void testClc() {
-        Cpu cpu = Cpu.builder().carryFlagSet(true).build();
+        Cpu cpu = Cpu.builder().build();
+        cpu.setCarryFlag(true);
         assembleAndRun(cpu, "clc");
         assertFalse(cpu.isCarryFlagSet());
     }
 
     @Test
     void testCld() {
-        Cpu cpu = Cpu.builder().decimalModeSet(true).build();
+        Cpu cpu = Cpu.builder().build();
+        cpu.setDecimalMode(true);
         assembleAndRun(cpu, "cld");
         assertFalse(cpu.isDecimalModeSet());
     }
 
     @Test
     void testCli() {
-        Cpu cpu = Cpu.builder().interruptDisableSet(true).build();
+        Cpu cpu = Cpu.builder().build();
+        cpu.setInterruptDisable(true);
         assembleAndRun(cpu, "cli");
         assertFalse(cpu.isInterruptDisableSet());
     }
 
     @Test
     void testClv() {
-        Cpu cpu = Cpu.builder().overflowFlagSet(true).build();
+        Cpu cpu = Cpu.builder().build();
+        cpu.setOverflowFlag(true);
         assembleAndRun(cpu, "clv");
         assertFalse(cpu.isOverflowFlagSet());
     }
@@ -209,21 +213,24 @@ class InstructionFunctionalTest {
 
     @Test
     void testSec() {
-        Cpu cpu = Cpu.builder().carryFlagSet(false).build();
+        Cpu cpu = Cpu.builder().build();
+        cpu.setCarryFlag(false);
         assembleAndRun(cpu, "sec");
         assertTrue(cpu.isCarryFlagSet());
     }
 
     @Test
     void testSed() {
-        Cpu cpu = Cpu.builder().decimalModeSet(false).build();
+        Cpu cpu = Cpu.builder().build();
+        cpu.setDecimalMode(false);
         assembleAndRun(cpu, "sed");
         assertTrue(cpu.isDecimalModeSet());
     }
 
     @Test
     void testSei() {
-        Cpu cpu = Cpu.builder().interruptDisableSet(false).build();
+        Cpu cpu = Cpu.builder().build();
+        cpu.setInterruptDisable(false);
         assembleAndRun(cpu, "sei");
         assertTrue(cpu.isInterruptDisableSet());
     }
