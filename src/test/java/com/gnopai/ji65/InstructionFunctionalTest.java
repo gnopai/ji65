@@ -40,7 +40,7 @@ class InstructionFunctionalTest {
     }
 
     @Test
-    void testJmp() {
+    void testJmpAbsolute() {
         Cpu cpu = Cpu.builder().build();
         assembleAndRun(cpu, "jmp $1234");
         assertEquals(0x1234, cpu.getProgramCounter());
@@ -209,6 +209,26 @@ class InstructionFunctionalTest {
         cpu.setMemoryValue(new Address(0x5436), (byte) 0x12);
         assembleAndRun(cpu, "ldy $5430,X");
         assertEquals((byte) 0x12, cpu.getY());
+    }
+
+    @Test
+    void testRts() {
+        Cpu cpu = Cpu.builder().build();
+        assembleAndRun(cpu,
+                "jsr derp",
+                "jmp end",
+                "sei",
+                "derp:",
+                "sec",
+                "rts",
+                "sed",
+                "end:"
+        );
+        assertFalse(cpu.isInterruptDisableSet());
+        assertTrue(cpu.isCarryFlagSet());
+        assertFalse(cpu.isInterruptDisableSet()); // sei skipped over
+        assertFalse(cpu.isDecimalModeSet()); // sed skipped over
+        assertEquals((byte) 0xFF, cpu.getStackPointer());
     }
 
     @Test

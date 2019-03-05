@@ -17,6 +17,7 @@ public class InstructionFactory extends TypeFactory<InstructionType, Instruction
                 new Lda(),
                 new Ldx(),
                 new Ldy(),
+                new Rts(),
                 new Sec(),
                 new Sed(),
                 new Sei(),
