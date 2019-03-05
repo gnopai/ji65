@@ -47,6 +47,15 @@ class InstructionFunctionalTest {
     }
 
     @Test
+    void testJmpIndirect() {
+        Cpu cpu = Cpu.builder().build();
+        cpu.setMemoryValue(new Address(0x1256), (byte) 0x4A);
+        cpu.setMemoryValue(new Address(0x1257), (byte) 0x56);
+        assembleAndRun(cpu, "jmp ($1256)");
+        assertEquals(0x564A, cpu.getProgramCounter());
+    }
+
+    @Test
     void testJsr() {
         Cpu cpu = Cpu.builder().build();
         assembleAndRun(cpu, "jsr derp", "sec", "sei", "derp:");
