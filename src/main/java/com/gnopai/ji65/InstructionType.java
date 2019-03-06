@@ -39,8 +39,8 @@ public enum InstructionType {
     INC("inc"), // TODO
     INX("inx"), // TODO
     INY("iny"), // TODO
-    JMP("jmp"), // TODO
-    JSR("jsr"), // TODO
+    JMP("jmp"),
+    JSR("jsr"),
     LDA("lda"),
     LDX("ldx"),
     LDY("ldy"),
@@ -54,7 +54,7 @@ public enum InstructionType {
     ROL("rol"), // TODO
     ROR("ror"), // TODO
     RTI("rti"), // TODO
-    RTS("rts"), // TODO
+    RTS("rts"),
     SBC("sbc"), // TODO
     SEC("sec"),
     SED("sed"),
