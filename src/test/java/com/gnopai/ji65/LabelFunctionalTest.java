@@ -19,13 +19,10 @@ class LabelFunctionalTest {
                 "lda #21",
                 "ldx #22",
                 "ldy #23",
-                "end:",
-                "lda #31",
-                "ldx #32",
-                "ldy #33"
+                "end:"
         );
-        assertEquals(31, cpu.getAccumulator());
-        assertEquals(32, cpu.getX());
-        assertEquals(33, cpu.getY());
+        assertEquals(11, cpu.getAccumulator());
+        assertEquals(12, cpu.getX());
+        assertEquals(13, cpu.getY());
     }
 }

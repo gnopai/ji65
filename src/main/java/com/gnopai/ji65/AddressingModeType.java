@@ -14,7 +14,7 @@ public enum AddressingModeType {
     ABSOLUTE(3),
     ABSOLUTE_X(3),
     ABSOLUTE_Y(3),
-    INDIRECT(3), // TODO
+    INDIRECT(3),
     INDEXED_INDIRECT(2),
     INDIRECT_INDEXED(2);
 

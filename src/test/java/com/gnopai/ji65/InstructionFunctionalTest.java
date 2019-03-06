@@ -9,37 +9,59 @@ class InstructionFunctionalTest {
 
     @Test
     void testClc() {
-        Cpu cpu = Cpu.builder().carryFlagSet(true).build();
+        Cpu cpu = Cpu.builder().build();
+        cpu.setCarryFlag(true);
         assembleAndRun(cpu, "clc");
         assertFalse(cpu.isCarryFlagSet());
     }
 
     @Test
     void testCld() {
-        Cpu cpu = Cpu.builder().decimalModeSet(true).build();
+        Cpu cpu = Cpu.builder().build();
+        cpu.setDecimalMode(true);
         assembleAndRun(cpu, "cld");
         assertFalse(cpu.isDecimalModeSet());
     }
 
     @Test
     void testCli() {
-        Cpu cpu = Cpu.builder().interruptDisableSet(true).build();
+        Cpu cpu = Cpu.builder().build();
+        cpu.setInterruptDisable(true);
         assembleAndRun(cpu, "cli");
         assertFalse(cpu.isInterruptDisableSet());
     }
 
     @Test
     void testClv() {
-        Cpu cpu = Cpu.builder().overflowFlagSet(true).build();
+        Cpu cpu = Cpu.builder().build();
+        cpu.setOverflowFlag(true);
         assembleAndRun(cpu, "clv");
         assertFalse(cpu.isOverflowFlagSet());
     }
 
     @Test
-    void testJmp() {
+    void testJmpAbsolute() {
         Cpu cpu = Cpu.builder().build();
         assembleAndRun(cpu, "jmp $1234");
         assertEquals(0x1234, cpu.getProgramCounter());
+    }
+
+    @Test
+    void testJmpIndirect() {
+        Cpu cpu = Cpu.builder().build();
+        cpu.setMemoryValue(new Address(0x1256), (byte) 0x4A);
+        cpu.setMemoryValue(new Address(0x1257), (byte) 0x56);
+        assembleAndRun(cpu, "jmp ($1256)");
+        assertEquals(0x564A, cpu.getProgramCounter());
+    }
+
+    @Test
+    void testJsr() {
+        Cpu cpu = Cpu.builder().build();
+        assembleAndRun(cpu, "jsr derp", "sec", "sei", "derp:");
+        assertFalse(cpu.isInterruptDisableSet());
+        assertFalse(cpu.isCarryFlagSet());
+        assertEquals((byte) 0xFD, cpu.getStackPointer());
     }
 
     @Test
@@ -199,22 +221,45 @@ class InstructionFunctionalTest {
     }
 
     @Test
+    void testRts() {
+        Cpu cpu = Cpu.builder().build();
+        assembleAndRun(cpu,
+                "jsr derp",
+                "jmp end",
+                "sei",
+                "derp:",
+                "sec",
+                "rts",
+                "sed",
+                "end:"
+        );
+        assertFalse(cpu.isInterruptDisableSet());
+        assertTrue(cpu.isCarryFlagSet());
+        assertFalse(cpu.isInterruptDisableSet()); // sei skipped over
+        assertFalse(cpu.isDecimalModeSet()); // sed skipped over
+        assertEquals((byte) 0xFF, cpu.getStackPointer());
+    }
+
+    @Test
     void testSec() {
-        Cpu cpu = Cpu.builder().carryFlagSet(false).build();
+        Cpu cpu = Cpu.builder().build();
+        cpu.setCarryFlag(false);
         assembleAndRun(cpu, "sec");
         assertTrue(cpu.isCarryFlagSet());
     }
 
     @Test
     void testSed() {
-        Cpu cpu = Cpu.builder().decimalModeSet(false).build();
+        Cpu cpu = Cpu.builder().build();
+        cpu.setDecimalMode(false);
         assembleAndRun(cpu, "sed");
         assertTrue(cpu.isDecimalModeSet());
     }
 
     @Test
     void testSei() {
-        Cpu cpu = Cpu.builder().interruptDisableSet(false).build();
+        Cpu cpu = Cpu.builder().build();
+        cpu.setInterruptDisable(false);
         assembleAndRun(cpu, "sei");
         assertTrue(cpu.isInterruptDisableSet());
     }

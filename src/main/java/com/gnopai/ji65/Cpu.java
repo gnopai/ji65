@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
 
 @Data
@@ -15,23 +13,13 @@ public class Cpu {
     @Getter(AccessLevel.NONE)
     private final byte[] memory = new byte[65536];
 
-    @Getter(AccessLevel.NONE)
-    private final Deque<Byte> stack = new LinkedList<>();
-
     private byte accumulator;
     private byte x;
     private byte y;
     @Builder.Default
     private byte stackPointer = (byte) 0xFF;
     private int programCounter; // 2-byte value
-
-    private boolean carryFlagSet;
-    private boolean zeroFlagSet;
-    private boolean interruptDisableSet;
-    private boolean decimalModeSet;
-    private boolean breakCommandSet;
-    private boolean overflowFlagSet;
-    private boolean negativeFlagSet;
+    private byte processorStatus;
 
     public void setMemoryValue(Address address, byte value) {
         memory[address.getValue()] = value;
@@ -49,22 +37,25 @@ public class Cpu {
     }
 
     public byte pullFromStack() {
-        byte value = stack.pop();
         stackPointer = (byte) (stackPointer + 1);
-        return value;
+        return memory[getStackMemoryIndex()];
     }
 
     public void pushOntoStack(byte value) {
-        stack.push(value);
+        memory[getStackMemoryIndex()] = value;
         stackPointer = (byte) (stackPointer - 1);
     }
 
+    private int getStackMemoryIndex() {
+        return 0x0100 + Byte.toUnsignedInt(stackPointer);
+    }
+
     public void updateZeroFlag(byte value) {
-        zeroFlagSet = value == 0;
+        setZeroFlag(value == 0);
     }
 
     public void updateNegativeFlag(byte value) {
-        negativeFlagSet = Byte.toUnsignedInt(value) >= 128;
+        setNegativeFlag(Byte.toUnsignedInt(value) >= 128);
     }
 
     private void incrementProgramCounter() {
@@ -83,5 +74,73 @@ public class Cpu {
         byte nextByte = memory[programCounter];
         incrementProgramCounter();
         return nextByte;
+    }
+
+    public void setCarryFlag(boolean value) {
+        updateProcessorStatus(value, 0b10000000);
+    }
+
+    public void setZeroFlag(boolean value) {
+        updateProcessorStatus(value, 0b01000000);
+    }
+
+    public void setInterruptDisable(boolean value) {
+        updateProcessorStatus(value, 0b00100000);
+    }
+
+    public void setDecimalMode(boolean value) {
+        updateProcessorStatus(value, 0b00010000);
+    }
+
+    public void setBreakCommand(boolean value) {
+        updateProcessorStatus(value, 0b00001000);
+    }
+
+    public void setOverflowFlag(boolean value) {
+        updateProcessorStatus(value, 0b00000100);
+    }
+
+    public void setNegativeFlag(boolean value) {
+        updateProcessorStatus(value, 0b00000010);
+    }
+
+    public boolean isCarryFlagSet() {
+        return getProcessorStatus(0b10000000);
+    }
+
+    public boolean isZeroFlagSet() {
+        return getProcessorStatus(0b01000000);
+    }
+
+    public boolean isInterruptDisableSet() {
+        return getProcessorStatus(0b00100000);
+    }
+
+    public boolean isDecimalModeSet() {
+        return getProcessorStatus(0b00010000);
+    }
+
+    public boolean isBreakCommandSet() {
+        return getProcessorStatus(0b00001000);
+    }
+
+    public boolean isOverflowFlagSet() {
+        return getProcessorStatus(0b00000100);
+    }
+
+    public boolean isNegativeFlagSet() {
+        return getProcessorStatus(0b00000010);
+    }
+
+    private boolean getProcessorStatus(int mask) {
+        return (processorStatus & mask) > 0;
+    }
+
+    private void updateProcessorStatus(boolean value, int mask) {
+        if (value) {
+            processorStatus |= mask;
+        } else {
+            processorStatus &= ~mask;
+        }
     }
 }

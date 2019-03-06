@@ -21,7 +21,7 @@ public class Interpreter {
         cpu.copyToMemory(startAddress, programBytes);
         cpu.setProgramCounter(startAddress.getValue());
 
-        // FIXME this is a silly workaround to get the program to end
+        // FIXME this is a temporary workaround to get the program to end
         byte nextValue = cpu.getMemoryValue(new Address(cpu.getProgramCounter()));
         while (nextValue != 0) {
             instructionExecutor.execute(cpu);

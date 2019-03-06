@@ -12,6 +12,6 @@ public class Sec implements Instruction {
 
     @Override
     public void run(Cpu cpu, Operand operand) {
-        cpu.setCarryFlagSet(true);
+        cpu.setCarryFlag(true);
     }
 }

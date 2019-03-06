@@ -12,6 +12,6 @@ public class Cld implements Instruction {
 
     @Override
     public void run(Cpu cpu, Operand operand) {
-        cpu.setDecimalModeSet(false);
+        cpu.setDecimalMode(false);
     }
 }

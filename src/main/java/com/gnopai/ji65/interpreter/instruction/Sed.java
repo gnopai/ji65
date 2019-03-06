@@ -12,6 +12,6 @@ public class Sed implements Instruction {
 
     @Override
     public void run(Cpu cpu, Operand operand) {
-        cpu.setDecimalModeSet(true);
+        cpu.setDecimalMode(true);
     }
 }
