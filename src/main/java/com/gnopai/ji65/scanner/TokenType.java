@@ -12,6 +12,8 @@ public enum TokenType {
 
     LEFT_PAREN,
     RIGHT_PAREN,
+    LEFT_BRACE,
+    RIGHT_BRACE,
     COMMA,
     MINUS,
     PLUS,
@@ -19,6 +21,7 @@ public enum TokenType {
     STAR,
     PIPE,
     AMPERSAND,
+    SEMICOLON,
     AT_SIGN,
     COLON,
     POUND,

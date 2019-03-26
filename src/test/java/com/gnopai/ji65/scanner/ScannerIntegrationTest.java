@@ -18,7 +18,7 @@ class ScannerIntegrationTest {
     @Test
     void test() throws Exception {
         String sourceText = readSourceText("scanner_sample.txt");
-        List<Token> tokens = new Scanner(new ErrorPrinter()).scan(sourceText);
+        List<Token> tokens = new Scanner(new TokenReader(new ErrorPrinter())).scan(sourceText);
 
         assertEquals(List.of(
                 new Token(DIRECTIVE, ".segment", DirectiveType.SEGMENT, 1),
