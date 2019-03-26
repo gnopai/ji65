@@ -14,6 +14,7 @@ import com.gnopai.ji65.parser.expression.ExpressionEvaluator;
 import com.gnopai.ji65.parser.statement.Statement;
 import com.gnopai.ji65.scanner.Scanner;
 import com.gnopai.ji65.scanner.Token;
+import com.gnopai.ji65.scanner.TokenReader;
 import com.gnopai.ji65.util.ErrorHandler;
 
 import java.util.List;
@@ -47,7 +48,8 @@ public class Ji65 {
     }
 
     private List<Token> scan(String programText) {
-        return new Scanner(errorHandler).scan(programText);
+        Scanner scanner = new Scanner(new TokenReader(errorHandler));
+        return scanner.scan(programText);
     }
 
     private List<Statement> parse(List<Token> tokens) {

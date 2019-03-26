@@ -2,43 +2,23 @@ package com.gnopai.ji65.scanner;
 
 import com.gnopai.ji65.InstructionType;
 import com.gnopai.ji65.directive.DirectiveType;
-import com.gnopai.ji65.util.ErrorHandler;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.gnopai.ji65.scanner.TokenType.*;
 
 public class Scanner {
-    private final ErrorHandler errorHandler;
-    private String source;
-    private List<Token> tokens;
-    private int line;
-    private int start;
-    private int current;
+    private final TokenReader tokenReader;
 
-    public Scanner(ErrorHandler errorHandler) {
-        this.errorHandler = errorHandler;
+    public Scanner(TokenReader tokenReader) {
+        this.tokenReader = tokenReader;
     }
 
     public List<Token> scan(String source) {
-        this.source = source;
-        tokens = new ArrayList<>();
-        line = 1;
-        current = 0;
-
-        while (!isAtEnd()) {
-            start = current;
-            scanToken();
-        }
-
-        tokens.add(new Token(EOF, "", null, line));
-
-        return tokens;
+        return tokenReader.read(source, this::scanToken);
     }
 
-    private void scanToken() {
-        char c = advance();
+    private void scanToken(char c) {
         switch (c) {
             case '(':
                 addToken(LEFT_PAREN);
@@ -86,16 +66,16 @@ public class Scanner {
                 addToken(TILDE);
                 break;
             case '>':
-                addToken(match('>') ? SHIFT_RIGHT : GREATER_THAN);
+                addToken(tokenReader.match('>') ? SHIFT_RIGHT : GREATER_THAN);
                 break;
             case '<':
-                addToken(match('<') ? SHIFT_LEFT : LESS_THAN);
+                addToken(tokenReader.match('<') ? SHIFT_LEFT : LESS_THAN);
                 break;
             case ';':
-                advanceUntilNextLine();
+                tokenReader.advanceUntilNextLine();
                 break;
             case '"':
-                string();
+                tokenReader.string();
                 break;
             case '0':
             case '1':
@@ -107,13 +87,13 @@ public class Scanner {
             case '7':
             case '8':
             case '9':
-                decimalNumber();
+                tokenReader.decimalNumber();
                 break;
             case '%':
-                binaryNumber();
+                tokenReader.binaryNumber();
                 break;
             case '$':
-                hexNumber();
+                tokenReader.hexNumber();
                 break;
             case '.':
                 directive();
@@ -125,10 +105,10 @@ public class Scanner {
                 break;
             case '\n':
                 addToken(EOL);
-                line++;
+                tokenReader.incrementLine();
                 break;
             default:
-                if (isLetter(c)) {
+                if (tokenReader.isLetter(c)) {
                     identifier();
                 } else {
                     error("Unexpected character '" + c + "'");
@@ -136,120 +116,9 @@ public class Scanner {
         }
     }
 
-    private char advance() {
-        current++;
-        return source.charAt(current - 1);
-    }
-
-    private void advanceUntilNextLine() {
-        while (peek() != '\n' && !isAtEnd()) {
-            advance();
-        }
-    }
-
-    private void advanceUntilCharOrEndOfLine(char c) {
-        char nextChar = peek();
-        while (nextChar != c && nextChar != '\n' && !isAtEnd()) {
-            advance();
-            nextChar = peek();
-        }
-    }
-
-    private void advanceWhileAlphaNumeric() {
-        char nextChar = peek();
-        while (isAlphaNumeric(nextChar)) {
-            advance();
-            nextChar = peek();
-        }
-    }
-
-    private char peek() {
-        return isAtEnd() ? '\0' : source.charAt(current);
-    }
-
-    private boolean match(char expected) {
-        if (isAtEnd()) {
-            return false;
-        }
-
-        if (source.charAt(current) != expected) {
-            return false;
-        }
-
-        current++;
-        return true;
-    }
-
-    private void addToken(TokenType type) {
-        addToken(type, null);
-    }
-
-    private void addToken(TokenType type, Object literal) {
-        String lexeme = source.substring(start, current);
-        Token token = new Token(type, lexeme, literal, line);
-        tokens.add(token);
-    }
-
-    private boolean isAtEnd() {
-        return current >= source.length();
-    }
-
-    private void error(String message) {
-        errorHandler.handleError(message, line);
-    }
-
-    private void string() {
-        advanceUntilCharOrEndOfLine('"');
-
-        if (peek() == '\n' || isAtEnd()) {
-            error("Unterminated string");
-            return;
-        }
-        advance(); // closing '"'
-
-        String value = source.substring(start + 1, current - 1);
-        addToken(STRING, value);
-    }
-
-    private void decimalNumber() {
-        advanceWhileAlphaNumeric();
-        String value = source.substring(start, current);
-        addNumberToken(value, 10, "decimal");
-    }
-
-    private void binaryNumber() {
-        advanceWhileAlphaNumeric();
-        String value = source.substring(start + 1, current);
-
-        if (value.length() != 8) {
-            error("Invalid binary number");
-            return;
-        }
-        addNumberToken(value, 2, "binary");
-    }
-
-    private void hexNumber() {
-        advanceWhileAlphaNumeric();
-        String value = source.substring(start + 1, current);
-
-        if (value.length() < 1 || value.length() > 4) {
-            error("Invalid hex number");
-            return;
-        }
-        addNumberToken(value, 16, "hex");
-    }
-
-    private void addNumberToken(String value, int radix, String numberType) {
-        try {
-            addToken(NUMBER, Integer.parseInt(value, radix));
-        } catch (NumberFormatException e) {
-            error("Invalid " + numberType + " number");
-        }
-    }
-
     private void directive() {
-        advanceWhileAlphaNumeric();
-        DirectiveType.fromIdentifier(source.substring(start + 1, current))
+        String value = tokenReader.getAlphaNumericValueWithOffset(1);
+        DirectiveType.fromIdentifier(value)
                 .ifPresentOrElse(
                         directiveType -> addToken(DIRECTIVE, directiveType),
                         () -> error("Invalid directive")
@@ -257,8 +126,7 @@ public class Scanner {
     }
 
     private void identifier() {
-        advanceWhileAlphaNumeric();
-        String string = source.substring(start, current);
+        String string = tokenReader.getAlphaNumericValue();
 
         if (string.equalsIgnoreCase("X")) {
             addToken(X);
@@ -278,14 +146,15 @@ public class Scanner {
                 );
     }
 
-    private boolean isAlphaNumeric(char c) {
-        return isLetter(c) ||
-                (c == '_') ||
-                (c >= '0' && c <= '9');
+    private void addToken(TokenType type) {
+        tokenReader.addToken(type);
     }
 
-    private boolean isLetter(char c) {
-        return (c >= 'a' && c <= 'z') ||
-                (c >= 'A' && c <= 'Z');
+    private void addToken(TokenType type, Object value) {
+        tokenReader.addToken(type, value);
+    }
+
+    private void error(String message) {
+        tokenReader.error(message);
     }
 }

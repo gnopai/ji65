@@ -1,7 +1,8 @@
-package com.gnopai.ji65.scanner;
+package com.gnopai.ji65.config;
 
-import com.gnopai.ji65.InstructionType;
-import com.gnopai.ji65.directive.DirectiveType;
+import com.gnopai.ji65.scanner.Token;
+import com.gnopai.ji65.scanner.TokenReader;
+import com.gnopai.ji65.scanner.TokenType;
 import com.gnopai.ji65.util.ErrorHandler;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +14,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-class ScannerTest {
+class ConfigScannerTest {
     private final ErrorHandler errorHandler = mock(ErrorHandler.class);
 
     @Test
@@ -27,29 +28,12 @@ class ScannerTest {
 
     @Test
     void testSingleToken_singleCharTokens() {
-        testSimpleSingleToken("(", LEFT_PAREN);
-        testSimpleSingleToken(")", RIGHT_PAREN);
+        testSimpleSingleToken("{", LEFT_BRACE);
+        testSimpleSingleToken("}", RIGHT_BRACE);
         testSimpleSingleToken(",", COMMA);
-        testSimpleSingleToken("-", MINUS);
-        testSimpleSingleToken("+", PLUS);
-        testSimpleSingleToken("/", SLASH);
-        testSimpleSingleToken("*", STAR);
-        testSimpleSingleToken("|", PIPE);
-        testSimpleSingleToken("&", AMPERSAND);
-        testSimpleSingleToken("@", AT_SIGN);
+        testSimpleSingleToken(";", SEMICOLON);
         testSimpleSingleToken(":", COLON);
-        testSimpleSingleToken("#", POUND);
         testSimpleSingleToken("=", EQUAL);
-        testSimpleSingleToken("^", CARET);
-        testSimpleSingleToken("~", TILDE);
-        testSimpleSingleToken(">", GREATER_THAN);
-        testSimpleSingleToken("<", LESS_THAN);
-    }
-
-    @Test
-    void testSingleToken_multiCharTokens() {
-        testSimpleSingleToken("<<", SHIFT_LEFT);
-        testSimpleSingleToken(">>", SHIFT_RIGHT);
     }
 
     @Test
@@ -66,11 +50,10 @@ class ScannerTest {
 
     @Test
     void testUnterminatedString_endOfLine() {
-        String text = "\"Ima String\n+\"";
+        String text = "\"Ima String\n;\"";
         List<Token> tokens = runScanner(text);
         List<Token> expectedTokens = List.of(
-                new Token(EOL, "\n", null, 1),
-                new Token(PLUS, "+", null, 2),
+                new Token(SEMICOLON, ";", null, 2),
                 new Token(EOF, "", null, 2)
         );
         assertEquals(expectedTokens, tokens);
@@ -109,78 +92,6 @@ class ScannerTest {
         );
         assertEquals(expectedTokens, tokens);
         verify(errorHandler).handleError("Invalid decimal number", 1);
-        verifyNoMoreInteractions(errorHandler);
-    }
-
-    @Test
-    void testSingleToken_binaryNumber_valid() {
-        String text = "%00011010";
-        List<Token> tokens = runScanner(text);
-        List<Token> expectedTokens = List.of(
-                new Token(NUMBER, text, 26, 1),
-                new Token(EOF, "", null, 1)
-        );
-        assertEquals(expectedTokens, tokens);
-        verifyNoErrors();
-    }
-
-    @Test
-    void testSingleToken_binaryNumber_badChar() {
-        String text = "%00011061";
-        List<Token> tokens = runScanner(text);
-        List<Token> expectedTokens = List.of(
-                new Token(EOF, "", null, 1)
-        );
-        assertEquals(expectedTokens, tokens);
-        verify(errorHandler).handleError("Invalid binary number", 1);
-        verifyNoMoreInteractions(errorHandler);
-    }
-
-    @Test
-    void testSingleToken_binaryNumber_tooShort() {
-        String text = "%0001110";
-        List<Token> tokens = runScanner(text);
-        List<Token> expectedTokens = List.of(
-                new Token(EOF, "", null, 1)
-        );
-        assertEquals(expectedTokens, tokens);
-        verify(errorHandler).handleError("Invalid binary number", 1);
-        verifyNoMoreInteractions(errorHandler);
-    }
-
-    @Test
-    void testSingleToken_binaryNumber_noValue() {
-        String text = "%";
-        List<Token> tokens = runScanner(text);
-        List<Token> expectedTokens = List.of(
-                new Token(EOF, "", null, 1)
-        );
-        assertEquals(expectedTokens, tokens);
-        verify(errorHandler).handleError("Invalid binary number", 1);
-        verifyNoMoreInteractions(errorHandler);
-    }
-
-    @Test
-    void testSingleToken_binaryNumber_tooLong() {
-        String text = "%000111001";
-        List<Token> tokens = runScanner(text);
-        List<Token> expectedTokens = List.of(
-                new Token(EOF, "", null, 1)
-        );
-        assertEquals(expectedTokens, tokens);
-        verify(errorHandler).handleError("Invalid binary number", 1);
-        verifyNoMoreInteractions(errorHandler);
-    }
-
-    @Test
-    void testSingleToken_binaryNumber_trailingGarbage() {
-        String text = "%00011100222";
-        List<Token> tokens = runScanner(text);
-        List<Token> expectedTokens = List.of(
-                new Token(EOF, "", null, 1)
-        );
-        assertEquals(expectedTokens, tokens);
-        verify(errorHandler).handleError("Invalid binary number", 1);
         verifyNoMoreInteractions(errorHandler);
     }
 
@@ -260,7 +171,6 @@ class ScannerTest {
         );
         assertEquals(
                 List.of(
-                        new Token(EOL, "\n", null, 1),
                         new Token(EOF, "", null, 2)),
                 runScanner("\n")
         );
@@ -280,11 +190,10 @@ class ScannerTest {
 
     @Test
     void testComment_wholeLine() {
-        String text = "; this is some stuff that is commented out\n+";
+        String text = "# this is some stuff that is commented out\n;";
         List<Token> tokens = runScanner(text);
         List<Token> expectedTokens = List.of(
-                new Token(EOL, "\n", null, 1),
-                new Token(PLUS, "+", null, 2),
+                new Token(SEMICOLON, ";", null, 2),
                 new Token(EOF, "", null, 2)
         );
         assertEquals(expectedTokens, tokens);
@@ -293,86 +202,13 @@ class ScannerTest {
 
     @Test
     void testComment_partOfLine() {
-        String text = "() ; this is some stuff that is commented out\n+";
+        String text = "{} # this is some stuff that is commented out\n;";
         List<Token> tokens = runScanner(text);
         List<Token> expectedTokens = List.of(
-                new Token(LEFT_PAREN, "(", null, 1),
-                new Token(RIGHT_PAREN, ")", null, 1),
-                new Token(EOL, "\n", null, 1),
-                new Token(PLUS, "+", null, 2),
+                new Token(LEFT_BRACE, "{", null, 1),
+                new Token(RIGHT_BRACE, "}", null, 1),
+                new Token(SEMICOLON, ";", null, 2),
                 new Token(EOF, "", null, 2)
-        );
-        assertEquals(expectedTokens, tokens);
-        verifyNoErrors();
-    }
-
-    @Test
-    void testSingleToken_directive_valid() {
-        String text = ".byte";
-        List<Token> tokens = runScanner(text);
-        List<Token> expectedTokens = List.of(
-                new Token(DIRECTIVE, text, DirectiveType.BYTE, 1),
-                new Token(EOF, "", null, 1)
-        );
-        assertEquals(expectedTokens, tokens);
-        verifyNoErrors();
-    }
-
-    @Test
-    void testSingleToken_directive_invalid() {
-        String text = ".derp";
-        List<Token> tokens = runScanner(text);
-        List<Token> expectedTokens = List.of(
-                new Token(EOF, "", null, 1)
-        );
-        assertEquals(expectedTokens, tokens);
-        verify(errorHandler).handleError("Invalid directive", 1);
-        verifyNoMoreInteractions(errorHandler);
-    }
-
-    @Test
-    void testSingleToken_instruction() {
-        String text = "LDA";
-        List<Token> tokens = runScanner(text);
-        List<Token> expectedTokens = List.of(
-                new Token(INSTRUCTION, text, InstructionType.LDA, 1),
-                new Token(EOF, "", null, 1)
-        );
-        assertEquals(expectedTokens, tokens);
-        verifyNoErrors();
-    }
-
-    @Test
-    void testSingleToken_registerX() {
-        String text = "X";
-        List<Token> tokens = runScanner(text);
-        List<Token> expectedTokens = List.of(
-                new Token(X, text, null, 1),
-                new Token(EOF, "", null, 1)
-        );
-        assertEquals(expectedTokens, tokens);
-        verifyNoErrors();
-    }
-
-    @Test
-    void testSingleToken_registerY() {
-        String text = "Y";
-        List<Token> tokens = runScanner(text);
-        List<Token> expectedTokens = List.of(
-                new Token(Y, text, null, 1),
-                new Token(EOF, "", null, 1)
-        );
-        assertEquals(expectedTokens, tokens);
-        verifyNoErrors();
-    }
-
-    @Test
-    void testSingleToken_registerA() {
-        String text = "A";
-        List<Token> tokens = runScanner(text);
-        List<Token> expectedTokens = List.of(
-                new Token(A, text, null, 1),
-                new Token(EOF, "", null, 1)
         );
         assertEquals(expectedTokens, tokens);
         verifyNoErrors();
@@ -391,16 +227,26 @@ class ScannerTest {
     }
 
     @Test
-    void testMultipleLines() {
-        String text = "()\n+\n-";
+    void testSingleToken_identifierWithPercentSign() {
+        String text = "%derp";
         List<Token> tokens = runScanner(text);
         List<Token> expectedTokens = List.of(
-                new Token(LEFT_PAREN, "(", null, 1),
-                new Token(RIGHT_PAREN, ")", null, 1),
-                new Token(EOL, "\n", null, 1),
-                new Token(PLUS, "+", null, 2),
-                new Token(EOL, "\n", null, 2),
-                new Token(MINUS, "-", null, 3),
+                new Token(IDENTIFIER, text, null, 1),
+                new Token(EOF, "", null, 1)
+        );
+        assertEquals(expectedTokens, tokens);
+        verifyNoErrors();
+    }
+
+    @Test
+    void testMultipleLines() {
+        String text = "{}\n;\n=";
+        List<Token> tokens = runScanner(text);
+        List<Token> expectedTokens = List.of(
+                new Token(LEFT_BRACE, "{", null, 1),
+                new Token(RIGHT_BRACE, "}", null, 1),
+                new Token(SEMICOLON, ";", null, 2),
+                new Token(EQUAL, "=", null, 3),
                 new Token(EOF, "", null, 3)
         );
         assertEquals(expectedTokens, tokens);
@@ -422,10 +268,11 @@ class ScannerTest {
     }
 
     private List<Token> runScanner(String text) {
-        return new Scanner(new TokenReader(errorHandler)).scan(text);
+        return new ConfigScanner(new TokenReader(errorHandler)).scan(text);
     }
 
     private void verifyNoErrors() {
         verify(errorHandler, never()).handleError(anyString(), anyInt());
     }
+
 }
