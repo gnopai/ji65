@@ -1,23 +1,29 @@
 package com.gnopai.ji65.assembler;
 
+import com.gnopai.ji65.config.ProgramConfig;
 import com.gnopai.ji65.parser.statement.*;
 
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 public class Assembler implements StatementVisitor {
     private final InstructionAssembler instructionAssembler;
     private final FirstPassResolver firstPassResolver;
     private AssembledSegments assembledSegments;
-    private String currentSegment = "CODE";
+    private String currentSegment = "CODE"; // TODO replace using segment directive to set
 
     public Assembler(FirstPassResolver firstPassResolver, InstructionAssembler instructionAssembler) {
         this.instructionAssembler = instructionAssembler;
         this.firstPassResolver = firstPassResolver;
     }
 
-    public AssembledSegments assemble(List<Statement> statements, Environment environment) {
+    public AssembledSegments assemble(List<Statement> statements, ProgramConfig programConfig, Environment environment) {
+        List<Segment> segments = programConfig.getSegmentConfigs().stream()
+                .map(Segment::new)
+                .collect(toList());
         firstPassResolver.resolve(statements, environment);
-        assembledSegments = new AssembledSegments(environment);
+        assembledSegments = new AssembledSegments(segments, environment);
         statements.forEach(statement -> statement.accept(this));
         return assembledSegments;
     }
