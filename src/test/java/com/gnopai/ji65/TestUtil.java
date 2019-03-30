@@ -11,11 +11,15 @@ public class TestUtil {
     private static final ProgramConfig DEFAULT_CONFIG = buildDefaultConfig();
 
     public static void assembleAndRun(Cpu cpu, String... lines) {
+        assembleAndRun(cpu, DEFAULT_CONFIG, lines);
+    }
+
+    public static void assembleAndRun(Cpu cpu, ProgramConfig programConfig, String... lines) {
         String programText = "start:\n" + Arrays.stream(lines)
                 .map(line -> line + "\n")
                 .collect(Collectors.joining(""));
         Ji65 ji65 = new Ji65(new ErrorPrinter());
-        Program program = ji65.assemble(programText, DEFAULT_CONFIG);
+        Program program = ji65.assemble(programText, programConfig);
         ji65.run(program, cpu);
     }
 
