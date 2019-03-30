@@ -1,12 +1,15 @@
 package com.gnopai.ji65;
 
 import com.gnopai.ji65.assembler.*;
+import com.gnopai.ji65.config.ProgramConfig;
 import com.gnopai.ji65.interpreter.InstructionExecutor;
 import com.gnopai.ji65.interpreter.Interpreter;
 import com.gnopai.ji65.interpreter.address.AddressingModeFactory;
 import com.gnopai.ji65.interpreter.instruction.InstructionFactory;
 import com.gnopai.ji65.linker.LabelResolver;
 import com.gnopai.ji65.linker.Linker;
+import com.gnopai.ji65.linker.SegmentAddressCalculator;
+import com.gnopai.ji65.linker.SegmentMapper;
 import com.gnopai.ji65.parser.ParseletFactory;
 import com.gnopai.ji65.parser.Parser;
 import com.gnopai.ji65.parser.TokenConsumer;
@@ -38,12 +41,12 @@ public class Ji65 {
         interpreter.run(program, cpu);
     }
 
-    public Program assemble(String programText) {
+    public Program assemble(String programText, ProgramConfig programConfig) {
         return Optional.of(programText)
                 .map(this::scan)
                 .map(this::parse)
-                .map(this::assemble)
-                .map(this::link)
+                .map(statements -> assemble(statements, programConfig))
+                .map(assembledSegments -> link(assembledSegments, programConfig))
                 .orElseThrow();
     }
 
@@ -57,16 +60,19 @@ public class Ji65 {
         return parser.parse();
     }
 
-    private AssembledSegments assemble(List<Statement> statements) {
+    private AssembledSegments assemble(List<Statement> statements, ProgramConfig programConfig) {
         Environment environment = new Environment();
         Assembler assembler = new Assembler(
                 new FirstPassResolver(new ExpressionEvaluator()),
                 new InstructionAssembler(new ExpressionZeroPageChecker()));
-        return assembler.assemble(statements, environment);
+        return assembler.assemble(statements, programConfig, environment);
     }
 
-    private Program link(AssembledSegments assembledSegments) {
-        Linker linker = new Linker(new LabelResolver(), new ExpressionEvaluator());
-        return linker.link(assembledSegments);
+    private Program link(AssembledSegments assembledSegments, ProgramConfig programConfig) {
+        Linker linker = new Linker(
+                new SegmentMapper(new SegmentAddressCalculator()),
+                new LabelResolver(),
+                new ExpressionEvaluator());
+        return linker.link(assembledSegments, programConfig);
     }
 }

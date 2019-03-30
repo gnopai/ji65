@@ -4,8 +4,6 @@ import com.gnopai.ji65.Address;
 import com.gnopai.ji65.Cpu;
 import com.gnopai.ji65.Program;
 
-import java.util.List;
-
 public class Interpreter {
     private final InstructionExecutor instructionExecutor;
 
@@ -16,10 +14,11 @@ public class Interpreter {
     public void run(Program program, Cpu cpu) {
         // TODO start executing instructions from a given address (or label)
         // TODO stop? how to know when to stop?
-        List<Byte> programBytes = program.getBytes();
-        Address startAddress = program.getMemoryAddress();
-        cpu.copyToMemory(startAddress, programBytes);
-        cpu.setProgramCounter(startAddress.getValue());
+
+        program.getChunks().forEach(chunk ->
+                cpu.copyToMemory(chunk.getAddress(), chunk.getBytes())
+        );
+        cpu.setProgramCounter(program.getStartAddress().getValue());
 
         // FIXME this is a temporary workaround to get the program to end
         byte nextValue = cpu.getMemoryValue(new Address(cpu.getProgramCounter()));
