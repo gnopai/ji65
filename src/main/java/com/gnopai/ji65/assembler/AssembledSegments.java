@@ -1,45 +1,27 @@
 package com.gnopai.ji65.assembler;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.Value;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Output object of the assembly stage.
  **/
-@EqualsAndHashCode
-@ToString
+@Value
 public class AssembledSegments {
-    private final Map<String, Segment> segments;
+    private final List<Segment> segments;
     private final Environment environment;
 
-    public AssembledSegments(Environment environment) {
-        this(new HashMap<>(), environment);
-    }
-
-    public AssembledSegments(Map<String, Segment> segments, Environment environment) {
-        this.segments = segments;
-        this.environment = environment;
-    }
-
     public void add(String segmentName, SegmentData segmentData) {
-        Segment segment = segments.computeIfAbsent(segmentName, Segment::new);
-        segment.add(segmentData);
-    }
-
-    public Set<String> getSegmentNames() {
-        return Set.copyOf(segments.keySet());
+        getSegment(segmentName)
+                .orElseThrow(() -> new RuntimeException("Unknown segment encountered: " + segmentName))
+                .add(segmentData);
     }
 
     public Optional<Segment> getSegment(String segmentName) {
-        return Optional.ofNullable(segments.get(segmentName));
-    }
-
-    public Environment getEnvironment() {
-        return environment;
+        return segments.stream()
+                .filter(segment -> segmentName.equalsIgnoreCase(segment.getName()))
+                .findFirst();
     }
 }

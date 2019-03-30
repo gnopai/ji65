@@ -8,17 +8,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
+
 public class ProgramBuilder {
-    private final byte[] bytes;
+    private final Map<Integer, byte[]> segmentBytes;
     private final Map<String, Integer> labels;
-    private final int startIndex;
+
+    private byte[] bytes;
+    private int startIndex;
     private int index;
 
-    public ProgramBuilder(int size, int startIndex) {
-        bytes = new byte[size];
+    public ProgramBuilder() {
+        segmentBytes = new HashMap<>();
         labels = new HashMap<>();
-        this.startIndex = startIndex;
+    }
+
+    public ProgramBuilder segment(MappedSegment segment) {
+        completeLastSegment();
+        bytes = new byte[segment.getSize()];
+        startIndex = segment.getStartAddress().getValue();
         index = 0;
+        return this;
     }
 
     public ProgramBuilder bytes(byte b) {
@@ -38,11 +49,33 @@ public class ProgramBuilder {
         return this;
     }
 
+    private void completeLastSegment() {
+        if (bytes != null) {
+            segmentBytes.put(startIndex, bytes);
+            bytes = null;
+        }
+    }
+
     public Program build() {
+        completeLastSegment();
+
+        List<Program.Chunk> chunks = segmentBytes.entrySet().stream()
+                .map(entry -> makeChunk(entry.getKey(), entry.getValue()))
+                .collect(toList());
+
+        // TODO temporary hack to have a place to start the program from
+        Address startAddress = ofNullable(labels.get("start"))
+                .map(Address::new)
+                .orElseThrow(() -> new RuntimeException("Expected 'start' label to know where to start running from"));
+
+        return new Program(chunks, Map.copyOf(labels), startAddress);
+    }
+
+    private Program.Chunk makeChunk(int startIndex, byte[] bytes) {
         List<Byte> byteList = new ArrayList<>(bytes.length);
         for (byte b : bytes) {
             byteList.add(b);
         }
-        return new Program(List.copyOf(byteList), Map.copyOf(labels), new Address(startIndex));
+        return new Program.Chunk(new Address(startIndex), List.copyOf(byteList));
     }
 }

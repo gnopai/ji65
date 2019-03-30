@@ -10,7 +10,7 @@ class LabelFunctionalTest {
     void testSimpleLabelJump() {
         Cpu cpu = Cpu.builder().build();
         assembleAndRun(cpu,
-                "start:",
+                "begin:",
                 "lda #11",
                 "ldx #12",
                 "ldy #13",

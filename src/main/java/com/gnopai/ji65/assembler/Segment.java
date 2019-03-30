@@ -1,34 +1,30 @@
 package com.gnopai.ji65.assembler;
 
+import com.gnopai.ji65.Address;
+import com.gnopai.ji65.config.MemoryConfig;
+import com.gnopai.ji65.config.SegmentConfig;
+import com.gnopai.ji65.config.SegmentType;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static java.util.Optional.ofNullable;
 
 @EqualsAndHashCode
 @ToString
 public class Segment {
-    private final String name;
+    private final SegmentConfig config;
     private final List<SegmentData> data;
-    private final boolean zeroPage;
 
-    public Segment(String name) {
-        this(name, false);
+    public Segment(SegmentConfig config) {
+        this(config, new ArrayList<>());
     }
 
-    public Segment(String name, boolean zeroPage) {
-        this(name, zeroPage, new ArrayList<>());
-    }
-
-    // TODO getting ahead of ourselves here??? Maybe we should worry about zeropage AFTER we can actually evaluate labels...
-    public static Segment zeroPage(String name) {
-        return new Segment(name, true);
-    }
-
-    public Segment(String name, boolean zeroPage, List<SegmentData> data) {
-        this.name = name;
-        this.zeroPage = zeroPage;
+    public Segment(SegmentConfig config, List<SegmentData> data) {
+        this.config = config;
         this.data = data;
     }
 
@@ -36,11 +32,33 @@ public class Segment {
         data.add(segmentData);
     }
 
+    public String getName() {
+        return config.getSegmentName();
+    }
+
+    public Optional<Address> getStartAddress() {
+        return ofNullable(config.getStartAddress());
+    }
+
+    public int getAlignment() {
+        return config.getAlignment();
+    }
+
+    public boolean isForMemoryConfig(MemoryConfig memoryConfig) {
+        return memoryConfig.getName().equalsIgnoreCase(config.getMemoryConfigName());
+    }
+
     public List<SegmentData> getSegmentData() {
         return List.copyOf(data);
     }
 
     public boolean isZeroPage() {
-        return zeroPage;
+        return SegmentType.ZERO_PAGE.equals(config.getSegmentType());
+    }
+
+    public int getSize() {
+        return data.stream()
+                .map(SegmentData::getByteCount)
+                .reduce(0, (a, b) -> a + b);
     }
 }

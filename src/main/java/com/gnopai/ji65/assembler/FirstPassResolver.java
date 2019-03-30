@@ -10,7 +10,6 @@ import java.util.List;
 public class FirstPassResolver implements StatementVisitor {
     private final ExpressionEvaluator expressionEvaluator;
     private Environment environment;
-    private String currentSegment;
 
     public FirstPassResolver(ExpressionEvaluator expressionEvaluator) {
         this.expressionEvaluator = expressionEvaluator;
@@ -18,7 +17,6 @@ public class FirstPassResolver implements StatementVisitor {
 
     public void resolve(List<Statement> statements, Environment environment) {
         this.environment = environment;
-        currentSegment = "CODE";
         statements.forEach(statement -> statement.accept(this));
     }
 

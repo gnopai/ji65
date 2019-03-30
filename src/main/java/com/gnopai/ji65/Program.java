@@ -7,17 +7,19 @@ import java.util.Map;
 
 @Value
 public class Program {
-    List<Byte> bytes;
-    Address memoryAddress;
+    List<Chunk> chunks;
     Map<String, Integer> labels;
+    Address startAddress;
 
-    public Program(List<Byte> bytes) {
-        this(bytes, Map.of(), new Address(0));
+    public Program(List<Chunk> chunks, Map<String, Integer> labels, Address startAddress) {
+        this.chunks = chunks;
+        this.labels = labels;
+        this.startAddress = startAddress;
     }
 
-    public Program(List<Byte> bytes, Map<String, Integer> labels, Address memoryAddress) {
-        this.bytes = bytes;
-        this.labels = labels;
-        this.memoryAddress = memoryAddress;
+    @Value
+    public static class Chunk {
+        Address address;
+        List<Byte> bytes;
     }
 }
