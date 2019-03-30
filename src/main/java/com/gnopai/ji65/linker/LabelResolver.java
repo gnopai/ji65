@@ -5,16 +5,17 @@ import com.gnopai.ji65.assembler.*;
 public class LabelResolver implements SegmentDataVisitor {
     private Environment environment;
     private int startIndex;
-    private int index;
+    private int offset;
 
-    public void resolve(AssembledSegments segments, int startIndex) {
-        this.environment = segments.getEnvironment();
-        this.startIndex = startIndex;
-        this.index = 0;
-        segments.getSegment("CODE")
-                .orElseThrow(() -> new RuntimeException("Expected at least a code segment for now"))
-                .getSegmentData()
-                .forEach(this::resolve);
+    public void resolve(MappedSegments mappedSegments, Environment environment) {
+        this.environment = environment;
+        mappedSegments.getSegments().forEach(this::resolve);
+    }
+
+    private void resolve(MappedSegment segment) {
+        this.startIndex = segment.getStartAddress().getValue();
+        this.offset = 0;
+        segment.getData().forEach(this::resolve);
     }
 
     private void resolve(SegmentData segment) {
@@ -23,17 +24,17 @@ public class LabelResolver implements SegmentDataVisitor {
 
     @Override
     public void visit(InstructionData instructionData) {
-        index += instructionData.getByteCount();
+        offset += instructionData.getByteCount();
     }
 
     @Override
     public void visit(RawData rawData) {
-        index += rawData.getByteCount();
+        offset += rawData.getByteCount();
     }
 
     @Override
     public void visit(Label label) {
-        environment.define(label.getName(), startIndex + index);
+        environment.define(label.getName(), startIndex + offset);
     }
 
     @Override

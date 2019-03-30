@@ -1,14 +1,15 @@
 package com.gnopai.ji65.linker;
 
+import com.gnopai.ji65.Address;
 import com.gnopai.ji65.Opcode;
 import com.gnopai.ji65.assembler.*;
+import com.gnopai.ji65.config.SegmentConfig;
 import com.gnopai.ji65.parser.expression.Expression;
 import com.gnopai.ji65.parser.expression.PrimaryExpression;
 import com.gnopai.ji65.scanner.TokenType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,12 +31,16 @@ class LabelResolverTest {
                 new InstructionData(Opcode.SEI_IMPLICIT),
                 new Label("four", false)
         );
-        Segment codeSegment = new Segment("CODE", false, segmentData);
+        Segment codeSegment = new Segment(
+                SegmentConfig.builder().segmentName("CODE").build(),
+                segmentData);
 
         Environment environment = new Environment();
-        AssembledSegments assembledSegments = new AssembledSegments(Map.of("CODE", codeSegment), environment);
+        MappedSegments mappedSegments = new MappedSegments(List.of(
+                new MappedSegment(codeSegment, new Address(0x7000))
+        ));
 
-        new LabelResolver().resolve(assembledSegments, 0x7000);
+        new LabelResolver().resolve(mappedSegments, environment);
 
         assertEquals(expectedExpression(0x7000), environment.get("one"));
         assertEquals(expectedExpression(0x7007), environment.get("two"));
