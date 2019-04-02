@@ -10,6 +10,7 @@ import java.util.Optional;
 public class ParseletFactory {
     private final Map<TokenType, StatementParselet> statementParsers = Map.of(
             TokenType.INSTRUCTION, new InstructionStatementParselet(),
+            TokenType.DIRECTIVE, new DirectiveStatementParselet(),
             TokenType.IDENTIFIER, new MultiTokenStatementParselet(Map.of(
                     TokenType.COLON, new LabelStatementParselet(),
                     TokenType.EQUAL, new AssignmentStatementParselet()

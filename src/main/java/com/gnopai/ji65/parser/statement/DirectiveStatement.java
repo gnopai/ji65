@@ -8,6 +8,8 @@ import lombok.Value;
 @Builder
 public class DirectiveStatement implements Statement {
     DirectiveType type;
+    String name;
+    // TODO more stuff here... eventually
 
     @Override
     public void accept(StatementVisitor statementVisitor) {
