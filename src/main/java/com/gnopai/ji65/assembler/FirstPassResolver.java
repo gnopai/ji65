@@ -1,5 +1,6 @@
 package com.gnopai.ji65.assembler;
 
+import com.gnopai.ji65.directive.DirectiveType;
 import com.gnopai.ji65.parser.expression.ExpressionEvaluator;
 import com.gnopai.ji65.parser.expression.PrimaryExpression;
 import com.gnopai.ji65.parser.statement.*;
@@ -9,14 +10,15 @@ import java.util.List;
 
 public class FirstPassResolver implements StatementVisitor {
     private final ExpressionEvaluator expressionEvaluator;
-    private Environment environment;
+    private AssembledSegments assembledSegments;
+    private String currentSegment;
 
     public FirstPassResolver(ExpressionEvaluator expressionEvaluator) {
         this.expressionEvaluator = expressionEvaluator;
     }
 
-    public void resolve(List<Statement> statements, Environment environment) {
-        this.environment = environment;
+    public void resolve(List<Statement> statements, AssembledSegments assembledSegments) {
+        this.assembledSegments = assembledSegments;
         statements.forEach(statement -> statement.accept(this));
     }
 
@@ -27,21 +29,31 @@ public class FirstPassResolver implements StatementVisitor {
 
     @Override
     public void visit(LabelStatement labelStatement) {
-        // TODO track zero page by segment we're in
         String name = labelStatement.getName();
-        environment.define(name, new Label(name, false));
+        getEnvironment().define(name, new Label(name, isCurrentSegmentZeroPage()));
     }
 
     @Override
     public void visit(DirectiveStatement directiveStatement) {
-        // TODO -- track segment here?
-        // TODO I think this is needed in both passes
+        if (DirectiveType.SEGMENT.equals(directiveStatement.getType())) {
+            currentSegment = directiveStatement.getName();
+        }
     }
 
     @Override
     public void visit(AssignmentStatement assignmentStatement) {
         // TODO support labels here? We'll error out on them as it is now.
-        int value = expressionEvaluator.evaluate(assignmentStatement.getExpression(), environment);
-        environment.define(assignmentStatement.getName(), new PrimaryExpression(TokenType.NUMBER, value));
+        int value = expressionEvaluator.evaluate(assignmentStatement.getExpression(), getEnvironment());
+        getEnvironment().define(assignmentStatement.getName(), new PrimaryExpression(TokenType.NUMBER, value));
+    }
+
+    private boolean isCurrentSegmentZeroPage() {
+        return assembledSegments.getSegment(currentSegment)
+                .map(Segment::isZeroPage)
+                .orElse(false);
+    }
+
+    private Environment getEnvironment() {
+        return assembledSegments.getEnvironment();
     }
 }

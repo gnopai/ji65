@@ -56,6 +56,10 @@ public class Segment {
         return SegmentType.ZERO_PAGE.equals(config.getSegmentType());
     }
 
+    public SegmentType getType() {
+        return config.getSegmentType();
+    }
+
     public int getSize() {
         return data.stream()
                 .map(SegmentData::getByteCount)
