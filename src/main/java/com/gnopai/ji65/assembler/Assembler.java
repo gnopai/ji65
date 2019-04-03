@@ -1,6 +1,7 @@
 package com.gnopai.ji65.assembler;
 
 import com.gnopai.ji65.config.ProgramConfig;
+import com.gnopai.ji65.directive.DirectiveType;
 import com.gnopai.ji65.parser.statement.*;
 
 import java.util.List;
@@ -11,7 +12,7 @@ public class Assembler implements StatementVisitor {
     private final InstructionAssembler instructionAssembler;
     private final FirstPassResolver firstPassResolver;
     private AssembledSegments assembledSegments;
-    private String currentSegment = "CODE"; // TODO replace using segment directive to set
+    private String currentSegment;
 
     public Assembler(FirstPassResolver firstPassResolver, InstructionAssembler instructionAssembler) {
         this.instructionAssembler = instructionAssembler;
@@ -22,8 +23,8 @@ public class Assembler implements StatementVisitor {
         List<Segment> segments = programConfig.getSegmentConfigs().stream()
                 .map(Segment::new)
                 .collect(toList());
-        firstPassResolver.resolve(statements, environment);
         assembledSegments = new AssembledSegments(segments, environment);
+        firstPassResolver.resolve(statements, assembledSegments);
         statements.forEach(statement -> statement.accept(this));
         return assembledSegments;
     }
@@ -47,7 +48,9 @@ public class Assembler implements StatementVisitor {
 
     @Override
     public void visit(DirectiveStatement directiveStatement) {
-        // TODO I think this is needed in both passes
+        if (DirectiveType.SEGMENT.equals(directiveStatement.getType())) {
+            currentSegment = directiveStatement.getName();
+        }
     }
 
     @Override

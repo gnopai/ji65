@@ -5,11 +5,15 @@ import lombok.Value;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
+
 /**
  * Output object of the assembly stage.
  **/
 @Value
 public class AssembledSegments {
+    static final String DEFAULT_SEGMENT_NAME = "CODE";
+
     private final List<Segment> segments;
     private final Environment environment;
 
@@ -20,8 +24,9 @@ public class AssembledSegments {
     }
 
     public Optional<Segment> getSegment(String segmentName) {
+        String segmentNameToFind = ofNullable(segmentName).orElse(DEFAULT_SEGMENT_NAME);
         return segments.stream()
-                .filter(segment -> segmentName.equalsIgnoreCase(segment.getName()))
+                .filter(segment -> segmentNameToFind.equalsIgnoreCase(segment.getName()))
                 .findFirst();
     }
 }

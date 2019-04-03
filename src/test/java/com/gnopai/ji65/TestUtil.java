@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TestUtil {
+    public static final Address DEFAULT_PROGRAM_START_ADDRESS = new Address(0x8000);
     private static final ProgramConfig DEFAULT_CONFIG = buildDefaultConfig();
 
     public static void assembleAndRun(Cpu cpu, String... lines) {
@@ -35,7 +36,7 @@ public class TestUtil {
                         MemoryConfig.builder()
                                 .name("PRG")
                                 .memoryType(MemoryType.READ_ONLY)
-                                .startAddress(new Address(0x8000))
+                                .startAddress(DEFAULT_PROGRAM_START_ADDRESS)
                                 .size(0x8000)
                                 .build()
                 ))
@@ -47,6 +48,12 @@ public class TestUtil {
                                 .build(),
                         SegmentConfig.builder()
                                 .segmentName("CODE")
+                                .memoryConfigName("PRG")
+                                .segmentType(SegmentType.READ_ONLY)
+                                .startAddress(DEFAULT_PROGRAM_START_ADDRESS)
+                                .build(),
+                        SegmentConfig.builder()
+                                .segmentName("RODATA")
                                 .memoryConfigName("PRG")
                                 .segmentType(SegmentType.READ_ONLY)
                                 .build()
