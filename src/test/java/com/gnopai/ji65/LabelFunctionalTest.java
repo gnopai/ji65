@@ -2,6 +2,7 @@ package com.gnopai.ji65;
 
 import org.junit.jupiter.api.Test;
 
+import static com.gnopai.ji65.TestUtil.DEFAULT_PROGRAM_START_ADDRESS;
 import static com.gnopai.ji65.TestUtil.assembleAndRun;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -24,5 +25,28 @@ class LabelFunctionalTest {
         assertEquals(11, cpu.getAccumulator());
         assertEquals(12, cpu.getX());
         assertEquals(13, cpu.getY());
+    }
+
+    @Test
+    void testLabelZeroPageEvaluation() {
+        Cpu cpu = Cpu.builder().build();
+        assembleAndRun(cpu,
+                ".segment \"ZEROPAGE\"",
+                "lda #0",
+                "zeroey:",
+                "lda #1",
+
+                ".segment \"CODE\"",
+                "lda zeroey", // should become an LDA zero-page
+                "lda not_zeroey", // should become an LDA absolute
+
+                ".segment \"RODATA\"",
+                "not_zeroey:",
+                "ldx #11"
+        );
+
+        assertEquals(Opcode.LDA_ZERO_PAGE.getOpcode(), cpu.getMemoryValue(DEFAULT_PROGRAM_START_ADDRESS));
+        Address nextAddress = DEFAULT_PROGRAM_START_ADDRESS.plus(Opcode.LDA_ZERO_PAGE.getByteCount());
+        assertEquals(Opcode.LDA_ABSOLUTE.getOpcode(), cpu.getMemoryValue(nextAddress));
     }
 }
