@@ -27,6 +27,34 @@ class ExpressionEvaluatorTest {
     }
 
     @Test
+    void testUnaryLowByte() {
+        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 0x5432);
+        PrefixExpression prefixExpression = new PrefixExpression(TokenType.LESS_THAN, rightSideExpression);
+
+        int result = new ExpressionEvaluator().evaluate(prefixExpression, environment);
+        assertEquals(0x32, result);
+    }
+
+    @Test
+    void testUnaryHighByte() {
+        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 0x5432);
+        PrefixExpression prefixExpression = new PrefixExpression(TokenType.GREATER_THAN, rightSideExpression);
+
+        int result = new ExpressionEvaluator().evaluate(prefixExpression, environment);
+        assertEquals(0x54, result);
+    }
+
+    @Test
+    void testUnaryNot() {
+        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 0b01101100);
+        PrefixExpression prefixExpression = new PrefixExpression(TokenType.TILDE, rightSideExpression);
+
+        int result = new ExpressionEvaluator().evaluate(prefixExpression, environment);
+        System.out.printf("%x\n", result);
+        assertEquals(0b1111111110010011, result);
+    }
+
+    @Test
     void testUnsupportedPrefixOperator() {
         Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 17);
         PrefixExpression prefixExpression = new PrefixExpression(TokenType.COMMA, rightSideExpression);
@@ -53,6 +81,56 @@ class ExpressionEvaluatorTest {
 
         int result = new ExpressionEvaluator().evaluate(binaryExpression, environment);
         assertEquals(6, result);
+    }
+
+    @Test
+    void testBinaryBitwiseOr() {
+        Expression leftSideExpression = new PrimaryExpression(TokenType.NUMBER, 0xF0);
+        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 0x0F);
+        BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, TokenType.PIPE, rightSideExpression);
+
+        int result = new ExpressionEvaluator().evaluate(binaryExpression, environment);
+        assertEquals(0xFF, result);
+    }
+
+    @Test
+    void testBinaryBitwiseAnd() {
+        Expression leftSideExpression = new PrimaryExpression(TokenType.NUMBER, 0b01110111);
+        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 0b11011101);
+        BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, TokenType.AMPERSAND, rightSideExpression);
+
+        int result = new ExpressionEvaluator().evaluate(binaryExpression, environment);
+        assertEquals(0b01010101, result);
+    }
+
+    @Test
+    void testBinaryBitwiseXor() {
+        Expression leftSideExpression = new PrimaryExpression(TokenType.NUMBER, 0b11110000);
+        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 0b01010101);
+        BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, TokenType.CARET, rightSideExpression);
+
+        int result = new ExpressionEvaluator().evaluate(binaryExpression, environment);
+        assertEquals(0b10100101, result);
+    }
+
+    @Test
+    void testBinaryShiftLeft() {
+        Expression leftSideExpression = new PrimaryExpression(TokenType.NUMBER, 0b00011100);
+        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 3);
+        BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, TokenType.SHIFT_LEFT, rightSideExpression);
+
+        int result = new ExpressionEvaluator().evaluate(binaryExpression, environment);
+        assertEquals(0b11100000, result);
+    }
+
+    @Test
+    void testBinaryShiftRight() {
+        Expression leftSideExpression = new PrimaryExpression(TokenType.NUMBER, 0b01110000);
+        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 2);
+        BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, TokenType.SHIFT_RIGHT, rightSideExpression);
+
+        int result = new ExpressionEvaluator().evaluate(binaryExpression, environment);
+        assertEquals(0b00011100, result);
     }
 
     @Test

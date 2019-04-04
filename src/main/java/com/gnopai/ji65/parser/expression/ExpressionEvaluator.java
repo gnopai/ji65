@@ -21,6 +21,12 @@ public class ExpressionEvaluator implements ExpressionVisitor<Integer> {
         switch (expression.getOperator()) {
             case MINUS:
                 return -rightSideValue;
+            case LESS_THAN:
+                return rightSideValue % 256; // low byte
+            case GREATER_THAN:
+                return rightSideValue / 256; // high byte
+            case TILDE:
+                return truncateToWordSize(~rightSideValue);
             default:
                 throw new RuntimeException("Unsupported prefix expression: " + expression.getOperator());
         }
@@ -35,6 +41,16 @@ public class ExpressionEvaluator implements ExpressionVisitor<Integer> {
                 return leftSideValue + rightSideValue;
             case MINUS:
                 return leftSideValue - rightSideValue;
+            case PIPE:
+                return leftSideValue | rightSideValue;
+            case AMPERSAND:
+                return leftSideValue & rightSideValue;
+            case CARET:
+                return leftSideValue ^ rightSideValue;
+            case SHIFT_LEFT:
+                return leftSideValue << rightSideValue;
+            case SHIFT_RIGHT:
+                return leftSideValue >> rightSideValue;
             case STAR:
                 return leftSideValue * rightSideValue;
             case SLASH:
@@ -57,6 +73,10 @@ public class ExpressionEvaluator implements ExpressionVisitor<Integer> {
             throw new RuntimeException("Unresolved label encountered: \"" + label.getName() + "\"");
         }
         return evaluate(value, environment);
+    }
+
+    private int truncateToWordSize(int i) {
+        return i & 0xFFFF;
     }
 
     private Expression getValueFromEnvironment(String name, Environment environment) {
