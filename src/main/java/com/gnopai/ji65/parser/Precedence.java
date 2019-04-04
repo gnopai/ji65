@@ -9,7 +9,7 @@ public enum Precedence {
     BOOLEAN_AND,
     COMPARISON,
     SUM,
-    BIT_SHIFTS,
+    BITWISE,
     MULTIPLY,
     UNARY,
     PRIMARY,

@@ -28,6 +28,19 @@ class LabelFunctionalTest {
     }
 
     @Test
+    void testLabelBytes() {
+        Cpu cpu = Cpu.builder().build();
+        assembleAndRun(cpu,
+                "sec",
+                "whee:",
+                "ldx #<whee",
+                "ldy #>whee"
+        );
+        assertEquals((byte) 0x01, cpu.getX());
+        assertEquals((byte) 0x80, cpu.getY());
+    }
+
+    @Test
     void testLabelZeroPageEvaluation() {
         Cpu cpu = Cpu.builder().build();
         assembleAndRun(cpu,

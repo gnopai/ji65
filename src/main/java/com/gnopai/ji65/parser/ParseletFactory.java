@@ -20,6 +20,11 @@ public class ParseletFactory {
     private final Map<TokenType, InfixParselet> infixParselets = Map.of(
             TokenType.PLUS, new BinaryOperatorParselet(Precedence.SUM),
             TokenType.MINUS, new BinaryOperatorParselet(Precedence.SUM),
+            TokenType.PIPE, new BinaryOperatorParselet(Precedence.SUM),
+            TokenType.AMPERSAND, new BinaryOperatorParselet(Precedence.BITWISE),
+            TokenType.CARET, new BinaryOperatorParselet(Precedence.BITWISE),
+            TokenType.SHIFT_LEFT, new BinaryOperatorParselet(Precedence.BITWISE),
+            TokenType.SHIFT_RIGHT, new BinaryOperatorParselet(Precedence.BITWISE),
             TokenType.STAR, new BinaryOperatorParselet(Precedence.MULTIPLY),
             TokenType.SLASH, new BinaryOperatorParselet(Precedence.MULTIPLY)
     );
@@ -27,6 +32,9 @@ public class ParseletFactory {
     private final Map<TokenType, PrefixParselet> prefixParselets = Map.of(
             TokenType.LEFT_PAREN, new GroupParselet(),
             TokenType.MINUS, new PrefixOperatorParselet(Precedence.UNARY),
+            TokenType.LESS_THAN, new PrefixOperatorParselet(Precedence.UNARY),
+            TokenType.GREATER_THAN, new PrefixOperatorParselet(Precedence.UNARY),
+            TokenType.TILDE, new PrefixOperatorParselet(Precedence.UNARY),
             TokenType.NUMBER, new PrimaryParselet(),
             TokenType.IDENTIFIER, new IdentifierParselet()
     );
