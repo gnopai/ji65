@@ -41,4 +41,9 @@ public class LabelResolver implements SegmentDataVisitor {
     public void visit(UnresolvedExpression unresolvedExpression) {
         // no-op -- bytes counted in the parent instruction data
     }
+
+    @Override
+    public void visit(ReservedData reservedData) {
+        offset += reservedData.getByteCount();
+    }
 }

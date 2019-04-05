@@ -23,6 +23,8 @@ class LabelResolverTest {
                 new InstructionData(Opcode.LDA_ABSOLUTE, (byte) 0x00, (byte) 0x01),
                 new RawData(List.of((byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04)),
                 new Label("two", false),
+                new Label("two-and-a-half", false),
+                new ReservedData(14),
                 new Label("three", false),
                 new InstructionData(Opcode.SEI_IMPLICIT),
                 new InstructionData(Opcode.SEI_IMPLICIT),
@@ -44,8 +46,9 @@ class LabelResolverTest {
 
         assertEquals(expectedExpression(0x7000), environment.get("one"));
         assertEquals(expectedExpression(0x7007), environment.get("two"));
-        assertEquals(expectedExpression(0x7007), environment.get("three"));
-        assertEquals(expectedExpression(0x700C), environment.get("four"));
+        assertEquals(expectedExpression(0x7007), environment.get("two-and-a-half"));
+        assertEquals(expectedExpression(0x7015), environment.get("three"));
+        assertEquals(expectedExpression(0x701A), environment.get("four"));
     }
 
     private Optional<Expression> expectedExpression(int value) {

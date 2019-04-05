@@ -2,6 +2,7 @@ package com.gnopai.ji65.parser.statement;
 
 import com.gnopai.ji65.directive.DirectiveType;
 import com.gnopai.ji65.parser.ParseException;
+import com.gnopai.ji65.parser.expression.PrimaryExpression;
 import com.gnopai.ji65.util.ErrorHandler;
 import org.junit.jupiter.api.Test;
 
@@ -12,43 +13,42 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
-class SegmentDirectiveParserTest {
+class ReserveDirectiveParserTest {
     private final ErrorHandler errorHandler = mock(ErrorHandler.class);
 
     @Test
     void testHappyPath() {
         Statement result = parse(errorHandler,
-                token(DIRECTIVE, DirectiveType.SEGMENT),
-                token(STRING, "CODE"),
+                token(DIRECTIVE, DirectiveType.RESERVE),
+                token(NUMBER, 32),
                 token(EOL)
         );
 
         DirectiveStatement expectedResult = DirectiveStatement.builder()
-                .type(DirectiveType.SEGMENT)
-                .name("CODE")
+                .type(DirectiveType.RESERVE)
+                .expression(new PrimaryExpression(NUMBER, 32))
                 .build();
         assertEquals(expectedResult, result);
     }
 
     @Test
-    void testNoSegmentName() {
+    void testMissingSizeExpression() {
         ParseException exception = assertThrows(ParseException.class, () -> parse(errorHandler,
-                token(DIRECTIVE, DirectiveType.SEGMENT),
-                token(NUMBER, 5),
+                token(DIRECTIVE, DirectiveType.RESERVE),
                 token(EOL)
         ));
-        assertEquals(NUMBER, exception.getTokenType());
-        assertEquals("Expected string with segment name", exception.getMessage());
+        assertEquals(EOL, exception.getTokenType());
+        assertEquals("Failed to parse token", exception.getMessage());
     }
 
     @Test
     void testNoEndOfLine() {
         ParseException exception = assertThrows(ParseException.class, () -> parse(errorHandler,
-                token(DIRECTIVE, DirectiveType.SEGMENT),
-                token(STRING, "CODE"),
-                token(SLASH)
+                token(DIRECTIVE, DirectiveType.RESERVE),
+                token(NUMBER, 32),
+                token(INSTRUCTION)
         ));
-        assertEquals(SLASH, exception.getTokenType());
+        assertEquals(INSTRUCTION, exception.getTokenType());
         assertEquals("Expected end of line", exception.getMessage());
     }
 }

@@ -7,6 +7,9 @@ import com.gnopai.ji65.config.ProgramConfig;
 import com.gnopai.ji65.parser.expression.ExpressionEvaluator;
 
 import java.util.List;
+import java.util.stream.IntStream;
+
+import static java.util.stream.Collectors.toList;
 
 public class Linker implements SegmentDataVisitor {
     private final SegmentMapper segmentMapper;
@@ -66,5 +69,13 @@ public class Linker implements SegmentDataVisitor {
             Address address = new Address(value);
             programBuilder.bytes(List.of(address.getLowByte(), address.getHighByte()));
         }
+    }
+
+    @Override
+    public void visit(ReservedData reservedData) {
+        List<Byte> bytes = IntStream.range(0, reservedData.getSize())
+                .mapToObj(i -> (byte) 0)
+                .collect(toList());
+        programBuilder.bytes(bytes);
     }
 }

@@ -8,4 +8,6 @@ public interface SegmentDataVisitor {
     void visit(Label label);
 
     void visit(UnresolvedExpression unresolvedExpression);
+
+    void visit(ReservedData reservedData);
 }
