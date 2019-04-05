@@ -7,6 +7,7 @@ import java.util.List;
 
 import static com.gnopai.ji65.TestUtil.assembleAndRun;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProgramLayoutFunctionalTest {
 
@@ -89,5 +90,29 @@ class ProgramLayoutFunctionalTest {
         assertEquals(Opcode.LDA_IMMEDIATE.getOpcode(), cpu.getMemoryValue(new Address(0x4000)));
         assertEquals(Opcode.LDX_IMMEDIATE.getOpcode(), cpu.getMemoryValue(new Address(0x5000)));
         assertEquals(Opcode.LDY_IMMEDIATE.getOpcode(), cpu.getMemoryValue(new Address(0x6000)));
+    }
+
+    @Test
+    void testReservedData() {
+        Address programStartAddress = new Address(0x4567);
+        ProgramConfig programConfig = ProgramConfig.builder()
+                .memoryConfigs(List.of(
+                        zeroPageMemoryConfig,
+                        programMemoryConfig.withStartAddress(programStartAddress))
+                )
+                .segmentConfigs(List.of(zeroPageSegmentConfig, programSegmentConfig))
+                .build();
+        Cpu cpu = Cpu.builder().build();
+        assembleAndRun(cpu, programConfig,
+                "sec",
+                ".res 15",
+                "sed",
+                ".res 31",
+                "sei"
+        );
+        assertTrue(cpu.isCarryFlagSet());
+        assertEquals(Opcode.SEC_IMPLICIT.getOpcode(), cpu.getMemoryValue(programStartAddress));
+        assertEquals(Opcode.SED_IMPLICIT.getOpcode(), cpu.getMemoryValue(programStartAddress.plus(16)));
+        assertEquals(Opcode.SEI_IMPLICIT.getOpcode(), cpu.getMemoryValue(programStartAddress.plus(48)));
     }
 }

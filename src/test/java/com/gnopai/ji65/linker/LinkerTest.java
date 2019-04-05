@@ -80,6 +80,29 @@ class LinkerTest {
     }
 
     @Test
+    void testVisitReservedData() {
+        ReservedData reservedData = new ReservedData(16);
+        Label startLabel = label("start", 1);
+        MappedSegments mappedSegments = mappedSegments(0x7001, reservedData, startLabel);
+        when(segmentMapper.mapSegments(programConfig, assembledSegments.getSegments()))
+                .thenReturn(mappedSegments);
+
+        Program program = runLinker();
+
+        Program expectedProgram = new Program(
+                List.of(new Program.Chunk(new Address(0x7001), List.of(
+                        (byte) 0, (byte) 0, (byte) 0, (byte) 0,
+                        (byte) 0, (byte) 0, (byte) 0, (byte) 0,
+                        (byte) 0, (byte) 0, (byte) 0, (byte) 0,
+                        (byte) 0, (byte) 0, (byte) 0, (byte) 0
+                ))),
+                Map.of("start", 1),
+                new Address(1)
+        );
+        assertEquals(expectedProgram, program);
+    }
+
+    @Test
     void testLink_multipleSegmentData() {
         Label label = label("derp", 7);
         Label startLabel = label("start", 99);
@@ -89,6 +112,7 @@ class LinkerTest {
                 new InstructionData(Opcode.LDX_ABSOLUTE, new RawData((byte) 80, (byte) 4)),
                 new InstructionData(Opcode.STX_ZERO_PAGE, new RawData((byte) 9)),
                 label,
+                new ReservedData(4),
                 new InstructionData(Opcode.INX_IMPLICIT),
                 new InstructionData(Opcode.STX_ZERO_PAGE, new RawData((byte) 10)),
                 startLabel
@@ -102,6 +126,7 @@ class LinkerTest {
                 (byte) 0xA2, (byte) 77,
                 (byte) 0xAE, (byte) 80, (byte) 4,
                 (byte) 0x86, (byte) 9,
+                (byte) 0, (byte) 0, (byte) 0, (byte) 0,
                 (byte) 0xE8,
                 (byte) 0x86, (byte) 10
         ));

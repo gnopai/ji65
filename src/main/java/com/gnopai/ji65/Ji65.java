@@ -62,9 +62,10 @@ public class Ji65 {
 
     private AssembledSegments assemble(List<Statement> statements, ProgramConfig programConfig) {
         Environment environment = new Environment();
+        ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator();
         Assembler assembler = new Assembler(
-                new FirstPassResolver(new ExpressionEvaluator()),
-                new InstructionAssembler(new ExpressionZeroPageChecker()));
+                new FirstPassResolver(expressionEvaluator),
+                new InstructionAssembler(new ExpressionZeroPageChecker()), expressionEvaluator);
         return assembler.assemble(statements, programConfig, environment);
     }
 

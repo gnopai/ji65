@@ -14,7 +14,8 @@ public class DirectiveStatementParselet implements StatementParselet {
 
     public DirectiveStatementParselet() {
         directiveParslets = Map.of(
-                DirectiveType.SEGMENT, new SegmentDirectiveParser()
+                DirectiveType.SEGMENT, new SegmentDirectiveParser(),
+                DirectiveType.RESERVE, new ReserveDirectiveParser()
         );
     }
 
