@@ -57,7 +57,7 @@ public class InstructionAssembler {
     private SegmentData assembleThreeByteInstruction(InstructionStatement instructionStatement, AddressingModeType zeroPageAddressingModeType, Environment environment) {
         boolean isZeroPage = expressionZeroPageChecker.isZeroPage(instructionStatement.getAddressExpression(), environment);
         UnresolvedExpression operand = new UnresolvedExpression(instructionStatement.getAddressExpression(), isZeroPage);
-        if (operand.isZeroPage()) {
+        if (operand.isSingleByte()) {
             Optional<Opcode> zeroPageOpcode = Opcode.of(instructionStatement.getInstructionType(), zeroPageAddressingModeType);
             if (zeroPageOpcode.isPresent()) {
                 return new InstructionData(zeroPageOpcode.get(), operand);

@@ -1,7 +1,7 @@
 package com.gnopai.ji65.assembler;
 
 import com.gnopai.ji65.config.ProgramConfig;
-import com.gnopai.ji65.parser.expression.ExpressionEvaluator;
+import com.gnopai.ji65.directive.DirectiveType;
 import com.gnopai.ji65.parser.statement.*;
 
 import java.util.List;
@@ -11,14 +11,14 @@ import static java.util.stream.Collectors.toList;
 public class Assembler implements StatementVisitor {
     private final InstructionAssembler instructionAssembler;
     private final FirstPassResolver firstPassResolver;
-    private final ExpressionEvaluator expressionEvaluator;
+    private final DirectiveDataAssembler directiveDataAssembler;
     private AssembledSegments assembledSegments;
     private String currentSegment;
 
-    public Assembler(FirstPassResolver firstPassResolver, InstructionAssembler instructionAssembler, ExpressionEvaluator expressionEvaluator) {
+    public Assembler(FirstPassResolver firstPassResolver, InstructionAssembler instructionAssembler, DirectiveDataAssembler directiveDataAssembler) {
         this.instructionAssembler = instructionAssembler;
         this.firstPassResolver = firstPassResolver;
-        this.expressionEvaluator = expressionEvaluator;
+        this.directiveDataAssembler = directiveDataAssembler;
     }
 
     public AssembledSegments assemble(List<Statement> statements, ProgramConfig programConfig, Environment environment) {
@@ -50,15 +50,13 @@ public class Assembler implements StatementVisitor {
 
     @Override
     public void visit(DirectiveStatement directiveStatement) {
-        switch (directiveStatement.getType()) {
-            case SEGMENT:
-                currentSegment = directiveStatement.getName();
-                break;
-            case RESERVE:
-                int size = expressionEvaluator.evaluate(directiveStatement.getExpression(), assembledSegments.getEnvironment());
-                assembledSegments.add(currentSegment, new ReservedData(size));
-                break;
+        if (directiveStatement.getType() == DirectiveType.SEGMENT) {
+            currentSegment = directiveStatement.getName();
+            return;
         }
+
+        directiveDataAssembler.assemble(directiveStatement, assembledSegments.getEnvironment())
+                .forEach(data -> assembledSegments.add(currentSegment, data));
     }
 
     @Override

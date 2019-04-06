@@ -6,11 +6,11 @@ import lombok.Value;
 @Value
 public class UnresolvedExpression implements SegmentData {
     Expression expression;
-    boolean zeroPage;
+    boolean singleByte;
 
     @Override
     public int getByteCount() {
-        return zeroPage ? 1 : 2;
+        return singleByte ? 1 : 2;
     }
 
     @Override

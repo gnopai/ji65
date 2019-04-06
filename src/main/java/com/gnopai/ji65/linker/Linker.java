@@ -63,7 +63,7 @@ public class Linker implements SegmentDataVisitor {
     @Override
     public void visit(UnresolvedExpression unresolvedExpression) {
         int value = expressionEvaluator.evaluate(unresolvedExpression.getExpression(), environment);
-        if (unresolvedExpression.isZeroPage()) {
+        if (unresolvedExpression.isSingleByte()) {
             programBuilder.bytes((byte) value);
         } else {
             Address address = new Address(value);
