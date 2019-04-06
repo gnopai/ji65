@@ -65,7 +65,9 @@ public class Ji65 {
         ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator();
         Assembler assembler = new Assembler(
                 new FirstPassResolver(expressionEvaluator),
-                new InstructionAssembler(new ExpressionZeroPageChecker()), expressionEvaluator);
+                new InstructionAssembler(new ExpressionZeroPageChecker()),
+                new DirectiveDataAssembler(expressionEvaluator)
+        );
         return assembler.assemble(statements, programConfig, environment);
     }
 

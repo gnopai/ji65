@@ -4,14 +4,10 @@ import com.gnopai.ji65.InstructionType;
 import com.gnopai.ji65.config.ProgramConfig;
 import com.gnopai.ji65.config.SegmentConfig;
 import com.gnopai.ji65.directive.DirectiveType;
-import com.gnopai.ji65.parser.expression.Expression;
-import com.gnopai.ji65.parser.expression.ExpressionEvaluator;
-import com.gnopai.ji65.parser.expression.PrimaryExpression;
 import com.gnopai.ji65.parser.statement.DirectiveStatement;
 import com.gnopai.ji65.parser.statement.InstructionStatement;
 import com.gnopai.ji65.parser.statement.LabelStatement;
 import com.gnopai.ji65.parser.statement.Statement;
-import com.gnopai.ji65.scanner.TokenType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -23,7 +19,7 @@ import static org.mockito.Mockito.*;
 class AssemblerTest {
     private final InstructionAssembler instructionAssembler = mock(InstructionAssembler.class);
     private final FirstPassResolver firstPassResolver = mock(FirstPassResolver.class);
-    private final ExpressionEvaluator expressionEvaluator = mock(ExpressionEvaluator.class);
+    private final DirectiveDataAssembler directiveDataAssembler = mock(DirectiveDataAssembler.class);
 
     private final SegmentConfig segmentConfig = SegmentConfig.builder().segmentName(DEFAULT_SEGMENT_NAME).build();
     private final ProgramConfig programConfig = ProgramConfig.builder()
@@ -38,7 +34,7 @@ class AssemblerTest {
         Statement statement3 = mock(Statement.class);
         List<Statement> statements = List.of(statement1, statement2, statement3);
 
-        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, expressionEvaluator);
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler);
 
         AssembledSegments result = assembler.assemble(statements, programConfig, environment);
 
@@ -59,7 +55,7 @@ class AssemblerTest {
         Label expectedLabel = new Label("derp", false);
         environment.define("derp", expectedLabel);
 
-        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, expressionEvaluator);
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler);
 
         AssembledSegments result = assembler.assemble(statements, programConfig, environment);
 
@@ -94,7 +90,7 @@ class AssemblerTest {
                 .segmentConfigs(List.of(segmentConfig1, segmentConfig2))
                 .build();
 
-        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, expressionEvaluator);
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler);
 
         AssembledSegments result = assembler.assemble(statements, programConfig, environment);
 
@@ -108,22 +104,21 @@ class AssemblerTest {
     }
 
     @Test
-    void testDirectiveStatement_reserve() {
-        Expression sizeExpression = new PrimaryExpression(TokenType.NUMBER, 55);
-        when(expressionEvaluator.evaluate(sizeExpression, environment)).thenReturn(55);
-
+    void testDirectiveStatement_allOthers() {
         DirectiveStatement directiveStatement = DirectiveStatement.builder()
                 .type(DirectiveType.RESERVE)
-                .expression(sizeExpression)
                 .build();
+        List<SegmentData> segmentData = List.of(new ReservedData(55), new ReservedData(66));
+        when(directiveDataAssembler.assemble(directiveStatement, environment)).thenReturn(segmentData);
+
         List<Statement> statements = List.of(directiveStatement);
 
-        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, expressionEvaluator);
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler);
 
         AssembledSegments result = assembler.assemble(statements, programConfig, environment);
 
         List<Segment> expectedSegments = List.of(
-                new Segment(segmentConfig, List.of(new ReservedData(55)))
+                new Segment(segmentConfig, segmentData)
         );
         AssembledSegments expectedResult = new AssembledSegments(expectedSegments, environment);
         assertEquals(expectedResult, result);
