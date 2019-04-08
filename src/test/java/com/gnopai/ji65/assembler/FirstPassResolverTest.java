@@ -1,8 +1,8 @@
 package com.gnopai.ji65.assembler;
 
+import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.config.SegmentConfig;
 import com.gnopai.ji65.config.SegmentType;
-import com.gnopai.ji65.directive.DirectiveType;
 import com.gnopai.ji65.parser.expression.ExpressionEvaluator;
 import com.gnopai.ji65.parser.expression.PrefixExpression;
 import com.gnopai.ji65.parser.expression.PrimaryExpression;

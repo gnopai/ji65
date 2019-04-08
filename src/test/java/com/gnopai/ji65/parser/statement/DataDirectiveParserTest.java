@@ -1,6 +1,6 @@
 package com.gnopai.ji65.parser.statement;
 
-import com.gnopai.ji65.directive.DirectiveType;
+import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.parser.ParseException;
 import com.gnopai.ji65.parser.expression.PrimaryExpression;
 import com.gnopai.ji65.util.ErrorHandler;

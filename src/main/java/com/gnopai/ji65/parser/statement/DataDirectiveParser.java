@@ -1,6 +1,6 @@
 package com.gnopai.ji65.parser.statement;
 
-import com.gnopai.ji65.directive.DirectiveType;
+import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.parser.Parser;
 import com.gnopai.ji65.scanner.Token;
 import com.gnopai.ji65.scanner.TokenType;

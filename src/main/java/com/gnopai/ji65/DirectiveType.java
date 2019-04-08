@@ -1,4 +1,4 @@
-package com.gnopai.ji65.directive;
+package com.gnopai.ji65;
 
 import lombok.Getter;
 
