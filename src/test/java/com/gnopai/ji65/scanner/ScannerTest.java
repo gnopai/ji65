@@ -1,7 +1,7 @@
 package com.gnopai.ji65.scanner;
 
+import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.InstructionType;
-import com.gnopai.ji65.directive.DirectiveType;
 import com.gnopai.ji65.util.ErrorHandler;
 import org.junit.jupiter.api.Test;
 

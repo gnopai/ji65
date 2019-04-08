@@ -1,7 +1,7 @@
 package com.gnopai.ji65.assembler;
 
+import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.config.ProgramConfig;
-import com.gnopai.ji65.directive.DirectiveType;
 import com.gnopai.ji65.parser.statement.*;
 
 import java.util.List;
