@@ -75,7 +75,7 @@ public class Scanner {
                 tokenReader.advanceUntilNextLine();
                 break;
             case '"':
-                tokenReader.string();
+                string();
                 break;
             case '0':
             case '1':
@@ -114,6 +114,11 @@ public class Scanner {
                     error("Unexpected character '" + c + "'");
                 }
         }
+    }
+
+    private void string() {
+        tokenReader.string()
+                .ifPresent(string -> string.chars().forEach(i -> addToken(CHAR, i)));
     }
 
     private void directive() {

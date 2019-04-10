@@ -72,7 +72,7 @@ class DirectiveFunctionalTest {
         Cpu cpu = Cpu.builder().build();
         assembleAndRun(cpu, programConfig,
                 "sec",
-                ".byte $00, 200 + 55, 0, $80, start, >start, <start"
+                ".byte $00, 200 + 55, 0, $80, start, >start, <start, \"Whee\""
         );
         assertTrue(cpu.isCarryFlagSet());
         assertEquals(Opcode.SEC_IMPLICIT.getOpcode(), cpu.getMemoryValue(programStartAddress));
@@ -83,6 +83,10 @@ class DirectiveFunctionalTest {
         assertEquals((byte) 0x67, cpu.getMemoryValue(programStartAddress.plus(5)));
         assertEquals((byte) 0x45, cpu.getMemoryValue(programStartAddress.plus(6)));
         assertEquals((byte) 0x67, cpu.getMemoryValue(programStartAddress.plus(7)));
+        assertEquals((byte) 0x57, cpu.getMemoryValue(programStartAddress.plus(8)));
+        assertEquals((byte) 0x68, cpu.getMemoryValue(programStartAddress.plus(9)));
+        assertEquals((byte) 0x65, cpu.getMemoryValue(programStartAddress.plus(10)));
+        assertEquals((byte) 0x65, cpu.getMemoryValue(programStartAddress.plus(11)));
     }
 
     @Test
@@ -98,7 +102,7 @@ class DirectiveFunctionalTest {
         Cpu cpu = Cpu.builder().build();
         assembleAndRun(cpu, programConfig,
                 "sec",
-                ".word $00, 200 + 55, 258, $1234, $80, start, >start, <start"
+                ".word $00, 200 + 55, 258, $1234, $80, start, >start, <start, \"AB\""
         );
         assertTrue(cpu.isCarryFlagSet());
         assertEquals(Opcode.SEC_IMPLICIT.getOpcode(), cpu.getMemoryValue(programStartAddress));
@@ -126,5 +130,11 @@ class DirectiveFunctionalTest {
 
         assertEquals((byte) 0x67, cpu.getMemoryValue(programStartAddress.plus(15)));
         assertEquals((byte) 0x00, cpu.getMemoryValue(programStartAddress.plus(16)));
+
+        assertEquals((byte) 0x41, cpu.getMemoryValue(programStartAddress.plus(17)));
+        assertEquals((byte) 0x00, cpu.getMemoryValue(programStartAddress.plus(18)));
+
+        assertEquals((byte) 0x42, cpu.getMemoryValue(programStartAddress.plus(19)));
+        assertEquals((byte) 0x00, cpu.getMemoryValue(programStartAddress.plus(20)));
     }
 }

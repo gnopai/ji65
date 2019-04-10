@@ -19,7 +19,10 @@ class SegmentDirectiveParserTest {
     void testHappyPath() {
         Statement result = parse(errorHandler,
                 token(DIRECTIVE, DirectiveType.SEGMENT),
-                token(STRING, "CODE"),
+                token(CHAR, (int) 'C'),
+                token(CHAR, (int) 'O'),
+                token(CHAR, (int) 'D'),
+                token(CHAR, (int) 'E'),
                 token(EOL)
         );
 
@@ -45,7 +48,10 @@ class SegmentDirectiveParserTest {
     void testNoEndOfLine() {
         ParseException exception = assertThrows(ParseException.class, () -> parse(errorHandler,
                 token(DIRECTIVE, DirectiveType.SEGMENT),
-                token(STRING, "CODE"),
+                token(CHAR, (int) 'C'),
+                token(CHAR, (int) 'O'),
+                token(CHAR, (int) 'D'),
+                token(CHAR, (int) 'E'),
                 token(SLASH)
         ));
         assertEquals(SLASH, exception.getTokenType());

@@ -4,9 +4,11 @@ import com.gnopai.ji65.util.ErrorHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
-import static com.gnopai.ji65.scanner.TokenType.*;
+import static com.gnopai.ji65.scanner.TokenType.EOF;
+import static com.gnopai.ji65.scanner.TokenType.NUMBER;
 
 public class TokenReader {
     private final ErrorHandler errorHandler;
@@ -142,17 +144,16 @@ public class TokenReader {
         errorHandler.handleError(message, line);
     }
 
-    public void string() {
+    public Optional<String> string() {
         advanceUntilCharOrEndOfLine('"');
 
         if (peek() == '\n' || isAtEnd()) {
             error("Unterminated string");
-            return;
+            return Optional.empty();
         }
         advance(); // closing '"'
 
-        String value = source.substring(start + 1, current - 1);
-        addToken(STRING, value);
+        return Optional.of(source.substring(start + 1, current - 1));
     }
 
     public void incrementLine() {

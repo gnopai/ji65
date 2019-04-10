@@ -22,7 +22,14 @@ class ScannerIntegrationTest {
 
         assertEquals(List.of(
                 new Token(DIRECTIVE, ".segment", DirectiveType.SEGMENT, 1),
-                new Token(STRING, "\"ZEROPAGE\"", "ZEROPAGE", 1),
+                new Token(CHAR, "\"ZEROPAGE\"", (int) 'Z', 1),
+                new Token(CHAR, "\"ZEROPAGE\"", (int) 'E', 1),
+                new Token(CHAR, "\"ZEROPAGE\"", (int) 'R', 1),
+                new Token(CHAR, "\"ZEROPAGE\"", (int) 'O', 1),
+                new Token(CHAR, "\"ZEROPAGE\"", (int) 'P', 1),
+                new Token(CHAR, "\"ZEROPAGE\"", (int) 'A', 1),
+                new Token(CHAR, "\"ZEROPAGE\"", (int) 'G', 1),
+                new Token(CHAR, "\"ZEROPAGE\"", (int) 'E', 1),
                 new Token(EOL, "\n", null, 1),
                 new Token(IDENTIFIER, "NPC_MAX", null, 2),
                 new Token(EQUAL, "=", null, 2),
