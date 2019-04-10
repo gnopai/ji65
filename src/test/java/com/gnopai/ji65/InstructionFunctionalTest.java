@@ -1,11 +1,31 @@
 package com.gnopai.ji65;
 
+import com.gnopai.ji65.interpreter.EndProgramAtAddress;
+import com.gnopai.ji65.interpreter.EndProgramAtValue;
 import org.junit.jupiter.api.Test;
 
 import static com.gnopai.ji65.TestUtil.assembleAndRun;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InstructionFunctionalTest {
+
+    @Test
+    void testBrk() {
+        byte processorStatus = (byte) 0b01000000;
+        Cpu cpu = Cpu.builder()
+                .processorStatus(processorStatus)
+                .build();
+        cpu.setMemoryValue(new Address(0xFFFE), (byte) 0x00);
+        cpu.setMemoryValue(new Address(0xFFFF), (byte) 0x90);
+        cpu.setMemoryValue(new Address(0x9000), Opcode.SEC_IMPLICIT.getOpcode());
+        Address programEndAddress = new Address(0x9001);
+
+        assembleAndRun(cpu, new EndProgramAtAddress(programEndAddress), "brk");
+        assertTrue(cpu.isBreakCommandSet());
+        assertEquals(0x9001, cpu.getProgramCounter());
+        assertEquals(processorStatus, cpu.pullFromStack());
+        assertTrue(cpu.isCarryFlagSet());
+    }
 
     @Test
     void testClc() {
@@ -238,6 +258,25 @@ class InstructionFunctionalTest {
         assertFalse(cpu.isInterruptDisableSet()); // sei skipped over
         assertFalse(cpu.isDecimalModeSet()); // sed skipped over
         assertEquals((byte) 0xFF, cpu.getStackPointer());
+    }
+
+    @Test
+    void testRti() {
+        Cpu cpu = Cpu.builder().build();
+        cpu.setMemoryValue(new Address(0xFFFE), (byte) 0x00);
+        cpu.setMemoryValue(new Address(0xFFFF), (byte) 0x90);
+
+        byte accumulatorValue = (byte) 0xAB;
+        cpu.setMemoryValue(new Address(0x9000), Opcode.LDA_IMMEDIATE.getOpcode());
+        cpu.setMemoryValue(new Address(0x9001), accumulatorValue);
+        cpu.setMemoryValue(new Address(0x9002), Opcode.CLC_IMPLICIT.getOpcode());
+        cpu.setMemoryValue(new Address(0x9003), Opcode.RTI_IMPLICIT.getOpcode());
+
+        assembleAndRun(cpu, new EndProgramAtValue((byte) 0xFF), "sec", "brk", "sed", ".byte $FF");
+        assertFalse(cpu.isBreakCommandSet()); // cleared after break
+        assertTrue(cpu.isCarryFlagSet()); // flags should get restored from pre-break
+        assertTrue(cpu.isDecimalModeSet()); // set after break
+        assertEquals(accumulatorValue, cpu.getAccumulator()); // set during break
     }
 
     @Test

@@ -48,7 +48,7 @@ public class TestUtil {
                                 .name("PRG")
                                 .memoryType(MemoryType.READ_ONLY)
                                 .startAddress(DEFAULT_PROGRAM_START_ADDRESS)
-                                .size(0x8000)
+                                .size(0x4000)
                                 .build()
                 ))
                 .segmentConfigs(List.of(
