@@ -4,6 +4,7 @@ import com.gnopai.ji65.assembler.*;
 import com.gnopai.ji65.config.ProgramConfig;
 import com.gnopai.ji65.interpreter.InstructionExecutor;
 import com.gnopai.ji65.interpreter.Interpreter;
+import com.gnopai.ji65.interpreter.NeverEndProgram;
 import com.gnopai.ji65.interpreter.ProgramEndStrategy;
 import com.gnopai.ji65.interpreter.address.AddressingModeFactory;
 import com.gnopai.ji65.interpreter.instruction.InstructionFactory;
@@ -36,6 +37,10 @@ public class Ji65 {
                         new AddressingModeFactory()
                 )
         );
+    }
+
+    public void run(Program program, Cpu cpu) {
+        run(program, cpu, new NeverEndProgram());
     }
 
     public void run(Program program, Cpu cpu, ProgramEndStrategy programEndStrategy) {
