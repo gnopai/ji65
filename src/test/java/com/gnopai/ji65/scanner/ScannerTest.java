@@ -57,7 +57,16 @@ class ScannerTest {
         String text = "\"Ima String\"";
         List<Token> tokens = runScanner(text);
         List<Token> expectedTokens = List.of(
-                new Token(STRING, text, "Ima String", 1),
+                new Token(CHAR, text, (int) 'I', 1),
+                new Token(CHAR, text, (int) 'm', 1),
+                new Token(CHAR, text, (int) 'a', 1),
+                new Token(CHAR, text, (int) ' ', 1),
+                new Token(CHAR, text, (int) 'S', 1),
+                new Token(CHAR, text, (int) 't', 1),
+                new Token(CHAR, text, (int) 'r', 1),
+                new Token(CHAR, text, (int) 'i', 1),
+                new Token(CHAR, text, (int) 'n', 1),
+                new Token(CHAR, text, (int) 'g', 1),
                 new Token(EOF, "", null, 1)
         );
         assertEquals(expectedTokens, tokens);

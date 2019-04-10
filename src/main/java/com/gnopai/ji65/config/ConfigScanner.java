@@ -43,7 +43,7 @@ public class ConfigScanner {
                 tokenReader.advanceUntilNextLine();
                 break;
             case '"':
-                tokenReader.string();
+                string();
                 break;
             case '0':
             case '1':
@@ -78,6 +78,11 @@ public class ConfigScanner {
                     tokenReader.error("Unexpected character '" + c + "'");
                 }
         }
+    }
+
+    private void string() {
+        tokenReader.string()
+                .ifPresent(string -> tokenReader.addToken(STRING, string));
     }
 
     private void identifier() {

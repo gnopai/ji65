@@ -104,6 +104,37 @@ class TokenConsumerTest {
     }
 
     @Test
+    void testConsumeString() {
+        List<Token> tokens = List.of(
+                token(CHAR, (int) 'W'),
+                token(CHAR, (int) 'h'),
+                token(CHAR, (int) 'e'),
+                token(CHAR, (int) 'e'),
+                token(EOF)
+        );
+        TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
+
+        String string = consumer.consumeString("expected a string");
+        assertEquals("Whee", string);
+        assertFalse(consumer.hasError());
+    }
+
+    @Test
+    void testConsumeString_noMatch() {
+        List<Token> tokens = List.of(
+                token(NUMBER, 5),
+                token(EOF)
+        );
+        TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
+
+        String errorMessage = "expected a string";
+        ParseException parseException = assertThrows(ParseException.class, () -> consumer.consumeString(errorMessage));
+        assertEquals(NUMBER, parseException.getTokenType());
+        assertEquals(errorMessage, parseException.getMessage());
+        assertTrue(consumer.hasError());
+    }
+
+    @Test
     void testMatch_true() {
         List<Token> tokens = List.of(
                 token(NUMBER),
@@ -188,5 +219,9 @@ class TokenConsumerTest {
 
     private Token token(TokenType type) {
         return new Token(type, null, null, 0);
+    }
+
+    private Token token(TokenType type, Object value) {
+        return new Token(type, value.toString(), value, 0);
     }
 }

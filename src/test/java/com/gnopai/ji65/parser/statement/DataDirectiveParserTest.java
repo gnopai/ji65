@@ -42,6 +42,30 @@ class DataDirectiveParserTest {
 
     @ParameterizedTest
     @MethodSource("typeProvider")
+    void testString(DirectiveType directiveType) {
+        Statement result = parse(errorHandler,
+                token(DIRECTIVE, directiveType),
+                token(CHAR, (int) 'W'),
+                token(CHAR, (int) 'h'),
+                token(CHAR, (int) 'e'),
+                token(CHAR, (int) 'e'),
+                token(EOL)
+        );
+
+        DirectiveStatement expectedResult = DirectiveStatement.builder()
+                .type(directiveType)
+                .expressions(List.of(
+                        new PrimaryExpression(CHAR, 0x57),
+                        new PrimaryExpression(CHAR, 0x68),
+                        new PrimaryExpression(CHAR, 0x65),
+                        new PrimaryExpression(CHAR, 0x65)
+                ))
+                .build();
+        assertEquals(expectedResult, result);
+    }
+
+    @ParameterizedTest
+    @MethodSource("typeProvider")
     void testMultipleExpressions(DirectiveType directiveType) {
         Statement result = parse(errorHandler,
                 token(DIRECTIVE, directiveType),
@@ -58,6 +82,37 @@ class DataDirectiveParserTest {
                 .expressions(List.of(
                         new PrimaryExpression(NUMBER, 32),
                         new PrimaryExpression(NUMBER, 64),
+                        new PrimaryExpression(NUMBER, 96)
+                ))
+                .build();
+        assertEquals(expectedResult, result);
+    }
+
+    @ParameterizedTest
+    @MethodSource("typeProvider")
+    void testMultipleExpressionsIncludingString(DirectiveType directiveType) {
+        Statement result = parse(errorHandler,
+                token(DIRECTIVE, directiveType),
+                token(NUMBER, 32),
+                token(COMMA),
+                token(NUMBER, 64),
+                token(COMMA),
+                token(CHAR, (int) 'A'),
+                token(CHAR, (int) 'b'),
+                token(CHAR, (int) 'c'),
+                token(COMMA),
+                token(NUMBER, 96),
+                token(EOL)
+        );
+
+        DirectiveStatement expectedResult = DirectiveStatement.builder()
+                .type(directiveType)
+                .expressions(List.of(
+                        new PrimaryExpression(NUMBER, 32),
+                        new PrimaryExpression(NUMBER, 64),
+                        new PrimaryExpression(CHAR, 0x41),
+                        new PrimaryExpression(CHAR, 0x62),
+                        new PrimaryExpression(CHAR, 0x63),
                         new PrimaryExpression(NUMBER, 96)
                 ))
                 .build();
@@ -97,6 +152,6 @@ class DataDirectiveParserTest {
                 token(INSTRUCTION)
         ));
         assertEquals(INSTRUCTION, exception.getTokenType());
-        assertEquals("Expected end of line", exception.getMessage());
+        assertEquals("Failed to parse token", exception.getMessage());
     }
 }

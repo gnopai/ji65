@@ -2,7 +2,8 @@ package com.gnopai.ji65.scanner;
 
 public enum TokenType {
     IDENTIFIER,
-    STRING, // TODO I think these need to be chars, not strings...since it's one-char-per byte you know
+    STRING,
+    CHAR,
     NUMBER,
     INSTRUCTION,
     DIRECTIVE,

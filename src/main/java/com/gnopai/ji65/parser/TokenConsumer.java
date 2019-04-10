@@ -39,6 +39,19 @@ public class TokenConsumer {
         throw error(next, message);
     }
 
+    public String consumeString(String errorMessage) {
+        StringBuilder stringBuilder = new StringBuilder();
+        while (match(TokenType.CHAR)) {
+            stringBuilder.append((char) (int) current.getValue());
+        }
+        String string = stringBuilder.toString();
+
+        if (string.isEmpty()) {
+            throw error(next, errorMessage);
+        }
+        return string;
+    }
+
     public boolean match(TokenType tokenType) {
         if (tokenType.equals(next.getType())) {
             consume();

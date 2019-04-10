@@ -97,6 +97,10 @@ public class Parser {
         return tokenConsumer.consume(tokenType, errorMessage);
     }
 
+    public String consumeString(String errorMessage) {
+        return tokenConsumer.consumeString(errorMessage);
+    }
+
     public boolean match(TokenType tokenType) {
         return tokenConsumer.match(tokenType);
     }
