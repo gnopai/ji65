@@ -431,4 +431,73 @@ class InstructionFunctionalTest {
         assembleAndRun(cpu, "sty $5432");
         assertEquals((byte) 0x66, cpu.getMemoryValue(new Address(0x5432)));
     }
+
+    @Test
+    void testTax() {
+        byte value = (byte) 0xAB;
+        Cpu cpu = Cpu.builder()
+                .accumulator(value)
+                .x((byte) 0)
+                .build();
+        assembleAndRun(cpu, "tax");
+        assertEquals(value, cpu.getAccumulator());
+        assertEquals(value, cpu.getX());
+    }
+
+    @Test
+    void testTay() {
+        byte value = (byte) 0xAB;
+        Cpu cpu = Cpu.builder()
+                .accumulator(value)
+                .y((byte) 0)
+                .build();
+        assembleAndRun(cpu, "tay");
+        assertEquals(value, cpu.getAccumulator());
+        assertEquals(value, cpu.getY());
+    }
+
+    @Test
+    void testTsx() {
+        Cpu cpu = Cpu.builder()
+                .x((byte) 0)
+                .build();
+        assembleAndRun(cpu, "tsx");
+        assertEquals((byte) 0xFF, cpu.getStackPointer());
+        assertEquals((byte) 0xFF, cpu.getX());
+    }
+
+    @Test
+    void testTxa() {
+        byte value = (byte) 0xAB;
+        Cpu cpu = Cpu.builder()
+                .x(value)
+                .accumulator((byte) 0)
+                .build();
+        assembleAndRun(cpu, "txa");
+        assertEquals(value, cpu.getX());
+        assertEquals(value, cpu.getAccumulator());
+    }
+
+    @Test
+    void testTxs() {
+        byte value = (byte) 0xF0;
+        Cpu cpu = Cpu.builder()
+                .x(value)
+                .build();
+        assembleAndRun(cpu, "txs");
+        assertEquals(value, cpu.getX());
+        assertEquals(value, cpu.getStackPointer());
+    }
+
+    @Test
+    void testTya() {
+        byte value = (byte) 0xAB;
+        Cpu cpu = Cpu.builder()
+                .y(value)
+                .accumulator((byte) 0)
+                .build();
+        assembleAndRun(cpu, "tya");
+        assertEquals(value, cpu.getY());
+        assertEquals(value, cpu.getAccumulator());
+    }
 }
