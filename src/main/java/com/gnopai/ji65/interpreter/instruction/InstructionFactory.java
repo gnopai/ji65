@@ -25,7 +25,13 @@ public class InstructionFactory extends TypeFactory<InstructionType, Instruction
                 new Sei(),
                 new Sta(),
                 new Stx(),
-                new Sty()
+                new Sty(),
+                new Tax(),
+                new Tay(),
+                new Tsx(),
+                new Txa(),
+                new Txs(),
+                new Tya()
         ));
     }
 }
