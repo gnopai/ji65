@@ -12,7 +12,7 @@ import static java.util.stream.Collectors.toUnmodifiableMap;
 
 @Getter
 public enum InstructionType {
-    ADC("adc"), // TODO
+    ADC("adc"),
     AND("and"), // TODO
     ASL("asl"), // TODO
     BCC("bcc"), // TODO
@@ -22,7 +22,7 @@ public enum InstructionType {
     BMI("bmi"), // TODO
     BNE("bne"), // TODO
     BPL("bpl"), // TODO
-    BRK("brk"), // TODO
+    BRK("brk"),
     BVC("bvc"), // TODO
     BVS("bvs"), // TODO
     CLC("clc"),
@@ -53,21 +53,21 @@ public enum InstructionType {
     PLP("plp"), // TODO
     ROL("rol"), // TODO
     ROR("ror"), // TODO
-    RTI("rti"), // TODO
+    RTI("rti"),
     RTS("rts"),
-    SBC("sbc"), // TODO
+    SBC("sbc"),
     SEC("sec"),
     SED("sed"),
     SEI("sei"),
     STA("sta"),
     STX("stx"),
     STY("sty"),
-    TAX("tax"), // TODO
-    TAY("tay"), // TODO
-    TSX("tsx"), // TODO
-    TXA("txa"), // TODO
-    TXS("txs"), // TODO
-    TYA("tya"), // TODO
+    TAX("tax"),
+    TAY("tay"),
+    TSX("tsx"),
+    TXA("txa"),
+    TXS("txs"),
+    TYA("tya"),
     ;
 
     private final String identifier;

@@ -10,6 +10,19 @@ import static org.junit.jupiter.api.Assertions.*;
 class InstructionFunctionalTest {
 
     @Test
+    void testAdc() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x44)
+                .build();
+        cpu.setCarryFlag(true);
+        assembleAndRun(cpu, "adc #$22");
+        assertEquals((byte) 0x67, cpu.getAccumulator());
+        assertFalse(cpu.isCarryFlagSet());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
     void testBrk() {
         byte processorStatus = (byte) 0b01000000;
         Cpu cpu = Cpu.builder()
@@ -277,6 +290,18 @@ class InstructionFunctionalTest {
         assertTrue(cpu.isCarryFlagSet()); // flags should get restored from pre-break
         assertTrue(cpu.isDecimalModeSet()); // set after break
         assertEquals(accumulatorValue, cpu.getAccumulator()); // set during break
+    }
+
+    @Test
+    void testSbc() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x44)
+                .build();
+        assembleAndRun(cpu, "sbc #$30");
+        assertEquals((byte) 0x13, cpu.getAccumulator());
+        assertTrue(cpu.isCarryFlagSet());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
     }
 
     @Test
