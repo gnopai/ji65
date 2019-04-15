@@ -73,6 +73,39 @@ class InstructionFunctionalTest {
     }
 
     @Test
+    void testCmp() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x45)
+                .build();
+        assembleAndRun(cpu, "cmp #$44");
+        assertTrue(cpu.isCarryFlagSet());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testCpx() {
+        Cpu cpu = Cpu.builder()
+                .x((byte) 0x45)
+                .build();
+        assembleAndRun(cpu, "cpx #$44");
+        assertTrue(cpu.isCarryFlagSet());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testCpy() {
+        Cpu cpu = Cpu.builder()
+                .y((byte) 0x45)
+                .build();
+        assembleAndRun(cpu, "cpy #$44");
+        assertTrue(cpu.isCarryFlagSet());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
     void testJmpAbsolute() {
         Cpu cpu = Cpu.builder().build();
         assembleAndRun(cpu, "jmp $1234");
