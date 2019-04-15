@@ -26,5 +26,13 @@ public class Sbc implements Instruction {
         cpu.setAccumulator(resultByte);
         cpu.updateNegativeFlag(resultByte);
         cpu.updateZeroFlag(resultByte);
+
+        boolean overflowFlag = calculateOverflow(accumulatorValue, operandValue, toUnsignedInt(resultByte));
+        cpu.setOverflowFlag(overflowFlag);
+    }
+
+    private boolean calculateOverflow(int firstValue, int secondValue, int result) {
+        int secondValueComplement = 255 - secondValue;
+        return ((firstValue ^ result) & (secondValueComplement ^ result) & 0x80) == 0x80;
     }
 }

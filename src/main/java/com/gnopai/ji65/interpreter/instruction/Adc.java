@@ -26,5 +26,12 @@ public class Adc implements Instruction {
         cpu.setAccumulator(resultByte);
         cpu.updateNegativeFlag(resultByte);
         cpu.updateZeroFlag(resultByte);
+
+        boolean overflowFlag = calculateOverflow(accumulatorValue, operandValue, toUnsignedInt(resultByte));
+        cpu.setOverflowFlag(overflowFlag);
+    }
+
+    private boolean calculateOverflow(int firstValue, int secondValue, int result) {
+        return ((firstValue ^ result) & (secondValue ^ result) & 0x80) == 0x80;
     }
 }
