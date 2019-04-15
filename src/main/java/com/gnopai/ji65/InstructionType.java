@@ -29,9 +29,9 @@ public enum InstructionType {
     CLD("cld"),
     CLI("cli"),
     CLV("clv"),
-    CMP("cmp"), // TODO
-    CPX("cpx"), // TODO
-    CPY("cpy"), // TODO
+    CMP("cmp"),
+    CPX("cpx"),
+    CPY("cpy"),
     DEC("dec"), // TODO
     DEX("dex"), // TODO
     DEY("dey"), // TODO
