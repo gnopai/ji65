@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum AddressingModeType {
     IMPLICIT(1),
-    ACCUMULATOR(1), // TODO
+    ACCUMULATOR(1),
     IMMEDIATE(2),
     ZERO_PAGE(2),
     ZERO_PAGE_X(2),
