@@ -47,10 +47,10 @@ public enum InstructionType {
     LSR("lsr"),
     NOP("nop"), // TODO
     ORA("ora"), // TODO
-    PHA("pha"), // TODO
-    PHP("php"), // TODO
-    PLA("pla"), // TODO
-    PLP("plp"), // TODO
+    PHA("pha"),
+    PHP("php"),
+    PLA("pla"),
+    PLP("plp"),
     ROL("rol"),
     ROR("ror"),
     RTI("rti"),
