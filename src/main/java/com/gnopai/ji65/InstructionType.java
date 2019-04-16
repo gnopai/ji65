@@ -14,7 +14,7 @@ import static java.util.stream.Collectors.toUnmodifiableMap;
 public enum InstructionType {
     ADC("adc"),
     AND("and"), // TODO
-    ASL("asl"), // TODO
+    ASL("asl"),
     BCC("bcc"), // TODO
     BCS("bcs"), // TODO
     BEQ("beq"), // TODO
@@ -44,15 +44,15 @@ public enum InstructionType {
     LDA("lda"),
     LDX("ldx"),
     LDY("ldy"),
-    LSR("lsr"), // TODO
+    LSR("lsr"),
     NOP("nop"), // TODO
     ORA("ora"), // TODO
     PHA("pha"), // TODO
     PHP("php"), // TODO
     PLA("pla"), // TODO
     PLP("plp"), // TODO
-    ROL("rol"), // TODO
-    ROR("ror"), // TODO
+    ROL("rol"),
+    ROR("ror"),
     RTI("rti"),
     RTS("rts"),
     SBC("sbc"),
