@@ -32,13 +32,13 @@ public enum InstructionType {
     CMP("cmp"),
     CPX("cpx"),
     CPY("cpy"),
-    DEC("dec"), // TODO
-    DEX("dex"), // TODO
-    DEY("dey"), // TODO
+    DEC("dec"),
+    DEX("dex"),
+    DEY("dey"),
     EOR("eor"), // TODO
-    INC("inc"), // TODO
-    INX("inx"), // TODO
-    INY("iny"), // TODO
+    INC("inc"),
+    INX("inx"),
+    INY("iny"),
     JMP("jmp"),
     JSR("jsr"),
     LDA("lda"),

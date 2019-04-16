@@ -425,6 +425,146 @@ class InstructionFunctionalTest {
     }
 
     @Test
+    void testDecZeroPage() {
+        Cpu cpu = Cpu.builder().build();
+        Address address = new Address(0x0035);
+        cpu.setMemoryValue(address, (byte) 0x78);
+        assembleAndRun(cpu, "dec $35");
+        assertEquals((byte) 0x77, cpu.getMemoryValue(address));
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testDecZeroPageX() {
+        Cpu cpu = Cpu.builder()
+                .x((byte) 7)
+                .build();
+        Address address = new Address(0x0039);
+        cpu.setMemoryValue(address, (byte) 0x78);
+        assembleAndRun(cpu, "dec $32,X");
+        assertEquals((byte) 0x77, cpu.getMemoryValue(address));
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testDecAbsolute() {
+        Cpu cpu = Cpu.builder().build();
+        Address address = new Address(0x1234);
+        cpu.setMemoryValue(address, (byte) 0x78);
+        assembleAndRun(cpu, "dec $1234");
+        assertEquals((byte) 0x77, cpu.getMemoryValue(address));
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testDecAbsoluteX() {
+        Cpu cpu = Cpu.builder()
+                .x((byte) 7)
+                .build();
+        Address address = new Address(0x1239);
+        cpu.setMemoryValue(address, (byte) 0x78);
+        assembleAndRun(cpu, "dec $1232,X");
+        assertEquals((byte) 0x77, cpu.getMemoryValue(address));
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testDex() {
+        Cpu cpu = Cpu.builder()
+                .x((byte) 0x77)
+                .build();
+        assembleAndRun(cpu, "dex");
+        assertEquals((byte) 0x76, cpu.getX());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testDey() {
+        Cpu cpu = Cpu.builder()
+                .y((byte) 0x77)
+                .build();
+        assembleAndRun(cpu, "dey");
+        assertEquals((byte) 0x76, cpu.getY());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testIncZeroPage() {
+        Cpu cpu = Cpu.builder().build();
+        Address address = new Address(0x0035);
+        cpu.setMemoryValue(address, (byte) 0x78);
+        assembleAndRun(cpu, "inc $35");
+        assertEquals((byte) 0x79, cpu.getMemoryValue(address));
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testIncZeroPageX() {
+        Cpu cpu = Cpu.builder()
+                .x((byte) 7)
+                .build();
+        Address address = new Address(0x0039);
+        cpu.setMemoryValue(address, (byte) 0x78);
+        assembleAndRun(cpu, "inc $32,X");
+        assertEquals((byte) 0x79, cpu.getMemoryValue(address));
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testIncAbsolute() {
+        Cpu cpu = Cpu.builder().build();
+        Address address = new Address(0x1234);
+        cpu.setMemoryValue(address, (byte) 0x78);
+        assembleAndRun(cpu, "inc $1234");
+        assertEquals((byte) 0x79, cpu.getMemoryValue(address));
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testIncAbsoluteX() {
+        Cpu cpu = Cpu.builder()
+                .x((byte) 7)
+                .build();
+        Address address = new Address(0x1239);
+        cpu.setMemoryValue(address, (byte) 0x78);
+        assembleAndRun(cpu, "inc $1232,X");
+        assertEquals((byte) 0x79, cpu.getMemoryValue(address));
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testInx() {
+        Cpu cpu = Cpu.builder()
+                .x((byte) 0x77)
+                .build();
+        assembleAndRun(cpu, "inx");
+        assertEquals((byte) 0x78, cpu.getX());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testIny() {
+        Cpu cpu = Cpu.builder()
+                .y((byte) 0x77)
+                .build();
+        assembleAndRun(cpu, "iny");
+        assertEquals((byte) 0x78, cpu.getY());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
     void testJmpAbsolute() {
         Cpu cpu = Cpu.builder().build();
         assembleAndRun(cpu, "jmp $1234");
