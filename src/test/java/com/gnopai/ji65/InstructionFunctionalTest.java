@@ -670,6 +670,50 @@ class InstructionFunctionalTest {
     }
 
     @Test
+    void testPha() {
+        byte value = (byte) 0x48;
+        Cpu cpu = Cpu.builder()
+                .accumulator(value)
+                .build();
+        assembleAndRun(cpu, "pha");
+        assertEquals(value, cpu.getMemoryValue(new Address(0x01FF)));
+        assertEquals(value, cpu.pullFromStack());
+    }
+
+    @Test
+    void testPhp() {
+        byte value = (byte) 0x48;
+        Cpu cpu = Cpu.builder()
+                .processorStatus(value)
+                .build();
+        assembleAndRun(cpu, "php");
+        assertEquals(value, cpu.getMemoryValue(new Address(0x01FF)));
+        assertEquals(value, cpu.pullFromStack());
+    }
+
+    @Test
+    void testPla() {
+        byte value = (byte) 0x88;
+        Cpu cpu = Cpu.builder().build();
+        cpu.pushOntoStack(value);
+        assembleAndRun(cpu, "pla");
+        assertEquals(value, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertTrue(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testPlp() {
+        Cpu cpu = Cpu.builder()
+                .processorStatus((byte) 0xFF)
+                .build();
+        byte value = (byte) 0x88;
+        cpu.pushOntoStack(value);
+        assembleAndRun(cpu, "plp");
+        assertEquals(value, cpu.getProcessorStatus());
+    }
+
+    @Test
     void testRolAccumulator() {
         Cpu cpu = Cpu.builder()
                 .accumulator((byte) 0b11001100)
