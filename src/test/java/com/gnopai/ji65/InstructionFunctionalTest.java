@@ -130,6 +130,118 @@ class InstructionFunctionalTest {
     }
 
     @Test
+    void testAndImmediate() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x4F)
+                .build();
+        cpu.setCarryFlag(true);
+        assembleAndRun(cpu, "and #$F4");
+        assertEquals((byte) 0x44, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testAndZeroPage() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x4F)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x66), (byte) 0x45);
+        assembleAndRun(cpu, "and $66");
+        assertEquals((byte) 0x45, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testAndZeroPageX() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x4F)
+                .x((byte) 2)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x24), (byte) 0xF6);
+        assembleAndRun(cpu, "and $22,X");
+        assertEquals((byte) 0x46, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testAndAbsolute() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x4F)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x1234), (byte) 0x14);
+        assembleAndRun(cpu, "and $1234");
+        assertEquals((byte) 0x04, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testAndAbsoluteX() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x4F)
+                .x((byte) 3)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x1237), (byte) 0xF2);
+        assembleAndRun(cpu, "and $1234,X");
+        assertEquals((byte) 0x42, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testAndAbsoluteY() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x4F)
+                .y((byte) 5)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x1239), (byte) 0xFF);
+        assembleAndRun(cpu, "and $1234,Y");
+        assertEquals((byte) 0x4F, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testAndIndexedIndirect() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x4F)
+                .x((byte) 5)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x0039), (byte) 0x45);
+        cpu.setMemoryValue(new Address(0x003A), (byte) 0x23);
+        cpu.setMemoryValue(new Address(0x2345), (byte) 0xF9);
+        assembleAndRun(cpu, "and ($34,X)");
+        assertEquals((byte) 0x49, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testAndIndirectIndexed() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x4F)
+                .y((byte) 4)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x0034), (byte) 0x45);
+        cpu.setMemoryValue(new Address(0x0035), (byte) 0x23);
+        cpu.setMemoryValue(new Address(0x2349), (byte) 0x08);
+        assembleAndRun(cpu, "and ($34),Y");
+        assertEquals((byte) 0x08, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+    
+    @Test
     void testAslAccumulator() {
         Cpu cpu = Cpu.builder()
                 .accumulator((byte) 0b11001100)
@@ -495,6 +607,118 @@ class InstructionFunctionalTest {
     }
 
     @Test
+    void testEorImmediate() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0xFF)
+                .build();
+        cpu.setCarryFlag(true);
+        assembleAndRun(cpu, "eor #$85");
+        assertEquals((byte) 0x7A, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testEorZeroPage() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0xFF)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x66), (byte) 0x85);
+        assembleAndRun(cpu, "eor $66");
+        assertEquals((byte) 0x7A, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testEorZeroPageX() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0xFF)
+                .x((byte) 2)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x24), (byte) 0x85);
+        assembleAndRun(cpu, "eor $22,X");
+        assertEquals((byte) 0x7A, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testEorAbsolute() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0xFF)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x1234), (byte) 0x85);
+        assembleAndRun(cpu, "eor $1234");
+        assertEquals((byte) 0x7A, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testEorAbsoluteX() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0xFF)
+                .x((byte) 3)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x1237), (byte) 0x85);
+        assembleAndRun(cpu, "eor $1234,X");
+        assertEquals((byte) 0x7A, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testEorAbsoluteY() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0xFF)
+                .y((byte) 5)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x1239), (byte) 0x85);
+        assembleAndRun(cpu, "eor $1234,Y");
+        assertEquals((byte) 0x7A, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testEorIndexedIndirect() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0xFF)
+                .x((byte) 5)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x0039), (byte) 0x45);
+        cpu.setMemoryValue(new Address(0x003A), (byte) 0x23);
+        cpu.setMemoryValue(new Address(0x2345), (byte) 0x85);
+        assembleAndRun(cpu, "eor ($34,X)");
+        assertEquals((byte) 0x7A, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testEorIndirectIndexed() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0xFF)
+                .y((byte) 4)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x0034), (byte) 0x45);
+        cpu.setMemoryValue(new Address(0x0035), (byte) 0x23);
+        cpu.setMemoryValue(new Address(0x2349), (byte) 0x85);
+        assembleAndRun(cpu, "eor ($34),Y");
+        assertEquals((byte) 0x7A, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
     void testIncZeroPage() {
         Cpu cpu = Cpu.builder().build();
         Address address = new Address(0x0035);
@@ -805,6 +1029,118 @@ class InstructionFunctionalTest {
         assembleAndRun(cpu, "lsr $1234,X");
         assertEquals((byte) 0b01100110, cpu.getMemoryValue(address));
         assertTrue(cpu.isCarryFlagSet());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testOraImmediate() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x4F)
+                .build();
+        cpu.setCarryFlag(true);
+        assembleAndRun(cpu, "ora #$74");
+        assertEquals((byte) 0x7F, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testOraZeroPage() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x4F)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x66), (byte) 0x45);
+        assembleAndRun(cpu, "ora $66");
+        assertEquals((byte) 0x4F, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testOraZeroPageX() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x42)
+                .x((byte) 2)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x24), (byte) 0xF6);
+        assembleAndRun(cpu, "ora $22,X");
+        assertEquals((byte) 0xF6, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertTrue(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testOraAbsolute() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x22)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x1234), (byte) 0x11);
+        assembleAndRun(cpu, "ora $1234");
+        assertEquals((byte) 0x33, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testOraAbsoluteX() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x0F)
+                .x((byte) 3)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x1237), (byte) 0x72);
+        assembleAndRun(cpu, "ora $1234,X");
+        assertEquals((byte) 0x7F, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testOraAbsoluteY() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x19)
+                .y((byte) 5)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x1239), (byte) 0x2F);
+        assembleAndRun(cpu, "ora $1234,Y");
+        assertEquals((byte) 0x3F, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testOraIndexedIndirect() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x4F)
+                .x((byte) 5)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x0039), (byte) 0x45);
+        cpu.setMemoryValue(new Address(0x003A), (byte) 0x23);
+        cpu.setMemoryValue(new Address(0x2345), (byte) 0x29);
+        assembleAndRun(cpu, "ora ($34,X)");
+        assertEquals((byte) 0x6F, cpu.getAccumulator());
+        assertFalse(cpu.isZeroFlagSet());
+        assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testOraIndirectIndexed() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x22)
+                .y((byte) 4)
+                .build();
+        cpu.setCarryFlag(true);
+        cpu.setMemoryValue(new Address(0x0034), (byte) 0x45);
+        cpu.setMemoryValue(new Address(0x0035), (byte) 0x23);
+        cpu.setMemoryValue(new Address(0x2349), (byte) 0x19);
+        assembleAndRun(cpu, "ora ($34),Y");
+        assertEquals((byte) 0x3B, cpu.getAccumulator());
         assertFalse(cpu.isZeroFlagSet());
         assertFalse(cpu.isNegativeFlagSet());
     }
