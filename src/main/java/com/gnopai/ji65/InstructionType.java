@@ -13,7 +13,7 @@ import static java.util.stream.Collectors.toUnmodifiableMap;
 @Getter
 public enum InstructionType {
     ADC("adc"),
-    AND("and"), // TODO
+    AND("and"),
     ASL("asl"),
     BCC("bcc"), // TODO
     BCS("bcs"), // TODO
@@ -35,7 +35,7 @@ public enum InstructionType {
     DEC("dec"),
     DEX("dex"),
     DEY("dey"),
-    EOR("eor"), // TODO
+    EOR("eor"),
     INC("inc"),
     INX("inx"),
     INY("iny"),
@@ -46,7 +46,7 @@ public enum InstructionType {
     LDY("ldy"),
     LSR("lsr"),
     NOP("nop"), // TODO
-    ORA("ora"), // TODO
+    ORA("ora"),
     PHA("pha"),
     PHP("php"),
     PLA("pla"),

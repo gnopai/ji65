@@ -9,6 +9,7 @@ public class InstructionFactory extends TypeFactory<InstructionType, Instruction
     public InstructionFactory() {
         super(InstructionType.class, Instruction::getInstructionType, List.of(
                 new Adc(),
+                new And(),
                 new Asl(),
                 new Brk(),
                 new Clc(),
@@ -21,6 +22,7 @@ public class InstructionFactory extends TypeFactory<InstructionType, Instruction
                 new Dec(),
                 new Dex(),
                 new Dey(),
+                new Eor(),
                 new Inc(),
                 new Inx(),
                 new Iny(),
@@ -30,6 +32,7 @@ public class InstructionFactory extends TypeFactory<InstructionType, Instruction
                 new Ldx(),
                 new Ldy(),
                 new Lsr(),
+                new Ora(),
                 new Pha(),
                 new Php(),
                 new Pla(),
