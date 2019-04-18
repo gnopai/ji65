@@ -18,7 +18,7 @@ public enum InstructionType {
     BCC("bcc"), // TODO
     BCS("bcs"), // TODO
     BEQ("beq"), // TODO
-    BIT("bit"), // TODO
+    BIT("bit"),
     BMI("bmi"), // TODO
     BNE("bne"), // TODO
     BPL("bpl"), // TODO
@@ -45,7 +45,7 @@ public enum InstructionType {
     LDX("ldx"),
     LDY("ldy"),
     LSR("lsr"),
-    NOP("nop"), // TODO
+    NOP("nop"),
     ORA("ora"),
     PHA("pha"),
     PHP("php"),
