@@ -4,6 +4,7 @@ import com.gnopai.ji65.interpreter.EndProgramAtAddress;
 import com.gnopai.ji65.interpreter.EndProgramAtValue;
 import org.junit.jupiter.api.Test;
 
+import static com.gnopai.ji65.TestUtil.DEFAULT_PROGRAM_START_ADDRESS;
 import static com.gnopai.ji65.TestUtil.assembleAndRun;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -302,6 +303,32 @@ class InstructionFunctionalTest {
         assertEquals((byte) 0b10011000, cpu.getMemoryValue(address));
         assertTrue(cpu.isCarryFlagSet());
         assertFalse(cpu.isZeroFlagSet());
+        assertTrue(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testBitZeroPage() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x0F)
+                .build();
+        Address address = new Address(0x0034);
+        cpu.setMemoryValue(address, (byte) 0xC0);
+        assembleAndRun(cpu, "bit $34");
+        assertTrue(cpu.isZeroFlagSet());
+        assertTrue(cpu.isOverflowFlagSet());
+        assertTrue(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testBitAbsolute() {
+        Cpu cpu = Cpu.builder()
+                .accumulator((byte) 0x0F)
+                .build();
+        Address address = new Address(0x1234);
+        cpu.setMemoryValue(address, (byte) 0xC0);
+        assembleAndRun(cpu, "bit $1234");
+        assertTrue(cpu.isZeroFlagSet());
+        assertTrue(cpu.isOverflowFlagSet());
         assertTrue(cpu.isNegativeFlagSet());
     }
 
@@ -1031,6 +1058,13 @@ class InstructionFunctionalTest {
         assertTrue(cpu.isCarryFlagSet());
         assertFalse(cpu.isZeroFlagSet());
         assertFalse(cpu.isNegativeFlagSet());
+    }
+
+    @Test
+    void testNop() {
+        Cpu cpu = Cpu.builder().build();
+        assembleAndRun(cpu, "nop");
+        assertEquals(DEFAULT_PROGRAM_START_ADDRESS.plus(1).getValue(), cpu.getProgramCounter());
     }
 
     @Test
