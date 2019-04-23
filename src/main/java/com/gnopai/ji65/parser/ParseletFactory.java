@@ -37,6 +37,7 @@ public class ParseletFactory {
             TokenType.TILDE, new PrefixOperatorParselet(Precedence.UNARY),
             TokenType.NUMBER, new PrimaryParselet(),
             TokenType.CHAR, new PrimaryParselet(),
+            TokenType.STAR, new IdentifierParselet(),
             TokenType.IDENTIFIER, new IdentifierParselet()
     );
 

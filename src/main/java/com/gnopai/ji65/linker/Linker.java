@@ -45,8 +45,11 @@ public class Linker implements SegmentDataVisitor {
 
     @Override
     public void visit(InstructionData instructionData) {
+        // TODO scoped/nested environments instead of this define-undefine business?
+        environment.define("*", programBuilder.getCurrentIndex());
         programBuilder.bytes(instructionData.getOpcode().getOpcode());
         link(instructionData.getOperand());
+        environment.undefine("*");
     }
 
     @Override
