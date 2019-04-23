@@ -11,6 +11,8 @@ public class InstructionFactory extends TypeFactory<InstructionType, Instruction
                 new Adc(),
                 new And(),
                 new Asl(),
+                new Bcc(),
+                new Bcs(),
                 new Bit(),
                 new Brk(),
                 new Clc(),

@@ -108,6 +108,10 @@ public class Cpu {
         return getProcessorStatus(0b10000000);
     }
 
+    public boolean isCarryFlagClear() {
+        return !isCarryFlagSet();
+    }
+
     public boolean isZeroFlagSet() {
         return getProcessorStatus(0b01000000);
     }
