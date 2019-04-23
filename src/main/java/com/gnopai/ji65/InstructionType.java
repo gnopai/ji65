@@ -15,16 +15,16 @@ public enum InstructionType {
     ADC("adc"),
     AND("and"),
     ASL("asl"),
-    BCC("bcc"), // TODO
-    BCS("bcs"), // TODO
-    BEQ("beq"), // TODO
+    BCC("bcc"),
+    BCS("bcs"),
+    BEQ("beq"),
     BIT("bit"),
-    BMI("bmi"), // TODO
-    BNE("bne"), // TODO
-    BPL("bpl"), // TODO
+    BMI("bmi"),
+    BNE("bne"),
+    BPL("bpl"),
     BRK("brk"),
-    BVC("bvc"), // TODO
-    BVS("bvs"), // TODO
+    BVC("bvc"),
+    BVS("bvs"),
     CLC("clc"),
     CLD("cld"),
     CLI("cli"),
