@@ -307,6 +307,51 @@ class InstructionFunctionalTest {
     }
 
     @Test
+    void testBcc() {
+        Cpu cpu = Cpu.builder().build();
+        cpu.setCarryFlag(false);
+        assembleAndRun(cpu,
+                "bcc end",
+                "sei",
+                "end:",
+                "sed"
+        );
+        assertFalse(cpu.isCarryFlagSet());
+        assertTrue(cpu.isDecimalModeSet());
+        assertFalse(cpu.isInterruptDisableSet());
+    }
+
+    @Test
+    void testBcs() {
+        Cpu cpu = Cpu.builder().build();
+        cpu.setCarryFlag(true);
+        assembleAndRun(cpu,
+                "bcs end",
+                "sei",
+                "end:",
+                "sed"
+        );
+        assertTrue(cpu.isCarryFlagSet());
+        assertTrue(cpu.isDecimalModeSet());
+        assertFalse(cpu.isInterruptDisableSet());
+    }
+
+    @Test
+    void testBeq() {
+        Cpu cpu = Cpu.builder().build();
+        cpu.setZeroFlag(true);
+        assembleAndRun(cpu,
+                "beq end",
+                "sei",
+                "end:",
+                "sed"
+        );
+        assertTrue(cpu.isZeroFlagSet());
+        assertTrue(cpu.isDecimalModeSet());
+        assertFalse(cpu.isInterruptDisableSet());
+    }
+
+    @Test
     void testBitZeroPage() {
         Cpu cpu = Cpu.builder()
                 .accumulator((byte) 0x0F)
@@ -333,6 +378,51 @@ class InstructionFunctionalTest {
     }
 
     @Test
+    void testBmi() {
+        Cpu cpu = Cpu.builder().build();
+        cpu.setNegativeFlag(true);
+        assembleAndRun(cpu,
+                "bmi end",
+                "sei",
+                "end:",
+                "sed"
+        );
+        assertTrue(cpu.isNegativeFlagSet());
+        assertTrue(cpu.isDecimalModeSet());
+        assertFalse(cpu.isInterruptDisableSet());
+    }
+
+    @Test
+    void testBne() {
+        Cpu cpu = Cpu.builder().build();
+        cpu.setZeroFlag(false);
+        assembleAndRun(cpu,
+                "bne end",
+                "sei",
+                "end:",
+                "sed"
+        );
+        assertFalse(cpu.isZeroFlagSet());
+        assertTrue(cpu.isDecimalModeSet());
+        assertFalse(cpu.isInterruptDisableSet());
+    }
+
+    @Test
+    void testBpl() {
+        Cpu cpu = Cpu.builder().build();
+        cpu.setNegativeFlag(false);
+        assembleAndRun(cpu,
+                "bpl end",
+                "sei",
+                "end:",
+                "sed"
+        );
+        assertFalse(cpu.isNegativeFlagSet());
+        assertTrue(cpu.isDecimalModeSet());
+        assertFalse(cpu.isInterruptDisableSet());
+    }
+
+    @Test
     void testBrk() {
         byte processorStatus = (byte) 0b01000000;
         Cpu cpu = Cpu.builder()
@@ -348,6 +438,36 @@ class InstructionFunctionalTest {
         assertEquals(0x9001, cpu.getProgramCounter());
         assertEquals(processorStatus, cpu.pullFromStack());
         assertTrue(cpu.isCarryFlagSet());
+    }
+
+    @Test
+    void testBvc() {
+        Cpu cpu = Cpu.builder().build();
+        cpu.setOverflowFlag(false);
+        assembleAndRun(cpu,
+                "bvc end",
+                "sei",
+                "end:",
+                "sed"
+        );
+        assertFalse(cpu.isOverflowFlagSet());
+        assertTrue(cpu.isDecimalModeSet());
+        assertFalse(cpu.isInterruptDisableSet());
+    }
+
+    @Test
+    void testBvs() {
+        Cpu cpu = Cpu.builder().build();
+        cpu.setOverflowFlag(true);
+        assembleAndRun(cpu,
+                "bvs end",
+                "sei",
+                "end:",
+                "sed"
+        );
+        assertTrue(cpu.isOverflowFlagSet());
+        assertTrue(cpu.isDecimalModeSet());
+        assertFalse(cpu.isInterruptDisableSet());
     }
 
     @Test
