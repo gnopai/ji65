@@ -10,7 +10,7 @@ public enum AddressingModeType {
     ZERO_PAGE(2),
     ZERO_PAGE_X(2),
     ZERO_PAGE_Y(2),
-    RELATIVE(2), // TODO
+    RELATIVE(2),
     ABSOLUTE(3),
     ABSOLUTE_X(3),
     ABSOLUTE_Y(3),

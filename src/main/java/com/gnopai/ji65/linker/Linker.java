@@ -75,6 +75,14 @@ public class Linker implements SegmentDataVisitor {
     }
 
     @Override
+    public void visit(RelativeUnresolvedExpression relativeUnresolvedExpression) {
+        int operandValue = expressionEvaluator.evaluate(relativeUnresolvedExpression.getExpression(), environment);
+        int indexOfInstructionEnd = programBuilder.getCurrentIndex() + 1;
+        int relativeOffset = operandValue - indexOfInstructionEnd;
+        programBuilder.bytes((byte) relativeOffset);
+    }
+
+    @Override
     public void visit(ReservedData reservedData) {
         List<Byte> bytes = IntStream.range(0, reservedData.getSize())
                 .mapToObj(i -> (byte) 0)

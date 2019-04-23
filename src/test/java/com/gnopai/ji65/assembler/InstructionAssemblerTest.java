@@ -54,7 +54,7 @@ class InstructionAssemblerTest {
 
     @Test
     void testRelative() {
-        testTwoByteOpcode(InstructionType.BNE, AddressingModeType.RELATIVE, Opcode.BNE_RELATIVE);
+        testTwoByteRelativeOpcode(InstructionType.BNE, Opcode.BNE_RELATIVE);
     }
 
     @Test
@@ -144,7 +144,15 @@ class InstructionAssemblerTest {
         assertEquals(new InstructionData(expectedOpcode), segmentData);
     }
 
+    private void testTwoByteRelativeOpcode(InstructionType instructionType, Opcode expectedOpcode) {
+        testTwoByteOpcode(instructionType, AddressingModeType.RELATIVE, expectedOpcode, new RelativeUnresolvedExpression(new PrimaryExpression(TokenType.NUMBER, 63)));
+    }
+
     private void testTwoByteOpcode(InstructionType instructionType, AddressingModeType addressingModeType, Opcode expectedOpcode) {
+        testTwoByteOpcode(instructionType, addressingModeType, expectedOpcode, new UnresolvedExpression(new PrimaryExpression(TokenType.NUMBER, 63), true));
+    }
+
+    private void testTwoByteOpcode(InstructionType instructionType, AddressingModeType addressingModeType, Opcode expectedOpcode, SegmentData expectedSegmentData) {
         PrimaryExpression addressExpression = new PrimaryExpression(TokenType.NUMBER, 63);
         InstructionStatement instructionStatement = InstructionStatement.builder()
                 .instructionType(instructionType)
@@ -154,7 +162,7 @@ class InstructionAssemblerTest {
 
         SegmentData segmentData = assemble(instructionStatement);
 
-        InstructionData expectedData = new InstructionData(expectedOpcode, new UnresolvedExpression(addressExpression, true));
+        InstructionData expectedData = new InstructionData(expectedOpcode, expectedSegmentData);
         assertEquals(expectedData, segmentData);
     }
 

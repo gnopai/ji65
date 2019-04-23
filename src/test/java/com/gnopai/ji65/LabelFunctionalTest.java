@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static com.gnopai.ji65.TestUtil.DEFAULT_PROGRAM_START_ADDRESS;
 import static com.gnopai.ji65.TestUtil.assembleAndRun;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class LabelFunctionalTest {
     @Test
@@ -61,5 +61,48 @@ class LabelFunctionalTest {
         assertEquals(Opcode.LDA_ZERO_PAGE.getOpcode(), cpu.getMemoryValue(DEFAULT_PROGRAM_START_ADDRESS));
         Address nextAddress = DEFAULT_PROGRAM_START_ADDRESS.plus(Opcode.LDA_ZERO_PAGE.getByteCount());
         assertEquals(Opcode.LDA_ABSOLUTE.getOpcode(), cpu.getMemoryValue(nextAddress));
+    }
+
+    @Test
+    void testProgramCounterReference() {
+        Cpu cpu = Cpu.builder().build();
+        assembleAndRun(cpu,
+                "sec",
+                "ldx #<*",
+                "ldy #<*",
+                "lda #>*"
+        );
+        Address startAddress = DEFAULT_PROGRAM_START_ADDRESS;
+        assertEquals(startAddress.plus(1).getLowByte(), cpu.getX());
+        assertEquals(startAddress.plus(3).getLowByte(), cpu.getY());
+        assertEquals(startAddress.plus(5).getHighByte(), cpu.getAccumulator());
+    }
+
+    @Test
+    void testBranchWithPositiveOffset() {
+        Cpu cpu = Cpu.builder().build();
+        assembleAndRun(cpu,
+                "bcc end",
+                "sec",
+                "end:",
+                "sed"
+        );
+        assertTrue(cpu.isDecimalModeSet());
+        assertFalse(cpu.isCarryFlagSet());
+    }
+
+    @Test
+    void testBranchWithNegativeOffset() {
+        Cpu cpu = Cpu.builder().build();
+        assembleAndRun(cpu,
+                "jmp one",
+                "sed",
+                "two:",
+                "sec",
+                "one:",
+                "bcc two"
+        );
+        assertFalse(cpu.isDecimalModeSet());
+        assertTrue(cpu.isCarryFlagSet());
     }
 }
