@@ -45,8 +45,11 @@ public class Linker implements SegmentDataVisitor {
 
     @Override
     public void visit(InstructionData instructionData) {
+        // TODO scoped/nested environments instead of this define-undefine business?
+        environment.define("*", programBuilder.getCurrentIndex());
         programBuilder.bytes(instructionData.getOpcode().getOpcode());
         link(instructionData.getOperand());
+        environment.undefine("*");
     }
 
     @Override
@@ -69,6 +72,14 @@ public class Linker implements SegmentDataVisitor {
             Address address = new Address(value);
             programBuilder.bytes(List.of(address.getLowByte(), address.getHighByte()));
         }
+    }
+
+    @Override
+    public void visit(RelativeUnresolvedExpression relativeUnresolvedExpression) {
+        int operandValue = expressionEvaluator.evaluate(relativeUnresolvedExpression.getExpression(), environment);
+        int indexOfInstructionEnd = programBuilder.getCurrentIndex() + 1;
+        int relativeOffset = operandValue - indexOfInstructionEnd;
+        programBuilder.bytes((byte) relativeOffset);
     }
 
     @Override

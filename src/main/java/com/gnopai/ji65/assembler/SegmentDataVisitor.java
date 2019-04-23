@@ -9,5 +9,7 @@ public interface SegmentDataVisitor {
 
     void visit(UnresolvedExpression unresolvedExpression);
 
+    void visit(RelativeUnresolvedExpression relativeUnresolvedExpression);
+
     void visit(ReservedData reservedData);
 }

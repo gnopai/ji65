@@ -108,8 +108,16 @@ public class Cpu {
         return getProcessorStatus(0b10000000);
     }
 
+    public boolean isCarryFlagClear() {
+        return !isCarryFlagSet();
+    }
+
     public boolean isZeroFlagSet() {
         return getProcessorStatus(0b01000000);
+    }
+
+    public boolean isZeroFlagClear() {
+        return !isZeroFlagSet();
     }
 
     public boolean isInterruptDisableSet() {
@@ -128,8 +136,16 @@ public class Cpu {
         return getProcessorStatus(0b00000100);
     }
 
+    public boolean isOverflowFlagClear() {
+        return !isOverflowFlagSet();
+    }
+
     public boolean isNegativeFlagSet() {
         return getProcessorStatus(0b00000010);
+    }
+
+    public boolean isNegativeFlagClear() {
+        return !isNegativeFlagSet();
     }
 
     private boolean getProcessorStatus(int mask) {

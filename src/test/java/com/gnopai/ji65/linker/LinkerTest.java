@@ -9,6 +9,8 @@ import com.gnopai.ji65.config.ProgramConfig;
 import com.gnopai.ji65.config.SegmentConfig;
 import com.gnopai.ji65.config.SegmentType;
 import com.gnopai.ji65.parser.expression.ExpressionEvaluator;
+import com.gnopai.ji65.parser.expression.PrimaryExpression;
+import com.gnopai.ji65.scanner.TokenType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -95,6 +97,52 @@ class LinkerTest {
                         (byte) 0, (byte) 0, (byte) 0, (byte) 0,
                         (byte) 0, (byte) 0, (byte) 0, (byte) 0,
                         (byte) 0, (byte) 0, (byte) 0, (byte) 0
+                ))),
+                Map.of("start", 1),
+                new Address(1)
+        );
+        assertEquals(expectedProgram, program);
+    }
+
+    @Test
+    void testVisitRelativeUnresolvedExpression_positiveOffset() {
+        PrimaryExpression expression = new PrimaryExpression(TokenType.NUMBER, 0x7024);
+        RelativeUnresolvedExpression relativeUnresolvedExpression = new RelativeUnresolvedExpression(expression);
+        when(expressionEvaluator.evaluate(expression, environment)).thenReturn(0x7024);
+
+        Label startLabel = label("start", 1);
+        MappedSegments mappedSegments = mappedSegments(0x7001, relativeUnresolvedExpression, startLabel);
+        when(segmentMapper.mapSegments(programConfig, assembledSegments.getSegments()))
+                .thenReturn(mappedSegments);
+
+        Program program = runLinker();
+
+        Program expectedProgram = new Program(
+                List.of(new Program.Chunk(new Address(0x7001), List.of(
+                        (byte) 0x22
+                ))),
+                Map.of("start", 1),
+                new Address(1)
+        );
+        assertEquals(expectedProgram, program);
+    }
+
+    @Test
+    void testVisitRelativeUnresolvedExpression_negativeOffset() {
+        PrimaryExpression expression = new PrimaryExpression(TokenType.NUMBER, 0x6FFC);
+        RelativeUnresolvedExpression relativeUnresolvedExpression = new RelativeUnresolvedExpression(expression);
+        when(expressionEvaluator.evaluate(expression, environment)).thenReturn(0x6FFC);
+
+        Label startLabel = label("start", 1);
+        MappedSegments mappedSegments = mappedSegments(0x7001, relativeUnresolvedExpression, startLabel);
+        when(segmentMapper.mapSegments(programConfig, assembledSegments.getSegments()))
+                .thenReturn(mappedSegments);
+
+        Program program = runLinker();
+
+        Program expectedProgram = new Program(
+                List.of(new Program.Chunk(new Address(0x7001), List.of(
+                        (byte) 0xFA
                 ))),
                 Map.of("start", 1),
                 new Address(1)

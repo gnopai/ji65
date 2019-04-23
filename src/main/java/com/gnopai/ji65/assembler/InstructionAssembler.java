@@ -19,11 +19,12 @@ public class InstructionAssembler {
             case IMPLICIT:
             case ACCUMULATOR:
                 return assembleSingleByteInstruction(instructionStatement);
+            case RELATIVE:
+                return assembleRelativeInstruction(instructionStatement);
             case ZERO_PAGE:
             case ZERO_PAGE_X:
             case ZERO_PAGE_Y:
             case IMMEDIATE:
-            case RELATIVE:
             case INDEXED_INDIRECT:
             case INDIRECT_INDEXED:
                 return assembleTwoByteInstruction(instructionStatement);
@@ -47,6 +48,11 @@ public class InstructionAssembler {
                 .or(() -> Opcode.of(instructionType, AddressingModeType.ACCUMULATOR))
                 .orElseThrow(() -> invalidOpcode(instructionStatement));
         return new InstructionData(opcode);
+    }
+
+    private SegmentData assembleRelativeInstruction(InstructionStatement instructionStatement) {
+        Opcode opcode = getOpcode(instructionStatement);
+        return new InstructionData(opcode, new RelativeUnresolvedExpression(instructionStatement.getAddressExpression()));
     }
 
     private SegmentData assembleTwoByteInstruction(InstructionStatement instructionStatement) {

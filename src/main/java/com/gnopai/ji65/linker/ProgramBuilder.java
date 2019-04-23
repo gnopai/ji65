@@ -71,6 +71,10 @@ public class ProgramBuilder {
         return new Program(chunks, Map.copyOf(labels), startAddress);
     }
 
+    public int getCurrentIndex() {
+        return startIndex + index;
+    }
+
     private Program.Chunk makeChunk(int startIndex, byte[] bytes) {
         List<Byte> byteList = new ArrayList<>(bytes.length);
         for (byte b : bytes) {

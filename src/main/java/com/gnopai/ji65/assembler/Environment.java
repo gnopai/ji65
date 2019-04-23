@@ -26,4 +26,8 @@ public class Environment {
     public void define(String name, int value) {
         values.put(name, new PrimaryExpression(TokenType.NUMBER, value));
     }
+
+    public void undefine(String name) {
+        values.remove(name);
+    }
 }
