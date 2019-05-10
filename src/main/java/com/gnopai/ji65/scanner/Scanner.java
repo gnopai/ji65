@@ -48,7 +48,7 @@ public class Scanner {
                 addToken(AMPERSAND);
                 break;
             case '@':
-                addToken(AT_SIGN);
+                identifier();
                 break;
             case ':':
                 addToken(COLON);

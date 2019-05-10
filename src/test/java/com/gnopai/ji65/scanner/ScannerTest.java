@@ -36,7 +36,6 @@ class ScannerTest {
         testSimpleSingleToken("*", STAR);
         testSimpleSingleToken("|", PIPE);
         testSimpleSingleToken("&", AMPERSAND);
-        testSimpleSingleToken("@", AT_SIGN);
         testSimpleSingleToken(":", COLON);
         testSimpleSingleToken("#", POUND);
         testSimpleSingleToken("=", EQUAL);
@@ -390,6 +389,30 @@ class ScannerTest {
     @Test
     void testSingleToken_identifier() {
         String text = "derp";
+        List<Token> tokens = runScanner(text);
+        List<Token> expectedTokens = List.of(
+                new Token(IDENTIFIER, text, null, 1),
+                new Token(EOF, "", null, 1)
+        );
+        assertEquals(expectedTokens, tokens);
+        verifyNoErrors();
+    }
+
+    @Test
+    void testSingleToken_identifierWithAtSign() {
+        String text = "@derp";
+        List<Token> tokens = runScanner(text);
+        List<Token> expectedTokens = List.of(
+                new Token(IDENTIFIER, text, null, 1),
+                new Token(EOF, "", null, 1)
+        );
+        assertEquals(expectedTokens, tokens);
+        verifyNoErrors();
+    }
+
+    @Test
+    void testSingleToken_identifierWithAtSignThatLooksLikeSomethingElse() {
+        String text = "@x";
         List<Token> tokens = runScanner(text);
         List<Token> expectedTokens = List.of(
                 new Token(IDENTIFIER, text, null, 1),
