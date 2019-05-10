@@ -13,6 +13,6 @@ public class LabelStatementParselet implements StatementParselet {
         // consume end-of-line if present, but just move on if it's not
         parser.match(TokenType.EOL);
 
-        return new LabelStatement(labelName);
+        return labelName.startsWith("@") ? new LocalLabelStatement(labelName) : new LabelStatement(labelName);
     }
 }

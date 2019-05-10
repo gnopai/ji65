@@ -5,6 +5,8 @@ public interface StatementVisitor {
 
     void visit(LabelStatement labelStatement);
 
+    void visit(LocalLabelStatement localLabelStatement);
+
     void visit(DirectiveStatement directiveStatement);
 
     void visit(AssignmentStatement assignmentStatement);
