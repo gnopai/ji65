@@ -105,4 +105,25 @@ class LabelFunctionalTest {
         assertFalse(cpu.isDecimalModeSet());
         assertTrue(cpu.isCarryFlagSet());
     }
+
+    @Test
+    void testLocalLabels() {
+        Cpu cpu = Cpu.builder().build();
+        assembleAndRun(cpu,
+                "begin:",
+                "jmp @derp",
+                "lda #1",
+                "@derp:",
+                "ldx #2",
+                "middle:",
+                "jmp @derp",
+                "lda #1",
+                "@derp:",
+                "ldy #3",
+                "end:"
+        );
+        assertEquals(0, cpu.getAccumulator());
+        assertEquals(2, cpu.getX());
+        assertEquals(3, cpu.getY());
+    }
 }

@@ -9,6 +9,7 @@ public class LabelResolver implements SegmentDataVisitor {
 
     public void resolve(MappedSegments mappedSegments, Environment environment) {
         this.environment = environment;
+        environment.goToRootScope();
         mappedSegments.getSegments().forEach(this::resolve);
     }
 
@@ -34,7 +35,12 @@ public class LabelResolver implements SegmentDataVisitor {
 
     @Override
     public void visit(Label label) {
-        environment.define(label.getName(), startIndex + offset);
+        if (label.isLocal()) {
+            environment.define(label.getName(), startIndex + offset);
+        } else {
+            environment.defineGlobal(label.getName(), startIndex + offset);
+            environment.goToRootScope().enterChildScope(label.getName());
+        }
     }
 
     @Override

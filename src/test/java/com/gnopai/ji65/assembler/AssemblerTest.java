@@ -4,10 +4,7 @@ import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.InstructionType;
 import com.gnopai.ji65.config.ProgramConfig;
 import com.gnopai.ji65.config.SegmentConfig;
-import com.gnopai.ji65.parser.statement.DirectiveStatement;
-import com.gnopai.ji65.parser.statement.InstructionStatement;
-import com.gnopai.ji65.parser.statement.LabelStatement;
-import com.gnopai.ji65.parser.statement.Statement;
+import com.gnopai.ji65.parser.statement.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -52,7 +49,7 @@ class AssemblerTest {
         LabelStatement statement = new LabelStatement("derp");
         List<Statement> statements = List.of(statement);
 
-        Label expectedLabel = new Label("derp", false);
+        Label expectedLabel = new Label("derp");
         environment.define("derp", expectedLabel);
 
         Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler);
@@ -60,6 +57,50 @@ class AssemblerTest {
         AssembledSegments result = assembler.assemble(statements, programConfig, environment);
 
         List<Segment> expectedSegments = List.of(new Segment(segmentConfig, List.of(expectedLabel)));
+        AssembledSegments assembledSegments = new AssembledSegments(expectedSegments, environment);
+        assertEquals(assembledSegments, result);
+        verify(firstPassResolver).resolve(statements, assembledSegments);
+    }
+
+    @Test
+    void testLocalLabelStatement() {
+        String parentLabelName = "parent";
+        String localLabelName = "local";
+        LabelStatement labelStatement = new LabelStatement(parentLabelName);
+        LocalLabelStatement localLabelStatement = new LocalLabelStatement(localLabelName);
+        List<Statement> statements = List.of(labelStatement, localLabelStatement);
+
+        Label parentLabel = new Label(parentLabelName);
+        environment.define(parentLabelName, parentLabel);
+
+        Label localLabel = new Label(localLabelName);
+        environment.enterChildScope(parentLabelName);
+        environment.define(localLabelName, localLabel);
+
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler);
+
+        AssembledSegments result = assembler.assemble(statements, programConfig, environment);
+
+        List<Segment> expectedSegments = List.of(new Segment(segmentConfig, List.of(parentLabel, localLabel)));
+        AssembledSegments assembledSegments = new AssembledSegments(expectedSegments, environment);
+        assertEquals(assembledSegments, result);
+        verify(firstPassResolver).resolve(statements, assembledSegments);
+    }
+
+    @Test
+    void testLocalLabelStatement_noParent() {
+        String localLabelName = "local";
+        LocalLabelStatement localLabelStatement = new LocalLabelStatement(localLabelName);
+        List<Statement> statements = List.of(localLabelStatement);
+
+        Label localLabel = new Label(localLabelName);
+        environment.define(localLabelName, localLabel);
+
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler);
+
+        AssembledSegments result = assembler.assemble(statements, programConfig, environment);
+
+        List<Segment> expectedSegments = List.of(new Segment(segmentConfig, List.of(localLabel)));
         AssembledSegments assembledSegments = new AssembledSegments(expectedSegments, environment);
         assertEquals(assembledSegments, result);
         verify(firstPassResolver).resolve(statements, assembledSegments);

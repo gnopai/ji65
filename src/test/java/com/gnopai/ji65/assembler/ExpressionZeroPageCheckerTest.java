@@ -101,13 +101,19 @@ class ExpressionZeroPageCheckerTest {
 
     @Test
     void testLabel_zeroPage() {
-        Label label = new Label("derp", true);
+        Label label = Label.builder()
+                .name("derp")
+                .zeroPage(true)
+                .build();
         assertTrue(isZeroPage(label));
     }
 
     @Test
     void testLabel_notZeroPage() {
-        Label label = new Label("derp", false);
+        Label label = Label.builder()
+                .name("derp")
+                .zeroPage(false)
+                .build();
         assertFalse(isZeroPage(label));
     }
 

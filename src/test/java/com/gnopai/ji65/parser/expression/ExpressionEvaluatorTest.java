@@ -197,7 +197,7 @@ class ExpressionEvaluatorTest {
 
     @Test
     void testLabel() {
-        Label label = new Label("derp", false);
+        Label label = new Label("derp");
         environment.define("derp", new PrimaryExpression(TokenType.NUMBER, 17));
 
         int result = new ExpressionEvaluator().evaluate(label, environment);
@@ -206,7 +206,7 @@ class ExpressionEvaluatorTest {
 
     @Test
     void testUnresolvedLabel() {
-        Label label = new Label("derp", false);
+        Label label = new Label("derp");
         environment.define("derp", label);
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> new ExpressionEvaluator().evaluate(label, environment));

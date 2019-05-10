@@ -23,7 +23,6 @@ public enum TokenType {
     PIPE,
     AMPERSAND,
     SEMICOLON,
-    AT_SIGN,
     COLON,
     POUND,
     EQUAL,
