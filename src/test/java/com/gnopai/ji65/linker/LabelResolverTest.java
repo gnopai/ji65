@@ -19,19 +19,21 @@ class LabelResolverTest {
     @Test
     void test() {
         List<SegmentData> segmentData = List.of(
-                new Label("one", false),
+                new Label("one"),
                 new InstructionData(Opcode.LDA_ABSOLUTE, (byte) 0x00, (byte) 0x01),
+                localLabel("local"),
                 new RawData(List.of((byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04)),
-                new Label("two", false),
-                new Label("two-and-a-half", false),
+                new Label("two"),
+                new Label("two-and-a-half"),
                 new ReservedData(14),
-                new Label("three", false),
+                new Label("three"),
                 new InstructionData(Opcode.SEI_IMPLICIT),
                 new InstructionData(Opcode.SEI_IMPLICIT),
                 new InstructionData(Opcode.SEI_IMPLICIT),
+                localLabel("local"),
                 new InstructionData(Opcode.SEI_IMPLICIT),
                 new InstructionData(Opcode.SEI_IMPLICIT),
-                new Label("four", false)
+                new Label("four")
         );
         Segment codeSegment = new Segment(
                 SegmentConfig.builder().segmentName("CODE").build(),
@@ -44,11 +46,25 @@ class LabelResolverTest {
 
         new LabelResolver().resolve(mappedSegments, environment);
 
+        environment.goToRootScope();
         assertEquals(expectedExpression(0x7000), environment.get("one"));
+        environment.enterChildScope("one");
+        assertEquals(expectedExpression(0x7003), environment.get("local"));
+        environment.goToRootScope();
         assertEquals(expectedExpression(0x7007), environment.get("two"));
         assertEquals(expectedExpression(0x7007), environment.get("two-and-a-half"));
         assertEquals(expectedExpression(0x7015), environment.get("three"));
+        environment.enterChildScope("three");
+        assertEquals(expectedExpression(0x7018), environment.get("local"));
+        environment.goToRootScope();
         assertEquals(expectedExpression(0x701A), environment.get("four"));
+    }
+
+    private Label localLabel(String name) {
+        return Label.builder()
+                .name(name)
+                .local(true)
+                .build();
     }
 
     private Optional<Expression> expectedExpression(int value) {

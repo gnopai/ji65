@@ -29,6 +29,7 @@ public class Linker implements SegmentDataVisitor {
         MappedSegments mappedSegments = segmentMapper.mapSegments(programConfig, assembledSegments.getSegments());
         labelResolver.resolve(mappedSegments, environment);
 
+        environment.goToRootScope();
         programBuilder = new ProgramBuilder();
         mappedSegments.getSegments().forEach(this::link);
         return programBuilder.build();
@@ -45,11 +46,10 @@ public class Linker implements SegmentDataVisitor {
 
     @Override
     public void visit(InstructionData instructionData) {
-        // TODO scoped/nested environments instead of this define-undefine business?
         environment.define("*", programBuilder.getCurrentIndex());
         programBuilder.bytes(instructionData.getOpcode().getOpcode());
         link(instructionData.getOperand());
-        environment.undefine("*");
+        environment.undefine("*"); // only let the "*" be used in instruction expressions
     }
 
     @Override
@@ -59,8 +59,11 @@ public class Linker implements SegmentDataVisitor {
 
     @Override
     public void visit(Label label) {
-        int address = expressionEvaluator.evaluate(label, environment);
-        programBuilder.label(label.getName(), address);
+        if (!label.isLocal()) {
+            int address = expressionEvaluator.evaluate(label, environment);
+            programBuilder.label(label.getName(), address);
+            environment.goToRootScope().enterChildScope(label.getName());
+        }
     }
 
     @Override

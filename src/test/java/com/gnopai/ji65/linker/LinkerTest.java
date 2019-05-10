@@ -154,6 +154,7 @@ class LinkerTest {
     void testLink_multipleSegmentData() {
         Label label = label("derp", 7);
         Label startLabel = label("start", 99);
+        Label localLabel = label("@local", 11).withLocal(true);
 
         MappedSegments mappedSegments = mappedSegments(0x6001,
                 new InstructionData(Opcode.LDX_IMMEDIATE, new RawData((byte) 77)),
@@ -161,6 +162,7 @@ class LinkerTest {
                 new InstructionData(Opcode.STX_ZERO_PAGE, new RawData((byte) 9)),
                 label,
                 new ReservedData(4),
+                localLabel,
                 new InstructionData(Opcode.INX_IMPLICIT),
                 new InstructionData(Opcode.STX_ZERO_PAGE, new RawData((byte) 10)),
                 startLabel
@@ -197,7 +199,7 @@ class LinkerTest {
     }
 
     private Label label(String name, int address) {
-        Label label = new Label(name, false);
+        Label label = new Label(name);
         environment.define(name, label);
         when(expressionEvaluator.evaluate(label, environment)).thenReturn(address);
         return label;
