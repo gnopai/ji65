@@ -14,6 +14,7 @@ public class Assembler implements StatementVisitor {
     private final DirectiveDataAssembler directiveDataAssembler;
     private AssembledSegments assembledSegments;
     private String currentSegment;
+    private Environment environment;
 
     public Assembler(FirstPassResolver firstPassResolver, InstructionAssembler instructionAssembler, DirectiveDataAssembler directiveDataAssembler) {
         this.instructionAssembler = instructionAssembler;
@@ -26,25 +27,29 @@ public class Assembler implements StatementVisitor {
                 .map(Segment::new)
                 .collect(toList());
         assembledSegments = new AssembledSegments(segments, environment);
+        this.environment = environment;
         firstPassResolver.resolve(statements, assembledSegments);
+        environment.goToRootScope();
         statements.forEach(statement -> statement.accept(this));
         return assembledSegments;
     }
 
     @Override
     public void visit(InstructionStatement instructionStatement) {
-        SegmentData segmentData = instructionAssembler.assemble(instructionStatement, assembledSegments.getEnvironment());
+        SegmentData segmentData = instructionAssembler.assemble(instructionStatement, environment);
         assembledSegments.add(currentSegment, segmentData);
     }
 
     @Override
     public void visit(LabelStatement labelStatement) {
-        Environment environment = assembledSegments.getEnvironment();
-        String name = labelStatement.getName();
-        Label label = environment.get(name)
-                .filter(l -> l instanceof Label)
-                .map(l -> (Label) l)
-                .orElseThrow(() -> new RuntimeException("Expected label named \"" + name + "\""));
+        Label label = environment.getLabel(labelStatement.getName());
+        assembledSegments.add(currentSegment, label);
+        environment.goToRootScope().enterChildScope(labelStatement.getName());
+    }
+
+    @Override
+    public void visit(LocalLabelStatement localLabelStatement) {
+        Label label = environment.getLabel(localLabelStatement.getName());
         assembledSegments.add(currentSegment, label);
     }
 
@@ -52,10 +57,11 @@ public class Assembler implements StatementVisitor {
     public void visit(DirectiveStatement directiveStatement) {
         if (directiveStatement.getType() == DirectiveType.SEGMENT) {
             currentSegment = directiveStatement.getName();
+            environment.goToRootScope();
             return;
         }
 
-        directiveDataAssembler.assemble(directiveStatement, assembledSegments.getEnvironment())
+        directiveDataAssembler.assemble(directiveStatement, environment)
                 .forEach(data -> assembledSegments.add(currentSegment, data));
     }
 

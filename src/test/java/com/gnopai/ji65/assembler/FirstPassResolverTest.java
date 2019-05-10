@@ -6,10 +6,7 @@ import com.gnopai.ji65.config.SegmentType;
 import com.gnopai.ji65.parser.expression.ExpressionEvaluator;
 import com.gnopai.ji65.parser.expression.PrefixExpression;
 import com.gnopai.ji65.parser.expression.PrimaryExpression;
-import com.gnopai.ji65.parser.statement.AssignmentStatement;
-import com.gnopai.ji65.parser.statement.DirectiveStatement;
-import com.gnopai.ji65.parser.statement.LabelStatement;
-import com.gnopai.ji65.parser.statement.Statement;
+import com.gnopai.ji65.parser.statement.*;
 import com.gnopai.ji65.scanner.TokenType;
 import org.junit.jupiter.api.Test;
 
@@ -57,7 +54,10 @@ class FirstPassResolverTest {
 
         testClass.resolve(List.of(segmentDirectiveStatement, labelStatement), assembledSegments);
 
-        Label expectedLabel = new Label("derp", true);
+        Label expectedLabel = Label.builder()
+                .name("derp")
+                .zeroPage(true)
+                .build();
         assertEquals(Optional.of(expectedLabel), environment.get("derp"));
     }
 
@@ -71,8 +71,52 @@ class FirstPassResolverTest {
 
         testClass.resolve(List.of(statement), assembledSegments);
 
-        Label expectedLabel = new Label("derp", false);
+        Label expectedLabel = Label.builder()
+                .name("derp")
+                .zeroPage(false)
+                .build();
         assertEquals(Optional.of(expectedLabel), environment.get("derp"));
+    }
+
+    @Test
+    void testLocalLabelStatement() {
+        LabelStatement labelStatement = new LabelStatement("parent");
+        LocalLabelStatement localLabelStatement = new LocalLabelStatement("child");
+        Environment environment = new Environment();
+        AssembledSegments assembledSegments = new AssembledSegments(List.of(segment(DEFAULT_SEGMENT_NAME, SegmentType.READ_ONLY)), environment);
+
+        FirstPassResolver testClass = new FirstPassResolver(expressionEvaluator);
+
+        testClass.resolve(List.of(labelStatement, localLabelStatement), assembledSegments);
+
+        Label expectedLabel = Label.builder()
+                .name("child")
+                .zeroPage(false)
+                .local(true)
+                .build();
+
+        environment.goToRootScope();
+        assertEquals(Optional.empty(), environment.get("child"));
+        environment.enterChildScope("parent");
+        assertEquals(Optional.of(expectedLabel), environment.get("child"));
+    }
+
+    @Test
+    void testLocalLabelStatement_missingParent() {
+        LocalLabelStatement localLabelStatement = new LocalLabelStatement("child");
+        Environment environment = new Environment();
+        AssembledSegments assembledSegments = new AssembledSegments(List.of(segment(DEFAULT_SEGMENT_NAME, SegmentType.READ_ONLY)), environment);
+
+        FirstPassResolver testClass = new FirstPassResolver(expressionEvaluator);
+
+        testClass.resolve(List.of(localLabelStatement), assembledSegments);
+
+        Label expectedLabel = Label.builder()
+                .name("child")
+                .zeroPage(false)
+                .local(true)
+                .build();
+        assertEquals(Optional.of(expectedLabel), environment.get("child"));
     }
 
     @Test
