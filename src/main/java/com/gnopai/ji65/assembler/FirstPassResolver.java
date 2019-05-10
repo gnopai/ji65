@@ -21,6 +21,7 @@ public class FirstPassResolver implements StatementVisitor {
     public void resolve(List<Statement> statements, AssembledSegments assembledSegments) {
         this.assembledSegments = assembledSegments;
         this.environment = assembledSegments.getEnvironment();
+        environment.goToRootScope();
         statements.forEach(statement -> statement.accept(this));
     }
 
