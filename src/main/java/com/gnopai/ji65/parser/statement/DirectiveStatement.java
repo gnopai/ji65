@@ -5,16 +5,22 @@ import com.gnopai.ji65.parser.expression.Expression;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
+import lombok.experimental.Wither;
 
 import java.util.List;
 
 @Value
 @Builder
+@Wither
 public class DirectiveStatement implements Statement {
     DirectiveType type;
     String name;
     @Singular
+    List<Statement> statements;
+    @Singular
     List<Expression> expressions;
+    @Singular
+    List<String> arguments;
 
     @Override
     public void accept(StatementVisitor statementVisitor) {

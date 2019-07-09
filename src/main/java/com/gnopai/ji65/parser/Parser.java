@@ -1,5 +1,6 @@
 package com.gnopai.ji65.parser;
 
+import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.parser.expression.Expression;
 import com.gnopai.ji65.parser.expression.InfixParselet;
 import com.gnopai.ji65.parser.statement.Statement;
@@ -103,6 +104,10 @@ public class Parser {
 
     public boolean match(TokenType tokenType) {
         return tokenConsumer.match(tokenType);
+    }
+
+    public boolean matchDirective(DirectiveType directiveType) {
+        return tokenConsumer.match(TokenType.DIRECTIVE, directiveType);
     }
 
     public Token getPrevious() {
