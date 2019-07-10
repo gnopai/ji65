@@ -23,8 +23,8 @@ public class DirectiveStatement implements Statement {
     List<String> arguments;
 
     @Override
-    public void accept(StatementVisitor statementVisitor) {
-        statementVisitor.visit(this);
+    public <T> T accept(StatementVisitor<T> statementVisitor) {
+        return statementVisitor.visit(this);
     }
 
     public Expression getExpression() {

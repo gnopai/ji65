@@ -60,7 +60,7 @@ public class Linker implements SegmentDataVisitor {
     @Override
     public void visit(Label label) {
         if (!label.isLocal()) {
-            int address = expressionEvaluator.evaluate(label, environment);
+            int address = expressionEvaluator.evaluate(label, environment); // FIXME not really an expression, just a weird thing
             programBuilder.label(label.getName(), address);
             environment.goToRootScope().enterChildScope(label.getName());
         }

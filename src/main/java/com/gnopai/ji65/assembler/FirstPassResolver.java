@@ -8,7 +8,7 @@ import com.gnopai.ji65.scanner.TokenType;
 
 import java.util.List;
 
-public class FirstPassResolver implements StatementVisitor {
+public class FirstPassResolver implements StatementVisitor<Void> {
     private final ExpressionEvaluator expressionEvaluator;
     private AssembledSegments assembledSegments;
     private Environment environment;
@@ -26,12 +26,13 @@ public class FirstPassResolver implements StatementVisitor {
     }
 
     @Override
-    public void visit(InstructionStatement instructionStatement) {
+    public Void visit(InstructionStatement instructionStatement) {
         // second pass only
+        return null;
     }
 
     @Override
-    public void visit(LabelStatement labelStatement) {
+    public Void visit(LabelStatement labelStatement) {
         String name = labelStatement.getName();
         Label label = Label.builder()
                 .name(name)
@@ -39,10 +40,11 @@ public class FirstPassResolver implements StatementVisitor {
                 .build();
         environment.defineGlobal(name, label);
         environment.goToRootScope().enterChildScope(name);
+        return null;
     }
 
     @Override
-    public void visit(LocalLabelStatement localLabelStatement) {
+    public Void visit(LocalLabelStatement localLabelStatement) {
         String name = localLabelStatement.getName();
         Label label = Label.builder()
                 .name(name)
@@ -50,21 +52,24 @@ public class FirstPassResolver implements StatementVisitor {
                 .local(true)
                 .build();
         environment.define(name, label);
+        return null;
     }
 
     @Override
-    public void visit(DirectiveStatement directiveStatement) {
+    public Void visit(DirectiveStatement directiveStatement) {
         if (DirectiveType.SEGMENT.equals(directiveStatement.getType())) {
             currentSegment = directiveStatement.getName();
             environment.goToRootScope();
         }
+        return null;
     }
 
     @Override
-    public void visit(AssignmentStatement assignmentStatement) {
+    public Void visit(AssignmentStatement assignmentStatement) {
         // TODO support labels here? We'll error out on them as it is now.
         int value = expressionEvaluator.evaluate(assignmentStatement.getExpression(), environment);
         environment.defineGlobal(assignmentStatement.getName(), new PrimaryExpression(TokenType.NUMBER, value));
+        return null;
     }
 
     private boolean isCurrentSegmentZeroPage() {

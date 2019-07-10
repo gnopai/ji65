@@ -1,13 +1,13 @@
 package com.gnopai.ji65.parser.statement;
 
-public interface StatementVisitor {
-    void visit(InstructionStatement instructionStatement);
+public interface StatementVisitor<T> {
+    T visit(InstructionStatement instructionStatement);
 
-    void visit(LabelStatement labelStatement);
+    T visit(LabelStatement labelStatement);
 
-    void visit(LocalLabelStatement localLabelStatement);
+    T visit(LocalLabelStatement localLabelStatement);
 
-    void visit(DirectiveStatement directiveStatement);
+    T visit(DirectiveStatement directiveStatement);
 
-    void visit(AssignmentStatement assignmentStatement);
+    T visit(AssignmentStatement assignmentStatement);
 }

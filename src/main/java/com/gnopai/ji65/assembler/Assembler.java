@@ -8,7 +8,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-public class Assembler implements StatementVisitor {
+public class Assembler implements StatementVisitor<Void> {
     private final InstructionAssembler instructionAssembler;
     private final FirstPassResolver firstPassResolver;
     private final DirectiveDataAssembler directiveDataAssembler;
@@ -35,38 +35,43 @@ public class Assembler implements StatementVisitor {
     }
 
     @Override
-    public void visit(InstructionStatement instructionStatement) {
+    public Void visit(InstructionStatement instructionStatement) {
         SegmentData segmentData = instructionAssembler.assemble(instructionStatement, environment);
         assembledSegments.add(currentSegment, segmentData);
+        return null;
     }
 
     @Override
-    public void visit(LabelStatement labelStatement) {
+    public Void visit(LabelStatement labelStatement) {
         Label label = environment.getLabel(labelStatement.getName());
         assembledSegments.add(currentSegment, label);
         environment.goToRootScope().enterChildScope(labelStatement.getName());
+        return null;
     }
 
     @Override
-    public void visit(LocalLabelStatement localLabelStatement) {
+    public Void visit(LocalLabelStatement localLabelStatement) {
         Label label = environment.getLabel(localLabelStatement.getName());
         assembledSegments.add(currentSegment, label);
+        return null;
     }
 
     @Override
-    public void visit(DirectiveStatement directiveStatement) {
+    public Void visit(DirectiveStatement directiveStatement) {
         if (directiveStatement.getType() == DirectiveType.SEGMENT) {
             currentSegment = directiveStatement.getName();
             environment.goToRootScope();
-            return;
+            return null;
         }
 
         directiveDataAssembler.assemble(directiveStatement, environment)
                 .forEach(data -> assembledSegments.add(currentSegment, data));
+        return null;
     }
 
     @Override
-    public void visit(AssignmentStatement assignmentStatement) {
+    public Void visit(AssignmentStatement assignmentStatement) {
         // first pass only
+        return null;
     }
 }
