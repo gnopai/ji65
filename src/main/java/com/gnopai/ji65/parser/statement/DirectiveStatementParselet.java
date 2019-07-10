@@ -17,7 +17,8 @@ public class DirectiveStatementParselet implements StatementParselet {
                 DirectiveType.SEGMENT, new SegmentDirectiveParser(),
                 DirectiveType.RESERVE, new ReserveDirectiveParser(),
                 DirectiveType.BYTE, new DataDirectiveParser(DirectiveType.BYTE),
-                DirectiveType.WORD, new DataDirectiveParser(DirectiveType.WORD)
+                DirectiveType.WORD, new DataDirectiveParser(DirectiveType.WORD),
+                DirectiveType.REPEAT, new RepeatDirectiveParser()
         );
     }
 

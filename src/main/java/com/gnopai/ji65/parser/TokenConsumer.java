@@ -60,6 +60,14 @@ public class TokenConsumer {
         return false;
     }
 
+    public boolean match(TokenType tokenType, Object value) {
+        if (tokenType.equals(next.getType()) && value.equals(next.getValue())) {
+            consume();
+            return true;
+        }
+        return false;
+    }
+
     public Token peek() {
         return next;
     }

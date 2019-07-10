@@ -1,6 +1,5 @@
 package com.gnopai.ji65.assembler;
 
-import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.config.ProgramConfig;
 import com.gnopai.ji65.parser.statement.*;
 
@@ -8,18 +7,20 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-public class Assembler implements StatementVisitor {
+public class Assembler implements StatementVisitor<Void> {
     private final InstructionAssembler instructionAssembler;
     private final FirstPassResolver firstPassResolver;
     private final DirectiveDataAssembler directiveDataAssembler;
+    private final RepeatDirectiveProcessor repeatDirectiveProcessor;
     private AssembledSegments assembledSegments;
     private String currentSegment;
     private Environment environment;
 
-    public Assembler(FirstPassResolver firstPassResolver, InstructionAssembler instructionAssembler, DirectiveDataAssembler directiveDataAssembler) {
+    public Assembler(FirstPassResolver firstPassResolver, InstructionAssembler instructionAssembler, DirectiveDataAssembler directiveDataAssembler, RepeatDirectiveProcessor repeatDirectiveProcessor) {
         this.instructionAssembler = instructionAssembler;
         this.firstPassResolver = firstPassResolver;
         this.directiveDataAssembler = directiveDataAssembler;
+        this.repeatDirectiveProcessor = repeatDirectiveProcessor;
     }
 
     public AssembledSegments assemble(List<Statement> statements, ProgramConfig programConfig, Environment environment) {
@@ -35,38 +36,49 @@ public class Assembler implements StatementVisitor {
     }
 
     @Override
-    public void visit(InstructionStatement instructionStatement) {
+    public Void visit(InstructionStatement instructionStatement) {
         SegmentData segmentData = instructionAssembler.assemble(instructionStatement, environment);
         assembledSegments.add(currentSegment, segmentData);
+        return null;
     }
 
     @Override
-    public void visit(LabelStatement labelStatement) {
+    public Void visit(LabelStatement labelStatement) {
         Label label = environment.getLabel(labelStatement.getName());
         assembledSegments.add(currentSegment, label);
         environment.goToRootScope().enterChildScope(labelStatement.getName());
+        return null;
     }
 
     @Override
-    public void visit(LocalLabelStatement localLabelStatement) {
+    public Void visit(LocalLabelStatement localLabelStatement) {
         Label label = environment.getLabel(localLabelStatement.getName());
         assembledSegments.add(currentSegment, label);
+        return null;
     }
 
     @Override
-    public void visit(DirectiveStatement directiveStatement) {
-        if (directiveStatement.getType() == DirectiveType.SEGMENT) {
-            currentSegment = directiveStatement.getName();
-            environment.goToRootScope();
-            return;
+    public Void visit(DirectiveStatement directiveStatement) {
+        switch (directiveStatement.getType()) {
+            case SEGMENT:
+                currentSegment = directiveStatement.getName();
+                environment.goToRootScope();
+                break;
+            case REPEAT:
+                repeatDirectiveProcessor.process(directiveStatement, environment)
+                        .forEach(statement -> statement.accept(this));
+                break;
+            default:
+                directiveDataAssembler.assemble(directiveStatement, environment)
+                        .forEach(data -> assembledSegments.add(currentSegment, data));
         }
 
-        directiveDataAssembler.assemble(directiveStatement, environment)
-                .forEach(data -> assembledSegments.add(currentSegment, data));
+        return null;
     }
 
     @Override
-    public void visit(AssignmentStatement assignmentStatement) {
+    public Void visit(AssignmentStatement assignmentStatement) {
         // first pass only
+        return null;
     }
 }

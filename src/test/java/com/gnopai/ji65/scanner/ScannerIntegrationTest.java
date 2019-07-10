@@ -41,7 +41,7 @@ class ScannerIntegrationTest {
                 new Token(EOL, "\n", null, 3),
                 new Token(EOL, "\n", null, 4),
 
-                new Token(DIRECTIVE, ".macro", DirectiveType.MACRO_START, 5),
+                new Token(DIRECTIVE, ".macro", DirectiveType.MACRO, 5),
                 new Token(IDENTIFIER, "ldx_npc_offset", null, 5),
                 new Token(EOL, "\n", null, 5),
                 new Token(INSTRUCTION, "ldy", InstructionType.LDY, 6),

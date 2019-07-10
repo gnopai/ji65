@@ -1,5 +1,6 @@
 package com.gnopai.ji65.parser;
 
+import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.scanner.Token;
 import com.gnopai.ji65.scanner.TokenType;
 import com.gnopai.ji65.util.ErrorHandler;
@@ -158,6 +159,34 @@ class TokenConsumerTest {
         TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
 
         assertFalse(consumer.match(NUMBER));
+    }
+
+    @Test
+    public void testMatchWithValue_true() {
+        List<Token> tokens = List.of(
+                token(NUMBER, 5),
+                token(STRING, "whee"),
+                token(DIRECTIVE, DirectiveType.WORD),
+                token(EOF)
+        );
+        TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
+
+        assertTrue(consumer.match(NUMBER, 5));
+        assertTrue(consumer.match(STRING, "whee"));
+        assertTrue(consumer.match(DIRECTIVE, DirectiveType.WORD));
+    }
+
+    @Test
+    public void testMatchWithValue_false() {
+        List<Token> tokens = List.of(
+                token(NUMBER, 5),
+                token(EOF)
+        );
+        TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
+
+        assertFalse(consumer.match(NUMBER, 77));
+        assertFalse(consumer.match(STRING, 5));
+        assertFalse(consumer.match(STRING, "nope"));
     }
 
     @Test

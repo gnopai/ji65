@@ -15,7 +15,9 @@ public enum DirectiveType {
     RESERVE("res"),
     WORD("word"),
     BYTE("byte"),
-    MACRO_START("macro"),
+    REPEAT("repeat"),
+    REPEAT_END("endrep"),
+    MACRO("macro"),
     MACRO_END("endmacro"),
     ;
 
