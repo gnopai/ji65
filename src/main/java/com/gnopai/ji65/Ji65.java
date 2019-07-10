@@ -72,7 +72,11 @@ public class Ji65 {
         Assembler assembler = new Assembler(
                 new FirstPassResolver(expressionEvaluator),
                 new InstructionAssembler(new ExpressionZeroPageChecker()),
-                new DirectiveDataAssembler(expressionEvaluator)
+                new DirectiveDataAssembler(expressionEvaluator),
+                new RepeatDirectiveProcessor(
+                        new StatementValueSubstituter(new ExpressionValueSubstituter()),
+                        expressionEvaluator
+                )
         );
         return assembler.assemble(statements, programConfig, environment);
     }

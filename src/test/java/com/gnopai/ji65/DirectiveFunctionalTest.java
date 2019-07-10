@@ -137,4 +137,77 @@ class DirectiveFunctionalTest {
         assertEquals((byte) 0x42, cpu.getMemoryValue(programStartAddress.plus(19)));
         assertEquals((byte) 0x00, cpu.getMemoryValue(programStartAddress.plus(20)));
     }
+
+    @Test
+    void testRepeatDirective() {
+        Address programStartAddress = new Address(0x4567);
+        ProgramConfig programConfig = ProgramConfig.builder()
+                .memoryConfigs(List.of(
+                        zeroPageMemoryConfig,
+                        programMemoryConfig.withStartAddress(programStartAddress))
+                )
+                .segmentConfigs(List.of(zeroPageSegmentConfig, programSegmentConfig))
+                .build();
+        Cpu cpu = Cpu.builder().build();
+        assembleAndRun(cpu, programConfig,
+                ".repeat 2*3, I",
+                "lda #(I*2)",
+                "sta $2000+I",
+                ".endrep"
+        );
+
+        assertEquals((byte) 0x00, cpu.getMemoryValue(new Address(0x2000)));
+        assertEquals((byte) 0x02, cpu.getMemoryValue(new Address(0x2001)));
+        assertEquals((byte) 0x04, cpu.getMemoryValue(new Address(0x2002)));
+        assertEquals((byte) 0x06, cpu.getMemoryValue(new Address(0x2003)));
+        assertEquals((byte) 0x08, cpu.getMemoryValue(new Address(0x2004)));
+        assertEquals((byte) 0x0A, cpu.getMemoryValue(new Address(0x2005)));
+        assertEquals((byte) 0x00, cpu.getMemoryValue(new Address(0x2006)));
+    }
+
+    @Test
+    void testRepeatDirective_nested() {
+        Address programStartAddress = new Address(0x4567);
+        ProgramConfig programConfig = ProgramConfig.builder()
+                .memoryConfigs(List.of(
+                        zeroPageMemoryConfig,
+                        programMemoryConfig.withStartAddress(programStartAddress))
+                )
+                .segmentConfigs(List.of(zeroPageSegmentConfig, programSegmentConfig))
+                .build();
+        Cpu cpu = Cpu.builder().build();
+        assembleAndRun(cpu, programConfig,
+                "ldx #0",
+                ".repeat 2, I",
+                ".repeat 3, J",
+                "lda #(I+1)",
+                "sta $2000,X",
+                "inx",
+                "lda #(J+1)",
+                "sta $2000,X",
+                "inx",
+                ".endrep",
+                ".endrep"
+        );
+
+        assertEquals((byte) 0x01, cpu.getMemoryValue(new Address(0x2000)));
+        assertEquals((byte) 0x01, cpu.getMemoryValue(new Address(0x2001)));
+
+        assertEquals((byte) 0x01, cpu.getMemoryValue(new Address(0x2002)));
+        assertEquals((byte) 0x02, cpu.getMemoryValue(new Address(0x2003)));
+
+        assertEquals((byte) 0x01, cpu.getMemoryValue(new Address(0x2004)));
+        assertEquals((byte) 0x03, cpu.getMemoryValue(new Address(0x2005)));
+
+        assertEquals((byte) 0x02, cpu.getMemoryValue(new Address(0x2006)));
+        assertEquals((byte) 0x01, cpu.getMemoryValue(new Address(0x2007)));
+
+        assertEquals((byte) 0x02, cpu.getMemoryValue(new Address(0x2008)));
+        assertEquals((byte) 0x02, cpu.getMemoryValue(new Address(0x2009)));
+
+        assertEquals((byte) 0x02, cpu.getMemoryValue(new Address(0x200A)));
+        assertEquals((byte) 0x03, cpu.getMemoryValue(new Address(0x200B)));
+
+        assertEquals((byte) 0x00, cpu.getMemoryValue(new Address(0x200C)));
+    }
 }

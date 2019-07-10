@@ -30,4 +30,12 @@ public class DirectiveStatement implements Statement {
     public Expression getExpression() {
         return expressions.get(0);
     }
+
+    public boolean hasArguments() {
+        return !arguments.isEmpty();
+    }
+
+    public String getArgument(int i) {
+        return arguments.get(i);
+    }
 }

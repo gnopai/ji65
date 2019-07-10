@@ -1,6 +1,5 @@
 package com.gnopai.ji65.assembler;
 
-import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.config.ProgramConfig;
 import com.gnopai.ji65.parser.statement.*;
 
@@ -12,14 +11,16 @@ public class Assembler implements StatementVisitor<Void> {
     private final InstructionAssembler instructionAssembler;
     private final FirstPassResolver firstPassResolver;
     private final DirectiveDataAssembler directiveDataAssembler;
+    private final RepeatDirectiveProcessor repeatDirectiveProcessor;
     private AssembledSegments assembledSegments;
     private String currentSegment;
     private Environment environment;
 
-    public Assembler(FirstPassResolver firstPassResolver, InstructionAssembler instructionAssembler, DirectiveDataAssembler directiveDataAssembler) {
+    public Assembler(FirstPassResolver firstPassResolver, InstructionAssembler instructionAssembler, DirectiveDataAssembler directiveDataAssembler, RepeatDirectiveProcessor repeatDirectiveProcessor) {
         this.instructionAssembler = instructionAssembler;
         this.firstPassResolver = firstPassResolver;
         this.directiveDataAssembler = directiveDataAssembler;
+        this.repeatDirectiveProcessor = repeatDirectiveProcessor;
     }
 
     public AssembledSegments assemble(List<Statement> statements, ProgramConfig programConfig, Environment environment) {
@@ -58,14 +59,20 @@ public class Assembler implements StatementVisitor<Void> {
 
     @Override
     public Void visit(DirectiveStatement directiveStatement) {
-        if (directiveStatement.getType() == DirectiveType.SEGMENT) {
-            currentSegment = directiveStatement.getName();
-            environment.goToRootScope();
-            return null;
+        switch (directiveStatement.getType()) {
+            case SEGMENT:
+                currentSegment = directiveStatement.getName();
+                environment.goToRootScope();
+                break;
+            case REPEAT:
+                repeatDirectiveProcessor.process(directiveStatement, environment)
+                        .forEach(statement -> statement.accept(this));
+                break;
+            default:
+                directiveDataAssembler.assemble(directiveStatement, environment)
+                        .forEach(data -> assembledSegments.add(currentSegment, data));
         }
 
-        directiveDataAssembler.assemble(directiveStatement, environment)
-                .forEach(data -> assembledSegments.add(currentSegment, data));
         return null;
     }
 
