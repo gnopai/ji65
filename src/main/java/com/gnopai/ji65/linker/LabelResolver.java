@@ -35,12 +35,18 @@ public class LabelResolver implements SegmentDataVisitor {
 
     @Override
     public void visit(Label label) {
+        if (!label.isNamed()) {
+            environment.defineUnnamedLabel(startIndex + offset);
+            return;
+        }
+
         if (label.isLocal()) {
             environment.define(label.getName(), startIndex + offset);
-        } else {
-            environment.defineGlobal(label.getName(), startIndex + offset);
-            environment.goToRootScope().enterChildScope(label.getName());
+            return;
         }
+
+        environment.defineGlobal(label.getName(), startIndex + offset);
+        environment.goToRootScope().enterChildScope(label.getName());
     }
 
     @Override

@@ -82,6 +82,24 @@ class LinkerTest {
     }
 
     @Test
+    void testVisitLabel_unnamed() {
+        Label label = Label.UNNAMED;
+        Label startLabel = label("start", 1);
+        MappedSegments mappedSegments = mappedSegments(0x7001, label, startLabel);
+        when(segmentMapper.mapSegments(programConfig, assembledSegments.getSegments()))
+                .thenReturn(mappedSegments);
+
+        Program program = runLinker();
+
+        Program expectedProgram = new Program(
+                List.of(new Program.Chunk(new Address(0x7001), List.of())),
+                Map.of("start", 1),
+                new Address(1)
+        );
+        assertEquals(expectedProgram, program);
+    }
+
+    @Test
     void testVisitReservedData() {
         ReservedData reservedData = new ReservedData(16);
         Label startLabel = label("start", 1);
