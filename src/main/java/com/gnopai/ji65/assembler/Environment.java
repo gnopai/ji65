@@ -1,5 +1,7 @@
 package com.gnopai.ji65.assembler;
 
+import com.gnopai.ji65.Address;
+import com.gnopai.ji65.linker.UnnamedLabels;
 import com.gnopai.ji65.parser.expression.Expression;
 import com.gnopai.ji65.parser.expression.PrimaryExpression;
 import com.gnopai.ji65.scanner.TokenType;
@@ -7,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -15,10 +18,14 @@ import java.util.Optional;
 public class Environment {
     private final Scope rootScope;
     private Scope currentScope;
+    private final UnnamedLabels unnamedLabels;
+    private int currentAddress;
 
     public Environment() {
         rootScope = new Scope();
         currentScope = rootScope;
+        unnamedLabels = new UnnamedLabels();
+        currentAddress = 0;
     }
 
     public Environment enterChildScope(String scopeName) {
@@ -32,6 +39,10 @@ public class Environment {
     }
 
     public Optional<Expression> get(String name) {
+        if ("*".equals(name)) {
+            // magic program-counter var
+            return Optional.of(getCurrentAddressExpression());
+        }
         return currentScope.get(name);
     }
 
@@ -55,8 +66,29 @@ public class Environment {
         rootScope.define(name, value);
     }
 
-    public void undefine(String name) {
-        currentScope.undefine(name);
+    public void defineUnnamedLabel(int value) {
+        unnamedLabels.add(value);
+    }
+
+    public int getUnnamedLabel(Address address, int offset) {
+        return unnamedLabels.getFromAddress(address, offset)
+                .orElseThrow(() -> new RuntimeException("Invalid unnamed label reference from address " + address + " and offset " + offset));
+    }
+
+    public List<Integer> getUnnamedLabels() {
+        return unnamedLabels.getAll();
+    }
+
+    public int getCurrentAddress() {
+        return currentAddress;
+    }
+
+    public void setCurrentAddress(int currentAddress) {
+        this.currentAddress = currentAddress;
+    }
+
+    public Expression getCurrentAddressExpression() {
+        return new PrimaryExpression(TokenType.NUMBER, currentAddress);
     }
 
     @EqualsAndHashCode(exclude = "parent")
@@ -97,10 +129,6 @@ public class Environment {
 
         public void define(String name, int value) {
             values.put(name, new PrimaryExpression(TokenType.NUMBER, value));
-        }
-
-        public void undefine(String name) {
-            values.remove(name);
         }
 
         public Scope getChildScope(String scope) {

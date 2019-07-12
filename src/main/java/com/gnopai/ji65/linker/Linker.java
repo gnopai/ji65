@@ -46,10 +46,9 @@ public class Linker implements SegmentDataVisitor {
 
     @Override
     public void visit(InstructionData instructionData) {
-        environment.define("*", programBuilder.getCurrentIndex());
+        updateEnvironmentProgramAddress(); // TODO do this elsewhere? Right???
         programBuilder.bytes(instructionData.getOpcode().getOpcode());
         link(instructionData.getOperand());
-        environment.undefine("*"); // only let the "*" be used in instruction expressions
     }
 
     @Override
@@ -59,7 +58,7 @@ public class Linker implements SegmentDataVisitor {
 
     @Override
     public void visit(Label label) {
-        if (!label.isLocal()) {
+        if (label.isNamed() && !label.isLocal()) {
             int address = expressionEvaluator.evaluate(label, environment); // FIXME not really an expression, just a weird thing
             programBuilder.label(label.getName(), address);
             environment.goToRootScope().enterChildScope(label.getName());
@@ -91,5 +90,9 @@ public class Linker implements SegmentDataVisitor {
                 .mapToObj(i -> (byte) 0)
                 .collect(toList());
         programBuilder.bytes(bytes);
+    }
+
+    private void updateEnvironmentProgramAddress() {
+        environment.setCurrentAddress(programBuilder.getCurrentIndex());
     }
 }

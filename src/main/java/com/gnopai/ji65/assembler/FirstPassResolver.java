@@ -44,6 +44,12 @@ public class FirstPassResolver implements StatementVisitor<Void> {
     }
 
     @Override
+    public Void visit(UnnamedLabelStatement unnamedLabelStatement) {
+        // no-op
+        return null;
+    }
+
+    @Override
     public Void visit(LocalLabelStatement localLabelStatement) {
         String name = localLabelStatement.getName();
         Label label = Label.builder()

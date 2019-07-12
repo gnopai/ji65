@@ -126,4 +126,22 @@ class LabelFunctionalTest {
         assertEquals(2, cpu.getX());
         assertEquals(3, cpu.getY());
     }
+
+    @Test
+    void testUnnamedLabels() {
+        Cpu cpu = Cpu.builder().build();
+        assembleAndRun(cpu,
+                "begin:",
+                "ldx #7",
+                "ldy #0",
+                ": txa", "iny", "dex", "bne :-",
+                "lda #0",
+                "beq :+",
+                "sec",
+                ":"
+        );
+        assertEquals(0, cpu.getX());
+        assertEquals(7, cpu.getY());
+        assertFalse(cpu.isCarryFlagSet());
+    }
 }

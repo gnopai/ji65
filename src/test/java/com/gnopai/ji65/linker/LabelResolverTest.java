@@ -24,6 +24,7 @@ class LabelResolverTest {
                 localLabel("local"),
                 new RawData(List.of((byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04)),
                 new Label("two"),
+                Label.UNNAMED,
                 new Label("two-and-a-half"),
                 new ReservedData(14),
                 new Label("three"),
@@ -32,6 +33,7 @@ class LabelResolverTest {
                 new InstructionData(Opcode.SEI_IMPLICIT),
                 localLabel("local"),
                 new InstructionData(Opcode.SEI_IMPLICIT),
+                Label.UNNAMED,
                 new InstructionData(Opcode.SEI_IMPLICIT),
                 new Label("four")
         );
@@ -58,6 +60,8 @@ class LabelResolverTest {
         assertEquals(expectedExpression(0x7018), environment.get("local"));
         environment.goToRootScope();
         assertEquals(expectedExpression(0x701A), environment.get("four"));
+
+        assertEquals(List.of(0x7007, 0x7019), environment.getUnnamedLabels());
     }
 
     private Label localLabel(String name) {

@@ -212,4 +212,16 @@ class ExpressionEvaluatorTest {
         RuntimeException exception = assertThrows(RuntimeException.class, () -> new ExpressionEvaluator().evaluate(label, environment));
         assertEquals("Unresolved label encountered: \"derp\"", exception.getMessage());
     }
+
+    @Test
+    void testRelativeUnnamedLabelExpression() {
+        environment.setCurrentAddress(0x4563);
+        environment.defineUnnamedLabel(0x4568);
+        environment.defineUnnamedLabel(0x4575);
+        environment.defineUnnamedLabel(0x4699);
+        RelativeUnnamedLabelExpression expression = new RelativeUnnamedLabelExpression(2);
+
+        int result = new ExpressionEvaluator().evaluate(expression, environment);
+        assertEquals(0x4575, result);
+    }
 }

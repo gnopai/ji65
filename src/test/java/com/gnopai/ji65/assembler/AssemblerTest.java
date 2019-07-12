@@ -64,6 +64,21 @@ class AssemblerTest {
     }
 
     @Test
+    void testUnnamedLabelStatement() {
+        UnnamedLabelStatement statement = new UnnamedLabelStatement();
+        List<Statement> statements = List.of(statement);
+
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor);
+
+        AssembledSegments result = assembler.assemble(statements, programConfig, environment);
+
+        List<Segment> expectedSegments = List.of(new Segment(segmentConfig, List.of(Label.UNNAMED)));
+        AssembledSegments assembledSegments = new AssembledSegments(expectedSegments, environment);
+        assertEquals(assembledSegments, result);
+        verify(firstPassResolver).resolve(statements, assembledSegments);
+    }
+
+    @Test
     void testLocalLabelStatement() {
         String parentLabelName = "parent";
         String localLabelName = "local";

@@ -12,6 +12,8 @@ import lombok.experimental.Wither;
 @Wither
 @AllArgsConstructor
 public class Label implements Expression, SegmentData {
+    public static final Label UNNAMED = new Label(null);
+
     String name;
     boolean zeroPage;
     boolean local;
@@ -33,5 +35,9 @@ public class Label implements Expression, SegmentData {
     @Override
     public <T> T accept(ExpressionVisitor<T> visitor, Environment environment) {
         return visitor.visit(this, environment);
+    }
+
+    public boolean isNamed() {
+        return name != null;
     }
 }

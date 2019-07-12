@@ -13,4 +13,6 @@ public interface ExpressionVisitor<T> {
     T visit(IdentifierExpression identifierExpression, Environment environment);
 
     T visit(Label label, Environment environment);
+
+    T visit(RelativeUnnamedLabelExpression relativeUnnamedLabelExpression, Environment environment);
 }

@@ -51,6 +51,12 @@ public class Assembler implements StatementVisitor<Void> {
     }
 
     @Override
+    public Void visit(UnnamedLabelStatement unnamedLabelStatement) {
+        assembledSegments.add(currentSegment, Label.UNNAMED);
+        return null;
+    }
+
+    @Override
     public Void visit(LocalLabelStatement localLabelStatement) {
         Label label = environment.getLabel(localLabelStatement.getName());
         assembledSegments.add(currentSegment, label);

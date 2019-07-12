@@ -50,4 +50,9 @@ public class ExpressionValueSubstituter implements ExpressionVisitor<Expression>
     public Expression visit(Label label, Environment environment) {
         return label;
     }
+
+    @Override
+    public Expression visit(RelativeUnnamedLabelExpression relativeUnnamedLabelExpression, Environment environment) {
+        return relativeUnnamedLabelExpression;
+    }
 }

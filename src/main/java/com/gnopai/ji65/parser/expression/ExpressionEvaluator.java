@@ -1,5 +1,6 @@
 package com.gnopai.ji65.parser.expression;
 
+import com.gnopai.ji65.Address;
 import com.gnopai.ji65.assembler.Environment;
 import com.gnopai.ji65.assembler.Label;
 
@@ -73,6 +74,12 @@ public class ExpressionEvaluator implements ExpressionVisitor<Integer> {
             throw new RuntimeException("Unresolved label encountered: \"" + label.getName() + "\"");
         }
         return evaluate(value, environment);
+    }
+
+    @Override
+    public Integer visit(RelativeUnnamedLabelExpression relativeUnnamedLabelExpression, Environment environment) {
+        Address currentAddress = new Address(environment.getCurrentAddress());
+        return environment.getUnnamedLabel(currentAddress, relativeUnnamedLabelExpression.getOffset());
     }
 
     private int truncateToWordSize(int i) {
