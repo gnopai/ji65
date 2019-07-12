@@ -14,7 +14,8 @@ public class ParseletFactory {
             TokenType.IDENTIFIER, new MultiTokenStatementParselet(Map.of(
                     TokenType.COLON, new LabelStatementParselet(),
                     TokenType.EQUAL, new AssignmentStatementParselet()
-            ))
+            )),
+            TokenType.COLON, new UnnamedLabelStatementParselet()
     );
 
     private final Map<TokenType, InfixParselet> infixParselets = Map.of(
