@@ -39,6 +39,7 @@ public class ParseletFactory {
             TokenType.NUMBER, new PrimaryParselet(),
             TokenType.CHAR, new PrimaryParselet(),
             TokenType.STAR, new IdentifierParselet(),
+            TokenType.COLON, new RelativeUnnamedLabelParselet(),
             TokenType.IDENTIFIER, new IdentifierParselet()
     );
 

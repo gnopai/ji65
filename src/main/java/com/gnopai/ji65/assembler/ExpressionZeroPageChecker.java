@@ -37,6 +37,12 @@ public class ExpressionZeroPageChecker implements ExpressionVisitor<Boolean> {
         return label.isZeroPage();
     }
 
+    @Override
+    public Boolean visit(RelativeUnnamedLabelExpression relativeUnnamedLabelExpression, Environment environment) {
+        // TODO is this good enough? We don't really know where it might be pointing, and they're typically used for relative instructions anyway
+        return false;
+    }
+
     private boolean isZeroPage(int value) {
         return value < 256;
     }
