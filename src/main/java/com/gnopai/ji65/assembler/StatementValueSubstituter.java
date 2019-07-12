@@ -41,6 +41,11 @@ public class StatementValueSubstituter implements StatementVisitor<Statement> {
     }
 
     @Override
+    public Statement visit(UnnamedLabelStatement unnamedLabelStatement) {
+        return unnamedLabelStatement;
+    }
+
+    @Override
     public Statement visit(LocalLabelStatement localLabelStatement) {
         return localLabelStatement;
     }
