@@ -7,6 +7,8 @@ import com.gnopai.ji65.scanner.TokenType;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.util.Map.entry;
+
 public class ParseletFactory {
     private final Map<TokenType, StatementParselet> statementParsers = Map.of(
             TokenType.INSTRUCTION, new InstructionStatementParselet(),
@@ -18,29 +20,38 @@ public class ParseletFactory {
             TokenType.COLON, new UnnamedLabelStatementParselet()
     );
 
-    private final Map<TokenType, InfixParselet> infixParselets = Map.of(
-            TokenType.PLUS, new BinaryOperatorParselet(Precedence.SUM),
-            TokenType.MINUS, new BinaryOperatorParselet(Precedence.SUM),
-            TokenType.PIPE, new BinaryOperatorParselet(Precedence.SUM),
-            TokenType.AMPERSAND, new BinaryOperatorParselet(Precedence.BITWISE),
-            TokenType.CARET, new BinaryOperatorParselet(Precedence.BITWISE),
-            TokenType.SHIFT_LEFT, new BinaryOperatorParselet(Precedence.BITWISE),
-            TokenType.SHIFT_RIGHT, new BinaryOperatorParselet(Precedence.BITWISE),
-            TokenType.STAR, new BinaryOperatorParselet(Precedence.MULTIPLY),
-            TokenType.SLASH, new BinaryOperatorParselet(Precedence.MULTIPLY)
+    private final Map<TokenType, InfixParselet> infixParselets = Map.ofEntries(
+            entry(TokenType.PLUS, new BinaryOperatorParselet(Precedence.SUM)),
+            entry(TokenType.MINUS, new BinaryOperatorParselet(Precedence.SUM)),
+            entry(TokenType.PIPE, new BinaryOperatorParselet(Precedence.SUM)),
+            entry(TokenType.AMPERSAND, new BinaryOperatorParselet(Precedence.BITWISE)),
+            entry(TokenType.CARET, new BinaryOperatorParselet(Precedence.BITWISE)),
+            entry(TokenType.SHIFT_LEFT, new BinaryOperatorParselet(Precedence.BITWISE)),
+            entry(TokenType.SHIFT_RIGHT, new BinaryOperatorParselet(Precedence.BITWISE)),
+            entry(TokenType.STAR, new BinaryOperatorParselet(Precedence.MULTIPLY)),
+            entry(TokenType.SLASH, new BinaryOperatorParselet(Precedence.MULTIPLY)),
+            entry(TokenType.EQUAL, new BinaryOperatorParselet(Precedence.COMPARISON)),
+            entry(TokenType.NOT_EQUAL, new BinaryOperatorParselet(Precedence.COMPARISON)),
+            entry(TokenType.GREATER_THAN, new BinaryOperatorParselet(Precedence.COMPARISON)),
+            entry(TokenType.GREATER_OR_EQUAL_THAN, new BinaryOperatorParselet(Precedence.COMPARISON)),
+            entry(TokenType.LESS_THAN, new BinaryOperatorParselet(Precedence.COMPARISON)),
+            entry(TokenType.LESS_OR_EQUAL_THAN, new BinaryOperatorParselet(Precedence.COMPARISON)),
+            entry(TokenType.AND, new BinaryOperatorParselet(Precedence.BOOLEAN_AND)),
+            entry(TokenType.OR, new BinaryOperatorParselet(Precedence.BOOLEAN_OR))
     );
 
-    private final Map<TokenType, PrefixParselet> prefixParselets = Map.of(
-            TokenType.LEFT_PAREN, new GroupParselet(),
-            TokenType.MINUS, new PrefixOperatorParselet(Precedence.UNARY),
-            TokenType.LESS_THAN, new PrefixOperatorParselet(Precedence.UNARY),
-            TokenType.GREATER_THAN, new PrefixOperatorParselet(Precedence.UNARY),
-            TokenType.TILDE, new PrefixOperatorParselet(Precedence.UNARY),
-            TokenType.NUMBER, new PrimaryParselet(),
-            TokenType.CHAR, new PrimaryParselet(),
-            TokenType.STAR, new IdentifierParselet(),
-            TokenType.COLON, new RelativeUnnamedLabelParselet(),
-            TokenType.IDENTIFIER, new IdentifierParselet()
+    private final Map<TokenType, PrefixParselet> prefixParselets = Map.ofEntries(
+            entry(TokenType.LEFT_PAREN, new GroupParselet()),
+            entry(TokenType.MINUS, new PrefixOperatorParselet(Precedence.UNARY)),
+            entry(TokenType.LESS_THAN, new PrefixOperatorParselet(Precedence.UNARY)),
+            entry(TokenType.GREATER_THAN, new PrefixOperatorParselet(Precedence.UNARY)),
+            entry(TokenType.TILDE, new PrefixOperatorParselet(Precedence.UNARY)),
+            entry(TokenType.BANG, new PrefixOperatorParselet(Precedence.BOOLEAN_NOT)),
+            entry(TokenType.NUMBER, new PrimaryParselet()),
+            entry(TokenType.CHAR, new PrimaryParselet()),
+            entry(TokenType.STAR, new IdentifierParselet()),
+            entry(TokenType.COLON, new RelativeUnnamedLabelParselet()),
+            entry(TokenType.IDENTIFIER, new IdentifierParselet())
     );
 
     public Optional<StatementParselet> getStatementParselet(TokenType tokenType) {

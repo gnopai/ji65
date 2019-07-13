@@ -4,6 +4,8 @@ import com.gnopai.ji65.Address;
 import com.gnopai.ji65.assembler.Environment;
 import com.gnopai.ji65.assembler.Label;
 
+import java.util.function.Supplier;
+
 public class ExpressionEvaluator implements ExpressionVisitor<Integer> {
 
     public int evaluate(Expression expression, Environment environment) {
@@ -28,6 +30,8 @@ public class ExpressionEvaluator implements ExpressionVisitor<Integer> {
                 return rightSideValue / 256; // high byte
             case TILDE:
                 return truncateToWordSize(~rightSideValue);
+            case BANG:
+                return fromBoolean(!(toBoolean(rightSideValue))); // boolean not
             default:
                 throw new RuntimeException("Unsupported prefix expression: " + expression.getOperator());
         }
@@ -35,27 +39,49 @@ public class ExpressionEvaluator implements ExpressionVisitor<Integer> {
 
     @Override
     public Integer visit(BinaryOperatorExpression expression, Environment environment) {
-        int leftSideValue = evaluate(expression.getLeft(), environment);
-        int rightSideValue = evaluate(expression.getRight(), environment);
+        Supplier<Integer> left = () -> evaluate(expression.getLeft(), environment);
+        Supplier<Integer> right = () -> evaluate(expression.getRight(), environment);
         switch (expression.getOperator()) {
             case PLUS:
-                return leftSideValue + rightSideValue;
+                return left.get() + right.get();
             case MINUS:
-                return leftSideValue - rightSideValue;
+                return left.get() - right.get();
             case PIPE:
-                return leftSideValue | rightSideValue;
+                return left.get() | right.get();
             case AMPERSAND:
-                return leftSideValue & rightSideValue;
+                return left.get() & right.get();
             case CARET:
-                return leftSideValue ^ rightSideValue;
+                return left.get() ^ right.get();
             case SHIFT_LEFT:
-                return leftSideValue << rightSideValue;
+                return left.get() << right.get();
             case SHIFT_RIGHT:
-                return leftSideValue >> rightSideValue;
+                return left.get() >> right.get();
             case STAR:
-                return leftSideValue * rightSideValue;
+                return left.get() * right.get();
             case SLASH:
-                return leftSideValue / rightSideValue;
+                return left.get() / right.get();
+            case EQUAL:
+                return fromBoolean(left.get().equals(right.get()));
+            case NOT_EQUAL:
+                return fromBoolean(!left.get().equals(right.get()));
+            case GREATER_THAN:
+                return fromBoolean(left.get() > right.get());
+            case GREATER_OR_EQUAL_THAN:
+                return fromBoolean(left.get() >= right.get());
+            case LESS_THAN:
+                return fromBoolean(left.get() < right.get());
+            case LESS_OR_EQUAL_THAN:
+                return fromBoolean(left.get() <= right.get());
+            case AND:
+                if (toBoolean(left.get())) {
+                    return fromBoolean(toBoolean(right.get()));
+                }
+                return fromBoolean(false);
+            case OR:
+                if (toBoolean(left.get())) {
+                    return fromBoolean(true);
+                }
+                return fromBoolean(toBoolean(right.get()));
             default:
                 throw new RuntimeException("Unsupported binary expression: " + expression.getOperator());
         }
@@ -91,5 +117,13 @@ public class ExpressionEvaluator implements ExpressionVisitor<Integer> {
                 .orElseThrow(() ->
                         new RuntimeException("Unknown identifier referenced \"" + name + "\"")
                 );
+    }
+
+    private boolean toBoolean(int i) {
+        return i != 0;
+    }
+
+    private int fromBoolean(boolean b) {
+        return b ? 1 : 0;
     }
 }
