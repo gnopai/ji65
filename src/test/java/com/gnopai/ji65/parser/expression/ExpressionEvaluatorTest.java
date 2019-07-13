@@ -5,9 +5,16 @@ import com.gnopai.ji65.assembler.Label;
 import com.gnopai.ji65.scanner.TokenType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.stream.Stream;
+
+import static com.gnopai.ji65.scanner.TokenType.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class ExpressionEvaluatorTest {
     private Environment environment;
@@ -17,140 +24,101 @@ class ExpressionEvaluatorTest {
         environment = new Environment();
     }
 
-    @Test
-    void testUnaryNegation() {
-        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 17);
-        PrefixExpression prefixExpression = new PrefixExpression(TokenType.MINUS, rightSideExpression);
+    @ParameterizedTest
+    @MethodSource("prefixExpressionProvider")
+    void testPrefixExpression(TokenType tokenType, int value, int expected) {
+        Expression rightSideExpression = new PrimaryExpression(NUMBER, value);
+        PrefixExpression prefixExpression = new PrefixExpression(tokenType, rightSideExpression);
 
         int result = new ExpressionEvaluator().evaluate(prefixExpression, environment);
-        assertEquals(-17, result);
+        assertEquals(expected, result);
     }
 
-    @Test
-    void testUnaryLowByte() {
-        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 0x5432);
-        PrefixExpression prefixExpression = new PrefixExpression(TokenType.LESS_THAN, rightSideExpression);
-
-        int result = new ExpressionEvaluator().evaluate(prefixExpression, environment);
-        assertEquals(0x32, result);
-    }
-
-    @Test
-    void testUnaryHighByte() {
-        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 0x5432);
-        PrefixExpression prefixExpression = new PrefixExpression(TokenType.GREATER_THAN, rightSideExpression);
-
-        int result = new ExpressionEvaluator().evaluate(prefixExpression, environment);
-        assertEquals(0x54, result);
-    }
-
-    @Test
-    void testUnaryNot() {
-        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 0b01101100);
-        PrefixExpression prefixExpression = new PrefixExpression(TokenType.TILDE, rightSideExpression);
-
-        int result = new ExpressionEvaluator().evaluate(prefixExpression, environment);
-        System.out.printf("%x\n", result);
-        assertEquals(0b1111111110010011, result);
+    static Stream<Arguments> prefixExpressionProvider() {
+        return Stream.of(
+                arguments(MINUS, 17, -17),
+                arguments(LESS_THAN, 0x5432, 0x32),
+                arguments(GREATER_THAN, 0x5432, 0x54),
+                arguments(TILDE, 0b01101100, 0b1111111110010011),
+                arguments(BANG, 5, 0),
+                arguments(BANG, 0, 1)
+        );
     }
 
     @Test
     void testUnsupportedPrefixOperator() {
-        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 17);
-        PrefixExpression prefixExpression = new PrefixExpression(TokenType.COMMA, rightSideExpression);
+        Expression rightSideExpression = new PrimaryExpression(NUMBER, 17);
+        PrefixExpression prefixExpression = new PrefixExpression(COMMA, rightSideExpression);
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> new ExpressionEvaluator().evaluate(prefixExpression, environment));
-        assertEquals("Unsupported prefix expression: " + TokenType.COMMA.name(), exception.getMessage());
+        assertEquals("Unsupported prefix expression: " + COMMA.name(), exception.getMessage());
+    }
+
+    @ParameterizedTest
+    @MethodSource("binaryExpressionProvider")
+    void testBinaryExpression(int leftValue, TokenType tokenType, int rightValue, int expected) {
+        Expression leftSideExpression = new PrimaryExpression(NUMBER, leftValue);
+        Expression rightSideExpression = new PrimaryExpression(NUMBER, rightValue);
+        BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, tokenType, rightSideExpression);
+
+        int result = new ExpressionEvaluator().evaluate(binaryExpression, environment);
+        assertEquals(expected, result);
+    }
+
+    static Stream<Arguments> binaryExpressionProvider() {
+        return Stream.of(
+                arguments(7, PLUS, 8, 15),
+                arguments(8, MINUS, 2, 6),
+                arguments(0xF0, PIPE, 0x0F, 0xFF),
+                arguments(0b01110111, AMPERSAND, 0b11011101, 0b01010101),
+                arguments(0b11110000, CARET, 0b01010101, 0b10100101),
+                arguments(0b00011100, SHIFT_LEFT, 3, 0b11100000),
+                arguments(0b01110000, SHIFT_RIGHT, 2, 0b00011100),
+                arguments(7, STAR, 8, 56),
+                arguments(24, SLASH, 3, 8),
+                arguments(4, EQUAL, 5, 0),
+                arguments(4, EQUAL, 4, 1),
+                arguments(4, NOT_EQUAL, 5, 1),
+                arguments(4, NOT_EQUAL, 4, 0),
+                arguments(6, GREATER_THAN, 5, 1),
+                arguments(6, GREATER_THAN, 6, 0),
+                arguments(6, GREATER_THAN, 7, 0),
+                arguments(6, GREATER_OR_EQUAL_THAN, 5, 1),
+                arguments(6, GREATER_OR_EQUAL_THAN, 6, 1),
+                arguments(6, GREATER_OR_EQUAL_THAN, 7, 0),
+                arguments(6, LESS_THAN, 7, 1),
+                arguments(6, LESS_THAN, 6, 0),
+                arguments(6, LESS_THAN, 5, 0),
+                arguments(6, LESS_OR_EQUAL_THAN, 7, 1),
+                arguments(6, LESS_OR_EQUAL_THAN, 6, 1),
+                arguments(6, LESS_OR_EQUAL_THAN, 5, 0),
+                arguments(1, AND, 1, 1),
+                arguments(1, AND, 0, 0),
+                arguments(0, AND, 0, 0),
+                arguments(1, OR, 1, 1),
+                arguments(1, OR, 0, 1),
+                arguments(0, OR, 0, 0)
+        );
     }
 
     @Test
-    void testBinaryAddition() {
-        Expression leftSideExpression = new PrimaryExpression(TokenType.NUMBER, 7);
-        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 8);
-        BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, TokenType.PLUS, rightSideExpression);
+    void testShortCircuit_booleanAnd() {
+        Expression leftSideExpression = new PrimaryExpression(NUMBER, 0);
+        Expression rightSideExpression = null;
+        BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, AND, rightSideExpression);
 
         int result = new ExpressionEvaluator().evaluate(binaryExpression, environment);
-        assertEquals(15, result);
+        assertEquals(0, result);
     }
 
     @Test
-    void testBinarySubtraction() {
-        Expression leftSideExpression = new PrimaryExpression(TokenType.NUMBER, 8);
-        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 2);
-        BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, TokenType.MINUS, rightSideExpression);
+    void testShortCircuit_booleanOr() {
+        Expression leftSideExpression = new PrimaryExpression(NUMBER, 1);
+        Expression rightSideExpression = null;
+        BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, OR, rightSideExpression);
 
         int result = new ExpressionEvaluator().evaluate(binaryExpression, environment);
-        assertEquals(6, result);
-    }
-
-    @Test
-    void testBinaryBitwiseOr() {
-        Expression leftSideExpression = new PrimaryExpression(TokenType.NUMBER, 0xF0);
-        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 0x0F);
-        BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, TokenType.PIPE, rightSideExpression);
-
-        int result = new ExpressionEvaluator().evaluate(binaryExpression, environment);
-        assertEquals(0xFF, result);
-    }
-
-    @Test
-    void testBinaryBitwiseAnd() {
-        Expression leftSideExpression = new PrimaryExpression(TokenType.NUMBER, 0b01110111);
-        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 0b11011101);
-        BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, TokenType.AMPERSAND, rightSideExpression);
-
-        int result = new ExpressionEvaluator().evaluate(binaryExpression, environment);
-        assertEquals(0b01010101, result);
-    }
-
-    @Test
-    void testBinaryBitwiseXor() {
-        Expression leftSideExpression = new PrimaryExpression(TokenType.NUMBER, 0b11110000);
-        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 0b01010101);
-        BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, TokenType.CARET, rightSideExpression);
-
-        int result = new ExpressionEvaluator().evaluate(binaryExpression, environment);
-        assertEquals(0b10100101, result);
-    }
-
-    @Test
-    void testBinaryShiftLeft() {
-        Expression leftSideExpression = new PrimaryExpression(TokenType.NUMBER, 0b00011100);
-        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 3);
-        BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, TokenType.SHIFT_LEFT, rightSideExpression);
-
-        int result = new ExpressionEvaluator().evaluate(binaryExpression, environment);
-        assertEquals(0b11100000, result);
-    }
-
-    @Test
-    void testBinaryShiftRight() {
-        Expression leftSideExpression = new PrimaryExpression(TokenType.NUMBER, 0b01110000);
-        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 2);
-        BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, TokenType.SHIFT_RIGHT, rightSideExpression);
-
-        int result = new ExpressionEvaluator().evaluate(binaryExpression, environment);
-        assertEquals(0b00011100, result);
-    }
-
-    @Test
-    void testBinaryMultiplication() {
-        Expression leftSideExpression = new PrimaryExpression(TokenType.NUMBER, 7);
-        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 8);
-        BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, TokenType.STAR, rightSideExpression);
-
-        int result = new ExpressionEvaluator().evaluate(binaryExpression, environment);
-        assertEquals(56, result);
-    }
-
-    @Test
-    void testBinaryDivision() {
-        Expression leftSideExpression = new PrimaryExpression(TokenType.NUMBER, 24);
-        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 3);
-        BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, TokenType.SLASH, rightSideExpression);
-
-        int result = new ExpressionEvaluator().evaluate(binaryExpression, environment);
-        assertEquals(8, result);
+        assertEquals(1, result);
     }
 
     @Test
@@ -169,7 +137,7 @@ class ExpressionEvaluatorTest {
         environment.define("two", 8);
         BinaryOperatorExpression expression = new BinaryOperatorExpression(
                 new IdentifierExpression("one"),
-                TokenType.SLASH,
+                SLASH,
                 new IdentifierExpression("two")
         );
 
@@ -179,12 +147,12 @@ class ExpressionEvaluatorTest {
 
     @Test
     void testUnsupportedBinaryOperator() {
-        Expression leftSideExpression = new PrimaryExpression(TokenType.NUMBER, 24);
-        Expression rightSideExpression = new PrimaryExpression(TokenType.NUMBER, 3);
-        BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, TokenType.POUND, rightSideExpression);
+        Expression leftSideExpression = new PrimaryExpression(NUMBER, 24);
+        Expression rightSideExpression = new PrimaryExpression(NUMBER, 3);
+        BinaryOperatorExpression binaryExpression = new BinaryOperatorExpression(leftSideExpression, POUND, rightSideExpression);
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> new ExpressionEvaluator().evaluate(binaryExpression, environment));
-        assertEquals("Unsupported binary expression: " + TokenType.POUND.name(), exception.getMessage());
+        assertEquals("Unsupported binary expression: " + POUND.name(), exception.getMessage());
     }
 
     @Test
@@ -198,7 +166,7 @@ class ExpressionEvaluatorTest {
     @Test
     void testLabel() {
         Label label = new Label("derp");
-        environment.define("derp", new PrimaryExpression(TokenType.NUMBER, 17));
+        environment.define("derp", new PrimaryExpression(NUMBER, 17));
 
         int result = new ExpressionEvaluator().evaluate(label, environment);
         assertEquals(17, result);

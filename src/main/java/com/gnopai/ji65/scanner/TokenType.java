@@ -21,19 +21,23 @@ public enum TokenType {
     SLASH,
     STAR,
     PIPE,
+    OR,
     AMPERSAND,
+    AND,
     SEMICOLON,
     COLON,
     POUND,
     EQUAL,
     CARET,
     TILDE,
+    BANG,
+    NOT_EQUAL,
     GREATER_THAN,
+    GREATER_OR_EQUAL_THAN,
     LESS_THAN,
+    LESS_OR_EQUAL_THAN,
     SHIFT_LEFT,
     SHIFT_RIGHT,
-
-    // TODO boolean operators? (!, <>, =, <=, >=, <, >, &&, ||)
 
     EOL,
     EOF

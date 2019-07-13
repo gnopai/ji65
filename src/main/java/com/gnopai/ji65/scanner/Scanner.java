@@ -42,10 +42,10 @@ public class Scanner {
                 addToken(STAR);
                 break;
             case '|':
-                addToken(PIPE);
+                addToken(tokenReader.match('|') ? OR : PIPE);
                 break;
             case '&':
-                addToken(AMPERSAND);
+                addToken(tokenReader.match('&') ? AND : AMPERSAND);
                 break;
             case '@':
                 identifier();
@@ -59,6 +59,9 @@ public class Scanner {
             case '=':
                 addToken(EQUAL);
                 break;
+            case '!':
+                addToken(BANG);
+                break;
             case '^':
                 addToken(CARET);
                 break;
@@ -66,10 +69,24 @@ public class Scanner {
                 addToken(TILDE);
                 break;
             case '>':
-                addToken(tokenReader.match('>') ? SHIFT_RIGHT : GREATER_THAN);
+                if (tokenReader.match('>')) {
+                    addToken(SHIFT_RIGHT);
+                } else if (tokenReader.match('=')) {
+                    addToken(GREATER_OR_EQUAL_THAN);
+                } else {
+                    addToken(GREATER_THAN);
+                }
                 break;
             case '<':
-                addToken(tokenReader.match('<') ? SHIFT_LEFT : LESS_THAN);
+                if (tokenReader.match('<')) {
+                    addToken(SHIFT_LEFT);
+                } else if (tokenReader.match('>')) {
+                    addToken(NOT_EQUAL);
+                } else if (tokenReader.match('=')) {
+                    addToken(LESS_OR_EQUAL_THAN);
+                } else {
+                    addToken(LESS_THAN);
+                }
                 break;
             case ';':
                 tokenReader.advanceUntilNextLine();

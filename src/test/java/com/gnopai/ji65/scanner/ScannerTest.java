@@ -39,6 +39,7 @@ class ScannerTest {
         testSimpleSingleToken(":", COLON);
         testSimpleSingleToken("#", POUND);
         testSimpleSingleToken("=", EQUAL);
+        testSimpleSingleToken("!", BANG);
         testSimpleSingleToken("^", CARET);
         testSimpleSingleToken("~", TILDE);
         testSimpleSingleToken(">", GREATER_THAN);
@@ -49,6 +50,11 @@ class ScannerTest {
     void testSingleToken_multiCharTokens() {
         testSimpleSingleToken("<<", SHIFT_LEFT);
         testSimpleSingleToken(">>", SHIFT_RIGHT);
+        testSimpleSingleToken(">=", GREATER_OR_EQUAL_THAN);
+        testSimpleSingleToken("<=", LESS_OR_EQUAL_THAN);
+        testSimpleSingleToken("<>", NOT_EQUAL);
+        testSimpleSingleToken("&&", AND);
+        testSimpleSingleToken("||", OR);
     }
 
     @Test
