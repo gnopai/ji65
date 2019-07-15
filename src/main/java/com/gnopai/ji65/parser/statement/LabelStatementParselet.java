@@ -7,8 +7,8 @@ import com.gnopai.ji65.scanner.TokenType;
 public class LabelStatementParselet implements StatementParselet {
     @Override
     public Statement parse(Token token, Parser parser) {
-        // current token should be ":", previous token is the identifier
-        String labelName = parser.getPrevious().getLexeme();
+        String labelName = token.getLexeme();
+        parser.consume(TokenType.COLON, "Expected colon after label");
 
         // consume end-of-line if present, but just move on if it's not
         parser.match(TokenType.EOL);

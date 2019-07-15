@@ -114,6 +114,10 @@ public class Parser {
         return tokenConsumer.getPrevious();
     }
 
+    public TokenType peekNextTokenType() {
+        return tokenConsumer.peek().getType();
+    }
+
     public boolean hasError() {
         return tokenConsumer.hasError();
     }

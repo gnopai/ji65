@@ -87,4 +87,11 @@ public class Assembler implements StatementVisitor<Void> {
         // first pass only
         return null;
     }
+
+    @Override
+    public Void visit(MacroStatement macroStatement) {
+        // TODO -- assemble yer macro
+        // TODO test me
+        return null;
+    }
 }

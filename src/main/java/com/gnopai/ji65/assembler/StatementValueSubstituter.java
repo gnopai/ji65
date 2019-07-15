@@ -64,6 +64,11 @@ public class StatementValueSubstituter implements StatementVisitor<Statement> {
         );
     }
 
+    @Override
+    public Statement visit(MacroStatement macroStatement) {
+        return macroStatement.withArguments(substituteExpressions(macroStatement.getArguments()));
+    }
+
     private List<Statement> substituteValuesInStatements(List<Statement> statements) {
         return statements.stream()
                 .map(this::substituteValuesInStatement)
