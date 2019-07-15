@@ -19,12 +19,14 @@ public class Environment {
     private final Scope rootScope;
     private Scope currentScope;
     private final UnnamedLabels unnamedLabels;
+    private final Map<String, Macro> macros;
     private int currentAddress;
 
     public Environment() {
         rootScope = new Scope();
         currentScope = rootScope;
         unnamedLabels = new UnnamedLabels();
+        macros = new HashMap<>();
         currentAddress = 0;
     }
 
@@ -64,6 +66,14 @@ public class Environment {
 
     public void defineGlobal(String name, int value) {
         rootScope.define(name, value);
+    }
+
+    public void defineMacro(Macro macro) {
+        macros.put(macro.getName(), macro);
+    }
+
+    public Optional<Macro> getMacro(String name) {
+        return Optional.ofNullable(macros.get(name));
     }
 
     public void defineUnnamedLabel(int value) {
