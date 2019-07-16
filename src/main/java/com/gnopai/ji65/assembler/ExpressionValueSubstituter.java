@@ -1,14 +1,13 @@
 package com.gnopai.ji65.assembler;
 
 import com.gnopai.ji65.parser.expression.*;
-import com.gnopai.ji65.scanner.TokenType;
 
 public class ExpressionValueSubstituter implements ExpressionVisitor<Expression> {
     private String name;
-    private int value;
+    private Expression value;
     private Environment environment;
 
-    public Expression substituteValue(String name, int value, Expression expression, Environment environment) {
+    public Expression substituteValue(String name, Expression value, Expression expression, Environment environment) {
         this.name = name;
         this.value = value;
         this.environment = environment;
@@ -43,7 +42,7 @@ public class ExpressionValueSubstituter implements ExpressionVisitor<Expression>
 
     @Override
     public Expression visit(IdentifierExpression identifierExpression, Environment environment) {
-        return name.equals(identifierExpression.getName()) ? new PrimaryExpression(TokenType.NUMBER, value) : identifierExpression;
+        return name.equals(identifierExpression.getName()) ? value : identifierExpression;
     }
 
     @Override

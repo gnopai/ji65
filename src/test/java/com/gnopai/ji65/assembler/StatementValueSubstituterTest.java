@@ -4,7 +4,9 @@ import com.gnopai.ji65.AddressingModeType;
 import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.InstructionType;
 import com.gnopai.ji65.parser.expression.Expression;
+import com.gnopai.ji65.parser.expression.PrimaryExpression;
 import com.gnopai.ji65.parser.statement.*;
+import com.gnopai.ji65.scanner.TokenType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -16,7 +18,7 @@ import static org.mockito.Mockito.when;
 class StatementValueSubstituterTest {
     private final ExpressionValueSubstituter expressionValueSubstituter = mock(ExpressionValueSubstituter.class);
     private final String name = "valueName";
-    private final int value = 99;
+    private final Expression value = new PrimaryExpression(TokenType.NUMBER, 99);
     private final Environment environment = new Environment();
 
     @Test

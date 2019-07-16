@@ -10,14 +10,14 @@ import static java.util.stream.Collectors.toList;
 public class StatementValueSubstituter implements StatementVisitor<Statement> {
     private final ExpressionValueSubstituter expressionValueSubstituter;
     private String name;
-    private int value;
+    private Expression value;
     private Environment environment;
 
     public StatementValueSubstituter(ExpressionValueSubstituter expressionValueSubstituter) {
         this.expressionValueSubstituter = expressionValueSubstituter;
     }
 
-    public Statement substituteValuesInStatement(Statement statement, String name, int value, Environment environment) {
+    public Statement substituteValuesInStatement(Statement statement, String name, Expression value, Environment environment) {
         this.name = name;
         this.value = value;
         this.environment = environment;

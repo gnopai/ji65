@@ -6,11 +6,11 @@ import com.gnopai.ji65.parser.expression.ExpressionEvaluator;
 import com.gnopai.ji65.parser.expression.PrimaryExpression;
 import com.gnopai.ji65.parser.statement.DirectiveStatement;
 import com.gnopai.ji65.parser.statement.Statement;
-import com.gnopai.ji65.scanner.TokenType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static com.gnopai.ji65.scanner.TokenType.NUMBER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -23,7 +23,7 @@ class RepeatDirectiveProcessorTest {
     @Test
     void testWithoutArgument() {
         int count = 4;
-        Expression countExpression = new PrimaryExpression(TokenType.NUMBER, 4);
+        Expression countExpression = new PrimaryExpression(NUMBER, 4);
         when(expressionEvaluator.evaluate(countExpression, environment)).thenReturn(count);
 
         Statement statement1 = mock(Statement.class);
@@ -52,7 +52,7 @@ class RepeatDirectiveProcessorTest {
     @Test
     void testWithArgument() {
         int count = 3;
-        Expression countExpression = new PrimaryExpression(TokenType.NUMBER, 3);
+        Expression countExpression = new PrimaryExpression(NUMBER, 3);
         when(expressionEvaluator.evaluate(countExpression, environment)).thenReturn(count);
 
         Statement statement1 = mock(Statement.class);
@@ -66,12 +66,12 @@ class RepeatDirectiveProcessorTest {
         Statement statement2_1 = mock(Statement.class);
         Statement statement2_2 = mock(Statement.class);
 
-        when(statementValueSubstituter.substituteValuesInStatement(statement1, argument, 0, environment)).thenReturn(statement1_0);
-        when(statementValueSubstituter.substituteValuesInStatement(statement1, argument, 1, environment)).thenReturn(statement1_1);
-        when(statementValueSubstituter.substituteValuesInStatement(statement1, argument, 2, environment)).thenReturn(statement1_2);
-        when(statementValueSubstituter.substituteValuesInStatement(statement2, argument, 0, environment)).thenReturn(statement2_0);
-        when(statementValueSubstituter.substituteValuesInStatement(statement2, argument, 1, environment)).thenReturn(statement2_1);
-        when(statementValueSubstituter.substituteValuesInStatement(statement2, argument, 2, environment)).thenReturn(statement2_2);
+        when(statementValueSubstituter.substituteValuesInStatement(statement1, argument, new PrimaryExpression(NUMBER, 0), environment)).thenReturn(statement1_0);
+        when(statementValueSubstituter.substituteValuesInStatement(statement1, argument, new PrimaryExpression(NUMBER, 1), environment)).thenReturn(statement1_1);
+        when(statementValueSubstituter.substituteValuesInStatement(statement1, argument, new PrimaryExpression(NUMBER, 2), environment)).thenReturn(statement1_2);
+        when(statementValueSubstituter.substituteValuesInStatement(statement2, argument, new PrimaryExpression(NUMBER, 0), environment)).thenReturn(statement2_0);
+        when(statementValueSubstituter.substituteValuesInStatement(statement2, argument, new PrimaryExpression(NUMBER, 1), environment)).thenReturn(statement2_1);
+        when(statementValueSubstituter.substituteValuesInStatement(statement2, argument, new PrimaryExpression(NUMBER, 2), environment)).thenReturn(statement2_2);
 
         DirectiveStatement directiveStatement = DirectiveStatement.builder()
                 .type(DirectiveType.REPEAT)
