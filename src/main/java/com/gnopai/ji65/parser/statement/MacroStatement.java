@@ -16,4 +16,8 @@ public class MacroStatement implements Statement {
     public <T> T accept(StatementVisitor<T> statementVisitor) {
         return statementVisitor.visit(this);
     }
+
+    public Expression getArgument(int i) {
+        return arguments.get(i);
+    }
 }

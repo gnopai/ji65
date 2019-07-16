@@ -18,6 +18,7 @@ class AssemblerTest {
     private final FirstPassResolver firstPassResolver = mock(FirstPassResolver.class);
     private final DirectiveDataAssembler directiveDataAssembler = mock(DirectiveDataAssembler.class);
     private final RepeatDirectiveProcessor repeatDirectiveProcessor = mock(RepeatDirectiveProcessor.class);
+    private final MacroProcessor macroProcessor = mock(MacroProcessor.class);
 
     private final SegmentConfig segmentConfig = SegmentConfig.builder().segmentName(DEFAULT_SEGMENT_NAME).build();
     private final ProgramConfig programConfig = ProgramConfig.builder()
@@ -32,7 +33,7 @@ class AssemblerTest {
         Statement statement3 = mock(Statement.class);
         List<Statement> statements = List.of(statement1, statement2, statement3);
 
-        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor);
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor, macroProcessor);
 
         AssembledSegments result = assembler.assemble(statements, programConfig, environment);
 
@@ -53,7 +54,7 @@ class AssemblerTest {
         Label expectedLabel = new Label("derp");
         environment.define("derp", expectedLabel);
 
-        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor);
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor, macroProcessor);
 
         AssembledSegments result = assembler.assemble(statements, programConfig, environment);
 
@@ -68,7 +69,7 @@ class AssemblerTest {
         UnnamedLabelStatement statement = new UnnamedLabelStatement();
         List<Statement> statements = List.of(statement);
 
-        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor);
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor, macroProcessor);
 
         AssembledSegments result = assembler.assemble(statements, programConfig, environment);
 
@@ -93,7 +94,7 @@ class AssemblerTest {
         environment.enterChildScope(parentLabelName);
         environment.define(localLabelName, localLabel);
 
-        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor);
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor, macroProcessor);
 
         AssembledSegments result = assembler.assemble(statements, programConfig, environment);
 
@@ -112,7 +113,7 @@ class AssemblerTest {
         Label localLabel = new Label(localLabelName);
         environment.define(localLabelName, localLabel);
 
-        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor);
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor, macroProcessor);
 
         AssembledSegments result = assembler.assemble(statements, programConfig, environment);
 
@@ -147,7 +148,7 @@ class AssemblerTest {
                 .segmentConfigs(List.of(segmentConfig1, segmentConfig2))
                 .build();
 
-        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor);
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor, macroProcessor);
 
         AssembledSegments result = assembler.assemble(statements, programConfig, environment);
 
@@ -170,7 +171,7 @@ class AssemblerTest {
 
         List<Statement> statements = List.of(directiveStatement);
 
-        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor);
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor, macroProcessor);
 
         AssembledSegments result = assembler.assemble(statements, programConfig, environment);
 
@@ -193,7 +194,7 @@ class AssemblerTest {
         List<Statement> statements = List.of(statement1, statement2, statement3);
         when(repeatDirectiveProcessor.process(directiveStatement, environment)).thenReturn(statements);
 
-        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor);
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor, macroProcessor);
 
         AssembledSegments result = assembler.assemble(List.of(directiveStatement), programConfig, environment);
 
@@ -201,6 +202,28 @@ class AssemblerTest {
         AssembledSegments assembledSegments = new AssembledSegments(expectedSegments, environment);
         assertEquals(assembledSegments, result);
         verify(firstPassResolver).resolve(List.of(directiveStatement), assembledSegments);
+        verify(statement1).accept(assembler);
+        verify(statement2).accept(assembler);
+        verify(statement3).accept(assembler);
+    }
+
+    @Test
+    void testMacroStatement() {
+        MacroStatement macroStatement = new MacroStatement("foo", List.of());
+        Statement statement1 = mock(Statement.class);
+        Statement statement2 = mock(Statement.class);
+        Statement statement3 = mock(Statement.class);
+        List<Statement> statements = List.of(statement1, statement2, statement3);
+        when(macroProcessor.process(macroStatement, environment)).thenReturn(statements);
+
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor, macroProcessor);
+
+        AssembledSegments result = assembler.assemble(List.of(macroStatement), programConfig, environment);
+
+        List<Segment> expectedSegments = List.of(new Segment(segmentConfig));
+        AssembledSegments assembledSegments = new AssembledSegments(expectedSegments, environment);
+        assertEquals(assembledSegments, result);
+        verify(firstPassResolver).resolve(List.of(macroStatement), assembledSegments);
         verify(statement1).accept(assembler);
         verify(statement2).accept(assembler);
         verify(statement3).accept(assembler);

@@ -10,9 +10,17 @@ import java.util.List;
 public class Macro {
     String name;
     List<Statement> statements;
-    List<String> arguments;
+    List<String> argumentNames;
 
     public static Macro of(DirectiveStatement directiveStatement) {
         return new Macro(directiveStatement.getName(), directiveStatement.getStatements(), directiveStatement.getArguments());
+    }
+
+    public int getArgumentCount() {
+        return argumentNames.size();
+    }
+
+    public String getArgumentName(int i) {
+        return argumentNames.get(i);
     }
 }
