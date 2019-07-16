@@ -17,6 +17,7 @@ import com.gnopai.ji65.parser.Parser;
 import com.gnopai.ji65.parser.TokenConsumer;
 import com.gnopai.ji65.parser.expression.ExpressionEvaluator;
 import com.gnopai.ji65.parser.statement.Statement;
+import com.gnopai.ji65.scanner.FileLoader;
 import com.gnopai.ji65.scanner.Scanner;
 import com.gnopai.ji65.scanner.Token;
 import com.gnopai.ji65.scanner.TokenReader;
@@ -73,7 +74,7 @@ public class Ji65 {
         Assembler assembler = new Assembler(
                 new FirstPassResolver(expressionEvaluator),
                 new InstructionAssembler(new ExpressionZeroPageChecker()),
-                new DirectiveDataAssembler(expressionEvaluator),
+                new DirectiveDataAssembler(expressionEvaluator, new FileLoader()),
                 new RepeatDirectiveProcessor(
                         statementValueSubstituter,
                         expressionEvaluator

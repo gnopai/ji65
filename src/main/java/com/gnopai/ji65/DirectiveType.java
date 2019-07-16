@@ -19,6 +19,8 @@ public enum DirectiveType {
     REPEAT_END("endrep"),
     MACRO("macro"),
     MACRO_END("endmacro"),
+    INCLUDE("include"),
+    INCLUDE_BINARY("incbin"),
     ;
 
     private final String identifier;

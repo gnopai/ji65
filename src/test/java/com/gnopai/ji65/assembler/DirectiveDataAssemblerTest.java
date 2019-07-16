@@ -5,10 +5,12 @@ import com.gnopai.ji65.parser.expression.Expression;
 import com.gnopai.ji65.parser.expression.ExpressionEvaluator;
 import com.gnopai.ji65.parser.expression.PrimaryExpression;
 import com.gnopai.ji65.parser.statement.DirectiveStatement;
+import com.gnopai.ji65.scanner.FileLoader;
 import com.gnopai.ji65.scanner.TokenType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -17,6 +19,7 @@ import static org.mockito.Mockito.when;
 
 class DirectiveDataAssemblerTest {
     private final ExpressionEvaluator expressionEvaluator = mock(ExpressionEvaluator.class);
+    private final FileLoader fileLoader = mock(FileLoader.class);
     private final Environment environment = new Environment();
 
     @Test
@@ -78,6 +81,37 @@ class DirectiveDataAssemblerTest {
     }
 
     @Test
+    void testIncludeBinaryDirective() {
+        String filename = "wheeee.chr";
+        DirectiveStatement statement = DirectiveStatement.builder()
+                .type(DirectiveType.INCLUDE_BINARY)
+                .name(filename)
+                .build();
+
+        List<Byte> bytes = List.of((byte) 0x12, (byte) 0xFF);
+        when(fileLoader.loadBinaryFile(filename)).thenReturn(Optional.of(bytes));
+
+        List<SegmentData> segmentData = assemble(statement);
+
+        List<SegmentData> expectedSegmentData = List.of(new RawData(bytes));
+        assertEquals(expectedSegmentData, segmentData);
+    }
+
+    @Test
+    void testIncludeBinaryDirective_badFile() {
+        String filename = "whee.chr";
+        DirectiveStatement statement = DirectiveStatement.builder()
+                .type(DirectiveType.INCLUDE_BINARY)
+                .name(filename)
+                .build();
+
+        when(fileLoader.loadBinaryFile(filename)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> assemble(statement));
+        assertEquals("Failed to open binary file: whee.chr", exception.getMessage());
+    }
+
+    @Test
     void testUnsupportedDirectiveType() {
         DirectiveStatement statement = DirectiveStatement.builder()
                 .type(DirectiveType.MACRO_END)
@@ -87,7 +121,7 @@ class DirectiveDataAssemblerTest {
     }
 
     private List<SegmentData> assemble(DirectiveStatement statement) {
-        return new DirectiveDataAssembler(expressionEvaluator)
+        return new DirectiveDataAssembler(expressionEvaluator, fileLoader)
                 .assemble(statement, environment);
     }
 }
