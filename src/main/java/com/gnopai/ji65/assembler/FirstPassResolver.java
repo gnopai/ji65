@@ -1,6 +1,5 @@
 package com.gnopai.ji65.assembler;
 
-import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.parser.expression.ExpressionEvaluator;
 import com.gnopai.ji65.parser.expression.PrimaryExpression;
 import com.gnopai.ji65.parser.statement.*;
@@ -63,9 +62,14 @@ public class FirstPassResolver implements StatementVisitor<Void> {
 
     @Override
     public Void visit(DirectiveStatement directiveStatement) {
-        if (DirectiveType.SEGMENT.equals(directiveStatement.getType())) {
-            currentSegment = directiveStatement.getName();
-            environment.goToRootScope();
+        switch (directiveStatement.getType()) {
+            case SEGMENT:
+                currentSegment = directiveStatement.getName();
+                environment.goToRootScope();
+                break;
+            case MACRO:
+                environment.defineMacro(Macro.of(directiveStatement));
+                break;
         }
         return null;
     }
@@ -75,6 +79,12 @@ public class FirstPassResolver implements StatementVisitor<Void> {
         // TODO support labels here? We'll error out on them as it is now.
         int value = expressionEvaluator.evaluate(assignmentStatement.getExpression(), environment);
         environment.defineGlobal(assignmentStatement.getName(), new PrimaryExpression(TokenType.NUMBER, value));
+        return null;
+    }
+
+    @Override
+    public Void visit(MacroStatement macroStatement) {
+        // no-op
         return null;
     }
 

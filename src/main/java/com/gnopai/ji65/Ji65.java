@@ -69,15 +69,16 @@ public class Ji65 {
     private AssembledSegments assemble(List<Statement> statements, ProgramConfig programConfig) {
         Environment environment = new Environment();
         ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator();
+        StatementValueSubstituter statementValueSubstituter = new StatementValueSubstituter(new ExpressionValueSubstituter());
         Assembler assembler = new Assembler(
                 new FirstPassResolver(expressionEvaluator),
                 new InstructionAssembler(new ExpressionZeroPageChecker()),
                 new DirectiveDataAssembler(expressionEvaluator),
                 new RepeatDirectiveProcessor(
-                        new StatementValueSubstituter(new ExpressionValueSubstituter()),
+                        statementValueSubstituter,
                         expressionEvaluator
-                )
-        );
+                ),
+                new MacroProcessor(statementValueSubstituter));
         return assembler.assemble(statements, programConfig, environment);
     }
 

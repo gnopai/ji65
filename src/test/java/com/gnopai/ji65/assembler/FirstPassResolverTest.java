@@ -136,6 +136,29 @@ class FirstPassResolverTest {
         verify(statement3).accept(testClass);
     }
 
+    @Test
+    void testDirectiveStatement_macro() {
+        Statement statement1 = mock(Statement.class);
+        Statement statement2 = mock(Statement.class);
+        String macroName = "Whee";
+        DirectiveStatement directiveStatement = DirectiveStatement.builder()
+                .type(DirectiveType.MACRO)
+                .name(macroName)
+                .statement(statement1)
+                .statement(statement2)
+                .argument("a")
+                .build();
+        Environment environment = new Environment();
+        AssembledSegments assembledSegments = new AssembledSegments(List.of(segment(DEFAULT_SEGMENT_NAME, SegmentType.READ_ONLY)), environment);
+
+        FirstPassResolver testClass = new FirstPassResolver(expressionEvaluator);
+
+        testClass.resolve(List.of(directiveStatement), assembledSegments);
+
+        Macro expectedMacro = new Macro(macroName, List.of(statement1, statement2), List.of("a"));
+        assertEquals(Optional.of(expectedMacro), environment.getMacro(macroName));
+    }
+
     private Segment segment(String name, SegmentType type) {
         return new Segment(SegmentConfig.builder()
                 .segmentName(name)

@@ -8,9 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ExpressionValueSubstituterTest {
     private final String name = "valueName";
-    private final int value = 99;
+    private final Expression value = new PrimaryExpression(TokenType.NUMBER, 99);
     private final Environment environment = new Environment();
-    private final Expression substitutedExpression = new PrimaryExpression(TokenType.NUMBER, value);
 
     @Test
     void testPrefixExpression_noMatch() {
@@ -24,7 +23,7 @@ class ExpressionValueSubstituterTest {
     void testPrefixExpression_match() {
         PrefixExpression expression = new PrefixExpression(TokenType.MINUS, identifier(name));
         Expression result = testSubstitution(expression);
-        Expression expectedResult = new PrefixExpression(TokenType.MINUS, substitutedExpression);
+        Expression expectedResult = new PrefixExpression(TokenType.MINUS, value);
         assertEquals(expectedResult, result);
     }
 
@@ -32,7 +31,7 @@ class ExpressionValueSubstituterTest {
     void testBinaryOperatorExpression_leftMatch() {
         BinaryOperatorExpression expression = new BinaryOperatorExpression(identifier(name), TokenType.PLUS, identifier("nope"));
         Expression result = testSubstitution(expression);
-        Expression expectedResult = new BinaryOperatorExpression(substitutedExpression, TokenType.PLUS, identifier("nope"));
+        Expression expectedResult = new BinaryOperatorExpression(value, TokenType.PLUS, identifier("nope"));
         assertEquals(expectedResult, result);
     }
 
@@ -40,7 +39,7 @@ class ExpressionValueSubstituterTest {
     void testBinaryOperatorExpression_rightMatch() {
         BinaryOperatorExpression expression = new BinaryOperatorExpression(identifier("nope"), TokenType.PLUS, identifier(name));
         Expression result = testSubstitution(expression);
-        Expression expectedResult = new BinaryOperatorExpression(identifier("nope"), TokenType.PLUS, substitutedExpression);
+        Expression expectedResult = new BinaryOperatorExpression(identifier("nope"), TokenType.PLUS, value);
         assertEquals(expectedResult, result);
     }
 
@@ -55,7 +54,7 @@ class ExpressionValueSubstituterTest {
     void testIdentifierExpression_match() {
         IdentifierExpression expression = identifier(name);
         Expression result = testSubstitution(expression);
-        assertEquals(substitutedExpression, result);
+        assertEquals(value, result);
     }
 
     private IdentifierExpression identifier(String name) {

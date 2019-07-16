@@ -4,11 +4,12 @@ import com.gnopai.ji65.AddressingModeType;
 import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.InstructionType;
 import com.gnopai.ji65.parser.expression.Expression;
-import com.gnopai.ji65.parser.statement.AssignmentStatement;
-import com.gnopai.ji65.parser.statement.DirectiveStatement;
-import com.gnopai.ji65.parser.statement.InstructionStatement;
-import com.gnopai.ji65.parser.statement.Statement;
+import com.gnopai.ji65.parser.expression.PrimaryExpression;
+import com.gnopai.ji65.parser.statement.*;
+import com.gnopai.ji65.scanner.TokenType;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -17,7 +18,7 @@ import static org.mockito.Mockito.when;
 class StatementValueSubstituterTest {
     private final ExpressionValueSubstituter expressionValueSubstituter = mock(ExpressionValueSubstituter.class);
     private final String name = "valueName";
-    private final int value = 99;
+    private final Expression value = new PrimaryExpression(TokenType.NUMBER, 99);
     private final Environment environment = new Environment();
 
     @Test
@@ -116,5 +117,24 @@ class StatementValueSubstituterTest {
                 .expression(tweakedExpression2)
                 .build();
         assertEquals(expectedStatement, statement);
+    }
+
+    @Test
+    void testMacroStatement() {
+        Expression argumentExpression1 = mock(Expression.class);
+        Expression argumentExpression2 = mock(Expression.class);
+        MacroStatement macroStatement = new MacroStatement("Whee", List.of(argumentExpression1, argumentExpression2));
+
+        Expression tweakedExpression1 = mock(Expression.class);
+        Expression tweakedExpression2 = mock(Expression.class);
+        when(expressionValueSubstituter.substituteValue(name, value, argumentExpression1, environment)).thenReturn(tweakedExpression1);
+        when(expressionValueSubstituter.substituteValue(name, value, argumentExpression2, environment)).thenReturn(tweakedExpression2);
+
+        StatementValueSubstituter testClass = new StatementValueSubstituter(expressionValueSubstituter);
+
+        Statement statement = testClass.substituteValuesInStatement(macroStatement, name, value, environment);
+
+        MacroStatement expectedMacroStatement = new MacroStatement("Whee", List.of(tweakedExpression1, tweakedExpression2));
+        assertEquals(expectedMacroStatement, statement);
     }
 }

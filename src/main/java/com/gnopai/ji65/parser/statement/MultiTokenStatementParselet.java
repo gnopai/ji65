@@ -10,16 +10,18 @@ import static java.util.Optional.ofNullable;
 
 public class MultiTokenStatementParselet implements StatementParselet {
     private final Map<TokenType, StatementParselet> parselets;
+    private final StatementParselet defaultParselet;
 
-    public MultiTokenStatementParselet(Map<TokenType, StatementParselet> parselets) {
+    public MultiTokenStatementParselet(Map<TokenType, StatementParselet> parselets, StatementParselet defaultParselet) {
         this.parselets = parselets;
+        this.defaultParselet = defaultParselet;
     }
 
     @Override
     public Statement parse(Token token, Parser parser) {
-        Token nextToken = parser.consume();
-        return ofNullable(parselets.get(nextToken.getType()))
-                .map(parselet -> parselet.parse(nextToken, parser))
-                .orElseThrow(() -> parser.error("Unexpected token " + nextToken.getType()));
+        TokenType nextTokenType = parser.peekNextTokenType();
+        return ofNullable(parselets.get(nextTokenType))
+                .map(parselet -> parselet.parse(token, parser))
+                .orElseGet(() -> defaultParselet.parse(token, parser));
     }
 }

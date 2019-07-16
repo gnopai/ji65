@@ -12,4 +12,6 @@ public interface StatementVisitor<T> {
     T visit(DirectiveStatement directiveStatement);
 
     T visit(AssignmentStatement assignmentStatement);
+
+    T visit(MacroStatement macroStatement);
 }

@@ -1,8 +1,10 @@
 package com.gnopai.ji65.assembler;
 
 import com.gnopai.ji65.parser.expression.ExpressionEvaluator;
+import com.gnopai.ji65.parser.expression.PrimaryExpression;
 import com.gnopai.ji65.parser.statement.DirectiveStatement;
 import com.gnopai.ji65.parser.statement.Statement;
+import com.gnopai.ji65.scanner.TokenType;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -30,10 +32,13 @@ public class RepeatDirectiveProcessor {
         if (!directiveStatement.hasArguments()) {
             return directiveStatement.getStatements();
         }
+        String argumentName = directiveStatement.getArgument(0);
 
         return directiveStatement.getStatements().stream()
-                .map(statement ->
-                        statementValueSubstituter.substituteValuesInStatement(statement, directiveStatement.getArgument(0), i, environment)
+                .map(statement -> {
+                            PrimaryExpression indexValue = new PrimaryExpression(TokenType.NUMBER, i);
+                            return statementValueSubstituter.substituteValuesInStatement(statement, argumentName, indexValue, environment);
+                        }
                 )
                 .collect(toList());
     }
