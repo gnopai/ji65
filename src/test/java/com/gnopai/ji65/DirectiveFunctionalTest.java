@@ -210,4 +210,33 @@ class DirectiveFunctionalTest {
 
         assertEquals((byte) 0x00, cpu.getMemoryValue(new Address(0x200C)));
     }
+
+    @Test
+    void testMacroDirective() {
+        Address programStartAddress = new Address(0x4567);
+        ProgramConfig programConfig = ProgramConfig.builder()
+                .memoryConfigs(List.of(
+                        zeroPageMemoryConfig,
+                        programMemoryConfig.withStartAddress(programStartAddress))
+                )
+                .segmentConfigs(List.of(zeroPageSegmentConfig, programSegmentConfig))
+                .build();
+        Cpu cpu = Cpu.builder().build();
+        assembleAndRun(cpu, programConfig,
+                ".macro foo arg1, arg2",
+                "lda #arg1",
+                "clc",
+                "adc #$10",
+                "sta arg2",
+                ".endmacro",
+
+                "foo 1, $2000",
+                "foo 1+2+3, $2001",
+                "foo $35, $2002"
+        );
+
+        assertEquals((byte) 0x11, cpu.getMemoryValue(new Address(0x2000)));
+        assertEquals((byte) 0x16, cpu.getMemoryValue(new Address(0x2001)));
+        assertEquals((byte) 0x45, cpu.getMemoryValue(new Address(0x2002)));
+    }
 }

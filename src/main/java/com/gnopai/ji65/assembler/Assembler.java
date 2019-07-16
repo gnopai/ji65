@@ -76,6 +76,9 @@ public class Assembler implements StatementVisitor<Void> {
                 repeatDirectiveProcessor.process(directiveStatement, environment)
                         .forEach(statement -> statement.accept(this));
                 break;
+            case MACRO:
+                // handled in first pass
+                break;
             default:
                 directiveDataAssembler.assemble(directiveStatement, environment)
                         .forEach(data -> assembledSegments.add(currentSegment, data));
