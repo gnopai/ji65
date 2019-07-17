@@ -15,4 +15,6 @@ Github, import the project via the Gradle file, and then run...? This is current
 Things To Do
 ------------
 
-Most things. Please update this.
+ * Add test-framework functionality into this, which has always been my over-arching goal.
+ * There's a lot of features present in that similar-but-much-better tool ca65 that could be added here that I haven't personally used. I'll probably add these as I run into them.
+ * I kind of want to turn this into a full-fledged NES emulator long-term, though maybe as a separate module. We'll see.
