@@ -6,6 +6,7 @@ import com.gnopai.ji65.parser.statement.DirectiveStatement;
 import com.gnopai.ji65.parser.statement.Statement;
 import com.gnopai.ji65.scanner.TokenType;
 
+import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -15,6 +16,7 @@ public class RepeatDirectiveProcessor {
     private final StatementValueSubstituter statementValueSubstituter;
     private final ExpressionEvaluator expressionEvaluator;
 
+    @Inject
     public RepeatDirectiveProcessor(StatementValueSubstituter statementValueSubstituter, ExpressionEvaluator expressionEvaluator) {
         this.statementValueSubstituter = statementValueSubstituter;
         this.expressionEvaluator = expressionEvaluator;

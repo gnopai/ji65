@@ -5,6 +5,7 @@ import com.gnopai.ji65.parser.expression.PrimaryExpression;
 import com.gnopai.ji65.parser.statement.*;
 import com.gnopai.ji65.scanner.TokenType;
 
+import javax.inject.Inject;
 import java.util.List;
 
 public class FirstPassResolver implements StatementVisitor<Void> {
@@ -13,6 +14,7 @@ public class FirstPassResolver implements StatementVisitor<Void> {
     private Environment environment;
     private String currentSegment;
 
+    @Inject
     public FirstPassResolver(ExpressionEvaluator expressionEvaluator) {
         this.expressionEvaluator = expressionEvaluator;
     }

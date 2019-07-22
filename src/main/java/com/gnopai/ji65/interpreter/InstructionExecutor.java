@@ -7,10 +7,13 @@ import com.gnopai.ji65.interpreter.address.AddressingModeFactory;
 import com.gnopai.ji65.interpreter.instruction.Instruction;
 import com.gnopai.ji65.interpreter.instruction.InstructionFactory;
 
+import javax.inject.Inject;
+
 public class InstructionExecutor {
     private final InstructionFactory instructionFactory;
     private final AddressingModeFactory addressingModeFactory;
 
+    @Inject
     public InstructionExecutor(InstructionFactory instructionFactory, AddressingModeFactory addressingModeFactory) {
         this.instructionFactory = instructionFactory;
         this.addressingModeFactory = addressingModeFactory;

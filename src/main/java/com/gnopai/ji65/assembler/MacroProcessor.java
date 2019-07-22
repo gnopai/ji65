@@ -3,6 +3,7 @@ package com.gnopai.ji65.assembler;
 import com.gnopai.ji65.parser.statement.MacroStatement;
 import com.gnopai.ji65.parser.statement.Statement;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -10,6 +11,7 @@ import static java.util.stream.Collectors.toList;
 public class MacroProcessor {
     private final StatementValueSubstituter statementValueSubstituter;
 
+    @Inject
     public MacroProcessor(StatementValueSubstituter statementValueSubstituter) {
         this.statementValueSubstituter = statementValueSubstituter;
     }

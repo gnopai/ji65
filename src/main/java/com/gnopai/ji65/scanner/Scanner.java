@@ -3,6 +3,7 @@ package com.gnopai.ji65.scanner;
 import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.InstructionType;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static com.gnopai.ji65.scanner.TokenType.*;
@@ -10,6 +11,7 @@ import static com.gnopai.ji65.scanner.TokenType.*;
 public class Scanner {
     private final TokenReader tokenReader;
 
+    @Inject
     public Scanner(TokenReader tokenReader) {
         this.tokenReader = tokenReader;
     }

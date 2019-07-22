@@ -5,11 +5,13 @@ import com.gnopai.ji65.InstructionType;
 import com.gnopai.ji65.Opcode;
 import com.gnopai.ji65.parser.statement.InstructionStatement;
 
+import javax.inject.Inject;
 import java.util.Optional;
 
 public class InstructionAssembler {
     private final ExpressionZeroPageChecker expressionZeroPageChecker;
 
+    @Inject
     public InstructionAssembler(ExpressionZeroPageChecker expressionZeroPageChecker) {
         this.expressionZeroPageChecker = expressionZeroPageChecker;
     }

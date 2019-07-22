@@ -3,9 +3,12 @@ package com.gnopai.ji65.interpreter;
 import com.gnopai.ji65.Cpu;
 import com.gnopai.ji65.Program;
 
+import javax.inject.Inject;
+
 public class Interpreter {
     private final InstructionExecutor instructionExecutor;
 
+    @Inject
     public Interpreter(InstructionExecutor instructionExecutor) {
         this.instructionExecutor = instructionExecutor;
     }

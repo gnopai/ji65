@@ -32,13 +32,12 @@ class ParserTest {
         when(parseletFactory.getStatementParselet(TokenType.INSTRUCTION)).thenReturn(Optional.of(instructionStatementParselet));
 
         Token token1 = token(TokenType.INSTRUCTION, InstructionType.LDA);
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, List.of(token1));
-        Parser parser = new Parser(parseletFactory, tokenConsumer);
+        Parser parser = new Parser(parseletFactory, errorHandler);
 
         Statement statement = instructionStatement(InstructionType.LDA);
         when(instructionStatementParselet.parse(token1, parser)).thenReturn(statement);
 
-        List<Statement> statements = parser.parse();
+        List<Statement> statements = parser.parse(List.of(token1));
         assertEquals(List.of(statement), statements);
     }
 
@@ -49,17 +48,17 @@ class ParserTest {
         when(parseletFactory.getStatementParselet(TokenType.INSTRUCTION)).thenReturn(Optional.of(instructionStatementParselet));
 
         Token token = token(TokenType.INSTRUCTION, InstructionType.LDA);
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, List.of(
+        List<Token> tokens = List.of(
                 token(TokenType.EOL),
                 token(TokenType.EOL),
                 token
-        ));
-        Parser parser = new Parser(parseletFactory, tokenConsumer);
+        );
+        Parser parser = new Parser(parseletFactory, errorHandler);
 
         Statement statement = instructionStatement(InstructionType.LDA);
         when(instructionStatementParselet.parse(token, parser)).thenReturn(statement);
 
-        List<Statement> statements = parser.parse();
+        List<Statement> statements = parser.parse(tokens);
         assertEquals(List.of(statement), statements);
     }
 
@@ -74,8 +73,8 @@ class ParserTest {
         Token token1 = token(TokenType.INSTRUCTION, InstructionType.LDA);
         Token token2 = token(TokenType.DIRECTIVE);
         Token token3 = token(TokenType.INSTRUCTION, InstructionType.STA);
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, List.of(token1, token2, token3));
-        Parser parser = new Parser(parseletFactory, tokenConsumer);
+        List<Token> tokens = List.of(token1, token2, token3);
+        Parser parser = new Parser(parseletFactory, errorHandler);
 
         Statement statement1 = instructionStatement(InstructionType.LDA);
         when(instructionStatementParselet.parse(token1, parser)).thenReturn(statement1);
@@ -84,7 +83,7 @@ class ParserTest {
         Statement statement3 = instructionStatement(InstructionType.STA);
         when(instructionStatementParselet.parse(token3, parser)).thenReturn(statement3);
 
-        List<Statement> statements = parser.parse();
+        List<Statement> statements = parser.parse(tokens);
         assertEquals(List.of(statement1, statement2, statement3), statements);
     }
 
@@ -99,7 +98,7 @@ class ParserTest {
         Token token1 = token(TokenType.INSTRUCTION, InstructionType.LDA);
         Token token2 = token(TokenType.DIRECTIVE);
         Token token3 = token(TokenType.INSTRUCTION, InstructionType.STA);
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, List.of(
+        List<Token> tokens = List.of(
                 token(TokenType.EOL),
                 token1,
                 token(TokenType.EOL),
@@ -107,8 +106,8 @@ class ParserTest {
                 token(TokenType.EOL),
                 token2,
                 token3
-        ));
-        Parser parser = new Parser(parseletFactory, tokenConsumer);
+        );
+        Parser parser = new Parser(parseletFactory, errorHandler);
 
         Statement statement1 = instructionStatement(InstructionType.LDA);
         when(instructionStatementParselet.parse(token1, parser)).thenReturn(statement1);
@@ -117,27 +116,27 @@ class ParserTest {
         Statement statement3 = instructionStatement(InstructionType.STA);
         when(instructionStatementParselet.parse(token3, parser)).thenReturn(statement3);
 
-        List<Statement> statements = parser.parse();
+        List<Statement> statements = parser.parse(tokens);
         assertEquals(List.of(statement1, statement2, statement3), statements);
     }
 
     @Test
     void testParse_invalidStatementToken() {
         Token badToken = token(TokenType.STRING, "uhoh");
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, List.of(badToken));
-        Parser parser = new Parser(new ParseletFactory(), tokenConsumer);
+        List<Token> tokens = List.of(badToken);
+        Parser parser = new Parser(new ParseletFactory(), errorHandler);
 
-        ParseException parseException = assertThrows(ParseException.class, parser::parse);
+        ParseException parseException = assertThrows(ParseException.class, () -> parser.parse(tokens));
         assertEquals(badToken, parseException.getToken());
     }
 
     @Test
     void testExpression_singleHighPrecedenceExpression() {
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, List.of(
+        Parser parser = new Parser(new ParseletFactory(), errorHandler);
+        parser.setTokenConsumer(new TokenConsumer(errorHandler, List.of(
                 token(TokenType.NUMBER, 5),
                 token(TokenType.STRING, "derp")
-        ));
-        Parser parser = new Parser(new ParseletFactory(), tokenConsumer);
+        )));
 
         Expression expression = parser.expression();
         assertEquals(new PrimaryExpression(TokenType.NUMBER, 5), expression);
@@ -145,13 +144,13 @@ class ParserTest {
 
     @Test
     void testExpression_simpleExpressionChain() {
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, List.of(
+        Parser parser = new Parser(new ParseletFactory(), errorHandler);
+        parser.setTokenConsumer(new TokenConsumer(errorHandler, List.of(
                 token(TokenType.NUMBER, 5),
                 token(TokenType.PLUS),
                 token(TokenType.NUMBER, 10),
                 token(TokenType.STRING, "derp")
-        ));
-        Parser parser = new Parser(new ParseletFactory(), tokenConsumer);
+        )));
 
         Expression expression = parser.expression();
         Expression expectedExpression = new BinaryOperatorExpression(
@@ -164,15 +163,15 @@ class ParserTest {
 
     @Test
     void testExpression_moreComplexExpressionChain_precedenceHighToLow() {
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, List.of(
+        Parser parser = new Parser(new ParseletFactory(), errorHandler);
+        parser.setTokenConsumer(new TokenConsumer(errorHandler, List.of(
                 token(TokenType.NUMBER, 2),
                 token(TokenType.STAR),
                 token(TokenType.NUMBER, 4),
                 token(TokenType.PLUS, 10),
                 token(TokenType.NUMBER, 6),
                 token(TokenType.STRING, "derp")
-        ));
-        Parser parser = new Parser(new ParseletFactory(), tokenConsumer);
+        )));
 
         Expression expression = parser.expression();
         Expression expectedExpression = new BinaryOperatorExpression(
@@ -189,15 +188,15 @@ class ParserTest {
 
     @Test
     void testExpression_moreComplexExpressionChain_precedenceLowToHigh() {
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, List.of(
+        Parser parser = new Parser(new ParseletFactory(), errorHandler);
+        parser.setTokenConsumer(new TokenConsumer(errorHandler, List.of(
                 token(TokenType.NUMBER, 2),
                 token(TokenType.PLUS),
                 token(TokenType.NUMBER, 4),
                 token(TokenType.STAR, 10),
                 token(TokenType.NUMBER, 6),
                 token(TokenType.STRING, "derp")
-        ));
-        Parser parser = new Parser(new ParseletFactory(), tokenConsumer);
+        )));
 
         Expression expression = parser.expression();
 
@@ -214,10 +213,10 @@ class ParserTest {
 
     @Test
     void testExpression_invalidPrefixParseletToken() {
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, List.of(
+        Parser parser = new Parser(new ParseletFactory(), errorHandler);
+        parser.setTokenConsumer(new TokenConsumer(errorHandler, List.of(
                 token(TokenType.PLUS)
-        ));
-        Parser parser = new Parser(new ParseletFactory(), tokenConsumer);
+        )));
 
         ParseException parseException = assertThrows(ParseException.class, parser::expression);
         assertEquals(token(TokenType.PLUS), parseException.getToken());

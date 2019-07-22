@@ -6,7 +6,10 @@ import com.gnopai.ji65.parser.expression.InfixParselet;
 import com.gnopai.ji65.parser.statement.Statement;
 import com.gnopai.ji65.scanner.Token;
 import com.gnopai.ji65.scanner.TokenType;
+import com.gnopai.ji65.util.ErrorHandler;
+import com.google.common.annotations.VisibleForTesting;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,19 +18,28 @@ import java.util.List;
  */
 public class Parser {
     private final ParseletFactory parseletFactory;
-    private final TokenConsumer tokenConsumer;
+    private final ErrorHandler errorHandler;
+    private TokenConsumer tokenConsumer;
 
-    public Parser(ParseletFactory parseletFactory, TokenConsumer tokenConsumer) {
+    @Inject
+    public Parser(ParseletFactory parseletFactory, ErrorHandler errorHandler) {
         this.parseletFactory = parseletFactory;
-        this.tokenConsumer = tokenConsumer;
+        this.errorHandler = errorHandler;
     }
 
-    public List<Statement> parse() {
+    // TODO clean this up please
+    public List<Statement> parse(List<Token> tokens) {
+        setTokenConsumer(new TokenConsumer(errorHandler, tokens));
         List<Statement> statements = new ArrayList<>();
         while (tokenConsumer.hasMore()) {
             statements.add(statement());
         }
         return List.copyOf(statements);
+    }
+
+    @VisibleForTesting
+    void setTokenConsumer(TokenConsumer tokenConsumer) {
+        this.tokenConsumer = tokenConsumer;
     }
 
     public Statement statement() {

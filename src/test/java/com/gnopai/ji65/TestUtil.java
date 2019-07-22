@@ -3,6 +3,7 @@ package com.gnopai.ji65;
 import com.gnopai.ji65.config.*;
 import com.gnopai.ji65.interpreter.EndProgramAtValue;
 import com.gnopai.ji65.interpreter.ProgramEndStrategy;
+import com.gnopai.ji65.scanner.SourceFile;
 import com.gnopai.ji65.util.ErrorPrinter;
 
 import java.util.Arrays;
@@ -30,8 +31,9 @@ public class TestUtil {
         String programText = "start:\n" + Arrays.stream(lines)
                 .map(line -> line + "\n")
                 .collect(Collectors.joining(""));
+        SourceFile sourceFile = new SourceFile("not a file", programText);
         Ji65 ji65 = new Ji65(new ErrorPrinter());
-        Program program = ji65.assemble(programText, programConfig);
+        Program program = ji65.assemble(sourceFile, programConfig);
         ji65.run(program, cpu, programEndStrategy);
     }
 

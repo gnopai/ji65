@@ -10,10 +10,11 @@ import java.util.Optional;
 
 public class FileLoader {
 
-    public Optional<String> loadTextFile(String fileName) {
+    public Optional<SourceFile> loadSourceFile(String fileName) {
         try {
             List<String> lines = Files.readAllLines(Paths.get(fileName));
-            return Optional.of(String.join("\n", lines));
+            String text = String.join("\n", lines);
+            return Optional.of(new SourceFile(fileName, text));
         } catch (IOException e) {
             // TODO error?
             return Optional.empty();

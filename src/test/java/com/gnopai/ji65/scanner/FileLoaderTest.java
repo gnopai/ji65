@@ -14,17 +14,18 @@ class FileLoaderTest {
     private final FileLoader testClass = new FileLoader();
 
     @Test
-    void testLoadTextFile() {
+    void testLoadSourceFile() {
         String expectedText = "This is a sample input file.";
-        Optional<String> text = testClass.loadTextFile(getFullTestFileName());
-        assertTrue(text.isPresent());
-        assertEquals(expectedText, text.get());
+        String fileName = getFullTestFileName();
+        Optional<SourceFile> sourceFile = testClass.loadSourceFile(fileName);
+        assertTrue(sourceFile.isPresent());
+        assertEquals(new SourceFile(fileName, expectedText), sourceFile.get());
     }
 
     @Test
-    void testLoadTextFile_error() {
-        Optional<String> text = testClass.loadTextFile("nope");
-        assertFalse(text.isPresent());
+    void testLoadSourceFile_error() {
+        Optional<SourceFile> sourceFile = testClass.loadSourceFile("nope");
+        assertFalse(sourceFile.isPresent());
     }
 
     @Test
