@@ -1,6 +1,6 @@
 package com.gnopai.ji65.config;
 
-import com.gnopai.ji65.parser.TokenConsumer;
+import com.gnopai.ji65.parser.TokenStream;
 import com.gnopai.ji65.scanner.Token;
 import com.gnopai.ji65.scanner.TokenReader;
 import com.gnopai.ji65.util.ErrorHandler;
@@ -29,7 +29,7 @@ public class ConfigReader {
     }
 
     private List<ConfigBlock> parse(List<Token> tokens) {
-        ConfigParser configParser = new ConfigParser(new TokenConsumer(errorHandler, tokens));
+        ConfigParser configParser = new ConfigParser(new TokenStream(errorHandler, tokens));
         return configParser.parse();
     }
 

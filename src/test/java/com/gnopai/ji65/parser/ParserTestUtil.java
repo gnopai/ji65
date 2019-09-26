@@ -18,8 +18,8 @@ public class ParserTestUtil {
     }
 
     public static Statement parse(ErrorHandler errorHandler, Token... tokens) {
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, List.of(tokens));
-        Parser parser = new Parser(new ParseletFactory(), tokenConsumer);
+        TokenStream tokenStream = new TokenStream(errorHandler, List.of(tokens));
+        Parser parser = new Parser(new ParseletFactory(), tokenStream);
         return parser.statement();
     }
 }

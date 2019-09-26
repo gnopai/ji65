@@ -15,16 +15,16 @@ import java.util.List;
  */
 public class Parser {
     private final ParseletFactory parseletFactory;
-    private final TokenConsumer tokenConsumer;
+    private final TokenStream tokenStream;
 
-    public Parser(ParseletFactory parseletFactory, TokenConsumer tokenConsumer) {
+    public Parser(ParseletFactory parseletFactory, TokenStream tokenStream) {
         this.parseletFactory = parseletFactory;
-        this.tokenConsumer = tokenConsumer;
+        this.tokenStream = tokenStream;
     }
 
     public List<Statement> parse() {
         List<Statement> statements = new ArrayList<>();
-        while (tokenConsumer.hasMore()) {
+        while (tokenStream.hasMore()) {
             statements.add(statement());
         }
         return List.copyOf(statements);
@@ -38,9 +38,9 @@ public class Parser {
     }
 
     private Token nextNonEndOfLineToken() {
-        Token token = tokenConsumer.consume();
+        Token token = tokenStream.consume();
         while (TokenType.EOL.equals(token.getType())) {
-            token = tokenConsumer.consume();
+            token = tokenStream.consume();
         }
         return token;
     }
@@ -50,15 +50,15 @@ public class Parser {
     }
 
     public Expression expression(Precedence precedence) {
-        Token firstToken = tokenConsumer.consume();
+        Token firstToken = tokenStream.consume();
 
         Expression expression = parsePrefixExpression(firstToken);
-        Precedence nextTokenPrecedence = getPrecedence(tokenConsumer.peek());
+        Precedence nextTokenPrecedence = getPrecedence(tokenStream.peek());
 
         while (precedence.isLowerThan(nextTokenPrecedence)) {
-            Token currentToken = tokenConsumer.consume();
+            Token currentToken = tokenStream.consume();
             expression = parseInfixExpression(currentToken, expression);
-            nextTokenPrecedence = getPrecedence(tokenConsumer.peek());
+            nextTokenPrecedence = getPrecedence(tokenStream.peek());
         }
 
         return expression;
@@ -83,34 +83,34 @@ public class Parser {
     }
 
     private ParseException error(Token token) {
-        return tokenConsumer.error(token, "Failed to parse token");
+        return tokenStream.error(token, "Failed to parse token");
     }
 
     public ParseException error(String message) {
-        return tokenConsumer.error(message);
+        return tokenStream.error(message);
     }
 
     public Token consume() {
-        return tokenConsumer.consume();
+        return tokenStream.consume();
     }
 
     public Token consume(TokenType tokenType, String errorMessage) {
-        return tokenConsumer.consume(tokenType, errorMessage);
+        return tokenStream.consume(tokenType, errorMessage);
     }
 
     public String consumeString(String errorMessage) {
-        return tokenConsumer.consumeString(errorMessage);
+        return tokenStream.consumeString(errorMessage);
     }
 
     public boolean match(TokenType tokenType) {
-        return tokenConsumer.match(tokenType);
+        return tokenStream.match(tokenType);
     }
 
     public boolean matchDirective(DirectiveType directiveType) {
-        return tokenConsumer.match(TokenType.DIRECTIVE, directiveType);
+        return tokenStream.match(TokenType.DIRECTIVE, directiveType);
     }
 
     public TokenType peekNextTokenType() {
-        return tokenConsumer.peek().getType();
+        return tokenStream.peek().getType();
     }
 }

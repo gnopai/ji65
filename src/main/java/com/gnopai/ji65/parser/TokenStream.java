@@ -7,7 +7,7 @@ import com.gnopai.ji65.util.ErrorHandler;
 import java.util.Iterator;
 import java.util.List;
 
-public class TokenConsumer {
+public class TokenStream {
     private final ErrorHandler errorHandler;
     private final Iterator<Token> iterator;
     private Token next;
@@ -15,7 +15,7 @@ public class TokenConsumer {
     private Token previous;
     private boolean hasError;
 
-    public TokenConsumer(ErrorHandler errorHandler, List<Token> tokens) {
+    public TokenStream(ErrorHandler errorHandler, List<Token> tokens) {
         this.errorHandler = errorHandler;
         this.iterator = tokens.iterator();
         this.next = iterator.hasNext() ? iterator.next() : null;

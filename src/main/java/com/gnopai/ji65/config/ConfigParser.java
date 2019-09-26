@@ -1,6 +1,6 @@
 package com.gnopai.ji65.config;
 
-import com.gnopai.ji65.parser.TokenConsumer;
+import com.gnopai.ji65.parser.TokenStream;
 import com.gnopai.ji65.scanner.Token;
 import com.gnopai.ji65.scanner.TokenType;
 import lombok.Value;
@@ -13,38 +13,38 @@ import static com.gnopai.ji65.scanner.TokenType.*;
 import static java.util.stream.Collectors.toMap;
 
 public class ConfigParser {
-    private final TokenConsumer tokenConsumer;
+    private final TokenStream tokenStream;
 
-    public ConfigParser(TokenConsumer tokenConsumer) {
-        this.tokenConsumer = tokenConsumer;
+    public ConfigParser(TokenStream tokenStream) {
+        this.tokenStream = tokenStream;
     }
 
     public List<ConfigBlock> parse() {
         List<ConfigBlock> blocks = new ArrayList<>();
-        while (tokenConsumer.hasMore()) {
+        while (tokenStream.hasMore()) {
             blocks.add(parseBlock());
         }
         return blocks;
     }
 
     private ConfigBlock parseBlock() {
-        Token identifier = tokenConsumer.consume(TokenType.IDENTIFIER, "Expected block identifier");
-        tokenConsumer.consume(LEFT_BRACE, "Expected block starting brace");
+        Token identifier = tokenStream.consume(TokenType.IDENTIFIER, "Expected block identifier");
+        tokenStream.consume(LEFT_BRACE, "Expected block starting brace");
         List<ConfigSegment> allSegments = new ArrayList<>();
-        while (!tokenConsumer.match(RIGHT_BRACE)) {
+        while (!tokenStream.match(RIGHT_BRACE)) {
             allSegments.add(parseSegment());
         }
         return new ConfigBlock(identifier.getLexeme(), allSegments);
     }
 
     private ConfigSegment parseSegment() {
-        Token identifier = tokenConsumer.consume(IDENTIFIER, "Expected segment identifier");
-        tokenConsumer.consume(COLON, "Expected colon");
+        Token identifier = tokenStream.consume(IDENTIFIER, "Expected segment identifier");
+        tokenStream.consume(COLON, "Expected colon");
 
         List<Attribute> attributes = new ArrayList<>();
         attributes.add(parseSingleAttribute());
-        while (!tokenConsumer.match(SEMICOLON)) {
-            tokenConsumer.match(COMMA); // optional comma between attributes
+        while (!tokenStream.match(SEMICOLON)) {
+            tokenStream.match(COMMA); // optional comma between attributes
             attributes.add(parseSingleAttribute());
         }
 
@@ -54,21 +54,21 @@ public class ConfigParser {
     }
 
     private Attribute parseSingleAttribute() {
-        Token identifier = tokenConsumer.consume(IDENTIFIER, "Expected attribute identifier");
-        tokenConsumer.consume(EQUAL, "Expected equal sign");
+        Token identifier = tokenStream.consume(IDENTIFIER, "Expected attribute identifier");
+        tokenStream.consume(EQUAL, "Expected equal sign");
         Token value = consumeAttributeValue();
         return new Attribute(identifier.getLexeme(), value);
     }
 
     private Token consumeAttributeValue() {
-        Token value = tokenConsumer.consume();
+        Token value = tokenStream.consume();
         switch (value.getType()) {
             case NUMBER:
             case STRING:
             case IDENTIFIER:
                 return value;
             default:
-                throw tokenConsumer.error("Invalid attribute value");
+                throw tokenStream.error("Invalid attribute value");
         }
     }
 

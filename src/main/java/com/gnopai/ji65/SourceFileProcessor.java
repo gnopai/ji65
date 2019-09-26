@@ -2,7 +2,7 @@ package com.gnopai.ji65;
 
 import com.gnopai.ji65.parser.ParseletFactory;
 import com.gnopai.ji65.parser.Parser;
-import com.gnopai.ji65.parser.TokenConsumer;
+import com.gnopai.ji65.parser.TokenStream;
 import com.gnopai.ji65.parser.statement.Statement;
 import com.gnopai.ji65.scanner.FileLoader;
 import com.gnopai.ji65.scanner.Scanner;
@@ -35,8 +35,8 @@ public class SourceFileProcessor {
 
     public List<Statement> parse(SourceFile sourceFile) {
         List<Token> tokens = scanner.scan(sourceFile.getText());
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, tokens);
-        Parser parser = new Parser(parseletFactory, tokenConsumer);
+        TokenStream tokenStream = new TokenStream(errorHandler, tokens);
+        Parser parser = new Parser(parseletFactory, tokenStream);
         return parser.parse();
     }
 }
