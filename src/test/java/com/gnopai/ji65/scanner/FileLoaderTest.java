@@ -4,6 +4,8 @@ import com.google.common.io.Resources;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,10 +18,10 @@ class FileLoaderTest {
     @Test
     void testLoadSourceFile() {
         String expectedText = "This is a sample input file.";
-        String fileName = getFullTestFileName();
-        Optional<SourceFile> sourceFile = testClass.loadSourceFile(fileName);
+        Path testFilePath = getTestFilePath();
+        Optional<SourceFile> sourceFile = testClass.loadSourceFile(testFilePath.toString());
         assertTrue(sourceFile.isPresent());
-        assertEquals(new SourceFile(fileName, expectedText), sourceFile.get());
+        assertEquals(new SourceFile(testFilePath, expectedText), sourceFile.get());
     }
 
     @Test
@@ -40,7 +42,8 @@ class FileLoaderTest {
                 (byte) 0x69, (byte) 0x6c, (byte) 0x65, (byte) 0x2e
         );
 
-        Optional<List<Byte>> bytes = testClass.loadBinaryFile(getFullTestFileName());
+        Path testFilePath = getTestFilePath();
+        Optional<List<Byte>> bytes = testClass.loadBinaryFile(testFilePath.toString());
         assertTrue(bytes.isPresent());
         assertEquals(expectedBytes, bytes.get());
     }
@@ -51,8 +54,8 @@ class FileLoaderTest {
         assertFalse(bytes.isPresent());
     }
 
-    private String getFullTestFileName() {
+    private Path getTestFilePath() {
         URL url = Resources.getResource(TEST_FILE);
-        return url.getFile();
+        return Paths.get(url.getFile());
     }
 }
