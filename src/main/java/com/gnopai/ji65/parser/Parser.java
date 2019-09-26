@@ -6,10 +6,7 @@ import com.gnopai.ji65.parser.expression.InfixParselet;
 import com.gnopai.ji65.parser.statement.Statement;
 import com.gnopai.ji65.scanner.Token;
 import com.gnopai.ji65.scanner.TokenType;
-import com.gnopai.ji65.util.ErrorHandler;
-import com.google.common.annotations.VisibleForTesting;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,28 +15,19 @@ import java.util.List;
  */
 public class Parser {
     private final ParseletFactory parseletFactory;
-    private final ErrorHandler errorHandler;
-    private TokenConsumer tokenConsumer;
+    private final TokenConsumer tokenConsumer;
 
-    @Inject
-    public Parser(ParseletFactory parseletFactory, ErrorHandler errorHandler) {
+    public Parser(ParseletFactory parseletFactory, TokenConsumer tokenConsumer) {
         this.parseletFactory = parseletFactory;
-        this.errorHandler = errorHandler;
+        this.tokenConsumer = tokenConsumer;
     }
 
-    // TODO clean this up please
-    public List<Statement> parse(List<Token> tokens) {
-        setTokenConsumer(new TokenConsumer(errorHandler, tokens));
+    public List<Statement> parse() {
         List<Statement> statements = new ArrayList<>();
         while (tokenConsumer.hasMore()) {
             statements.add(statement());
         }
         return List.copyOf(statements);
-    }
-
-    @VisibleForTesting
-    void setTokenConsumer(TokenConsumer tokenConsumer) {
-        this.tokenConsumer = tokenConsumer;
     }
 
     public Statement statement() {
@@ -122,15 +110,7 @@ public class Parser {
         return tokenConsumer.match(TokenType.DIRECTIVE, directiveType);
     }
 
-    public Token getPrevious() {
-        return tokenConsumer.getPrevious();
-    }
-
     public TokenType peekNextTokenType() {
         return tokenConsumer.peek().getType();
-    }
-
-    public boolean hasError() {
-        return tokenConsumer.hasError();
     }
 }
