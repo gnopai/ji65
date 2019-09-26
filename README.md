@@ -9,8 +9,9 @@ this interpreter as a way to write and run test suites against my 6502 code.
 Running It
 ----------
 
-The app requires Gradle 4.10 and Java 11. Currently to run the app, you'll need to check it out of
-Github, import the project via the Gradle file, and then run...? This is currently a work in progress.
+The app currently runs on Java 12 and uses gradle-wrapper for building and whatnot. It might work on 10 or 11, but no guarantees.
+Currently to run the it, you'll need to check it out of Github, import the project via the Gradle file, and then run...?
+This is still kind of a work in progress, but nearly to the point of actually being useful.
 
 Things To Do
 ------------
