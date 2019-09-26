@@ -6,6 +6,7 @@ import com.gnopai.ji65.assembler.*;
 import com.gnopai.ji65.config.ProgramConfig;
 import com.gnopai.ji65.parser.expression.ExpressionEvaluator;
 
+import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -18,6 +19,7 @@ public class Linker implements SegmentDataVisitor {
     private ProgramBuilder programBuilder;
     private Environment environment;
 
+    @Inject
     public Linker(SegmentMapper segmentMapper, LabelResolver labelResolver, ExpressionEvaluator expressionEvaluator) {
         this.segmentMapper = segmentMapper;
         this.labelResolver = labelResolver;

@@ -1,7 +1,7 @@
 package com.gnopai.ji65.config;
 
 import com.gnopai.ji65.parser.ParseException;
-import com.gnopai.ji65.parser.TokenConsumer;
+import com.gnopai.ji65.parser.TokenStream;
 import com.gnopai.ji65.scanner.Token;
 import com.gnopai.ji65.scanner.TokenType;
 import com.gnopai.ji65.util.ErrorHandler;
@@ -32,9 +32,9 @@ class ConfigParserTest {
                 token(RIGHT_BRACE),
                 token(EOF)
         );
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream tokenStream = new TokenStream(errorHandler, tokens);
 
-        List<ConfigBlock> blocks = new ConfigParser(tokenConsumer).parse();
+        List<ConfigBlock> blocks = new ConfigParser(tokenStream).parse();
 
         ConfigBlock expectedBlock = new ConfigBlock("BLOCK1", List.of(
                 new ConfigSegment("SEGMENT1", Map.of("ATTR1", token(NUMBER, 123)))
@@ -62,9 +62,9 @@ class ConfigParserTest {
                 token(RIGHT_BRACE),
                 token(EOF)
         );
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream tokenStream = new TokenStream(errorHandler, tokens);
 
-        List<ConfigBlock> blocks = new ConfigParser(tokenConsumer).parse();
+        List<ConfigBlock> blocks = new ConfigParser(tokenStream).parse();
 
         ConfigBlock expectedBlock = new ConfigBlock("BLOCK1", List.of(
                 new ConfigSegment("SEGMENT1", Map.of(
@@ -98,9 +98,9 @@ class ConfigParserTest {
                 token(RIGHT_BRACE),
                 token(EOF)
         );
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream tokenStream = new TokenStream(errorHandler, tokens);
 
-        List<ConfigBlock> blocks = new ConfigParser(tokenConsumer).parse();
+        List<ConfigBlock> blocks = new ConfigParser(tokenStream).parse();
 
         ConfigBlock expectedBlock = new ConfigBlock("BLOCK1", List.of(
                 new ConfigSegment("SEGMENT1", Map.of(
@@ -132,9 +132,9 @@ class ConfigParserTest {
                 token(RIGHT_BRACE),
                 token(EOF)
         );
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream tokenStream = new TokenStream(errorHandler, tokens);
 
-        List<ConfigBlock> blocks = new ConfigParser(tokenConsumer).parse();
+        List<ConfigBlock> blocks = new ConfigParser(tokenStream).parse();
 
         ConfigBlock expectedBlock = new ConfigBlock("BLOCK1", List.of(
                 new ConfigSegment("SEGMENT1", Map.of("ATTR1", token(NUMBER, 123))),
@@ -166,9 +166,9 @@ class ConfigParserTest {
                 token(RIGHT_BRACE),
                 token(EOF)
         );
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream tokenStream = new TokenStream(errorHandler, tokens);
 
-        List<ConfigBlock> blocks = new ConfigParser(tokenConsumer).parse();
+        List<ConfigBlock> blocks = new ConfigParser(tokenStream).parse();
 
         ConfigBlock expectedBlock1 = new ConfigBlock("BLOCK1", List.of(
                 new ConfigSegment("SEGMENT1", Map.of("ATTR1", token(NUMBER, 123)))
@@ -192,9 +192,9 @@ class ConfigParserTest {
                 token(RIGHT_BRACE),
                 token(EOF)
         );
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream tokenStream = new TokenStream(errorHandler, tokens);
 
-        ParseException parseException = assertThrows(ParseException.class, () -> new ConfigParser(tokenConsumer).parse());
+        ParseException parseException = assertThrows(ParseException.class, () -> new ConfigParser(tokenStream).parse());
         assertEquals(LEFT_BRACE, parseException.getTokenType());
         assertEquals("Expected block identifier", parseException.getMessage());
     }
@@ -212,9 +212,9 @@ class ConfigParserTest {
                 token(RIGHT_BRACE),
                 token(EOF)
         );
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream tokenStream = new TokenStream(errorHandler, tokens);
 
-        ParseException parseException = assertThrows(ParseException.class, () -> new ConfigParser(tokenConsumer).parse());
+        ParseException parseException = assertThrows(ParseException.class, () -> new ConfigParser(tokenStream).parse());
         assertEquals(IDENTIFIER, parseException.getTokenType());
         assertEquals("Expected block starting brace", parseException.getMessage());
     }
@@ -232,9 +232,9 @@ class ConfigParserTest {
                 token(SEMICOLON),
                 token(EOF)
         );
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream tokenStream = new TokenStream(errorHandler, tokens);
 
-        ParseException parseException = assertThrows(ParseException.class, () -> new ConfigParser(tokenConsumer).parse());
+        ParseException parseException = assertThrows(ParseException.class, () -> new ConfigParser(tokenStream).parse());
         assertEquals(EOF, parseException.getTokenType());
         assertEquals("Expected segment identifier", parseException.getMessage());
     }
@@ -252,9 +252,9 @@ class ConfigParserTest {
                 token(RIGHT_BRACE),
                 token(EOF)
         );
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream tokenStream = new TokenStream(errorHandler, tokens);
 
-        ParseException parseException = assertThrows(ParseException.class, () -> new ConfigParser(tokenConsumer).parse());
+        ParseException parseException = assertThrows(ParseException.class, () -> new ConfigParser(tokenStream).parse());
         assertEquals(COLON, parseException.getTokenType());
         assertEquals("Expected segment identifier", parseException.getMessage());
     }
@@ -272,9 +272,9 @@ class ConfigParserTest {
                 token(RIGHT_BRACE),
                 token(EOF)
         );
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream tokenStream = new TokenStream(errorHandler, tokens);
 
-        ParseException parseException = assertThrows(ParseException.class, () -> new ConfigParser(tokenConsumer).parse());
+        ParseException parseException = assertThrows(ParseException.class, () -> new ConfigParser(tokenStream).parse());
         assertEquals(IDENTIFIER, parseException.getTokenType());
         assertEquals("Expected colon", parseException.getMessage());
     }
@@ -290,9 +290,9 @@ class ConfigParserTest {
                 token(RIGHT_BRACE),
                 token(EOF)
         );
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream tokenStream = new TokenStream(errorHandler, tokens);
 
-        ParseException parseException = assertThrows(ParseException.class, () -> new ConfigParser(tokenConsumer).parse());
+        ParseException parseException = assertThrows(ParseException.class, () -> new ConfigParser(tokenStream).parse());
         assertEquals(SEMICOLON, parseException.getTokenType());
         assertEquals("Expected attribute identifier", parseException.getMessage());
     }
@@ -310,9 +310,9 @@ class ConfigParserTest {
                 token(RIGHT_BRACE),
                 token(EOF)
         );
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream tokenStream = new TokenStream(errorHandler, tokens);
 
-        ParseException parseException = assertThrows(ParseException.class, () -> new ConfigParser(tokenConsumer).parse());
+        ParseException parseException = assertThrows(ParseException.class, () -> new ConfigParser(tokenStream).parse());
         assertEquals(EQUAL, parseException.getTokenType());
         assertEquals("Expected attribute identifier", parseException.getMessage());
     }
@@ -330,9 +330,9 @@ class ConfigParserTest {
                 token(RIGHT_BRACE),
                 token(EOF)
         );
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream tokenStream = new TokenStream(errorHandler, tokens);
 
-        ParseException parseException = assertThrows(ParseException.class, () -> new ConfigParser(tokenConsumer).parse());
+        ParseException parseException = assertThrows(ParseException.class, () -> new ConfigParser(tokenStream).parse());
         assertEquals(NUMBER, parseException.getTokenType());
         assertEquals("Expected equal sign", parseException.getMessage());
     }
@@ -350,9 +350,9 @@ class ConfigParserTest {
                 token(RIGHT_BRACE),
                 token(EOF)
         );
-        TokenConsumer tokenConsumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream tokenStream = new TokenStream(errorHandler, tokens);
 
-        ParseException parseException = assertThrows(ParseException.class, () -> new ConfigParser(tokenConsumer).parse());
+        ParseException parseException = assertThrows(ParseException.class, () -> new ConfigParser(tokenStream).parse());
         assertEquals(SEMICOLON, parseException.getTokenType());
         assertEquals("Invalid attribute value", parseException.getMessage());
     }

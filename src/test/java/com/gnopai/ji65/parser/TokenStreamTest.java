@@ -12,27 +12,27 @@ import static com.gnopai.ji65.scanner.TokenType.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-class TokenConsumerTest {
+class TokenStreamTest {
     private final ErrorHandler errorHandler = mock(ErrorHandler.class);
 
     @Test
     void testConsume_noTokens() {
         List<Token> tokens = List.of();
-        TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream consumer = new TokenStream(errorHandler, tokens);
         assertFalse(consumer.hasMore());
     }
 
     @Test
     void testHasMore_eofOnly() {
         List<Token> tokens = List.of(token(EOF));
-        TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream consumer = new TokenStream(errorHandler, tokens);
         assertFalse(consumer.hasMore());
     }
 
     @Test
     void testHasMore_tokensWithEof() {
         List<Token> tokens = List.of(token(NUMBER), token(EOF));
-        TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream consumer = new TokenStream(errorHandler, tokens);
 
         assertTrue(consumer.hasMore());
         consumer.consume(NUMBER, "Expected number token");
@@ -43,7 +43,7 @@ class TokenConsumerTest {
     @Test
     void testHasMore_tokensWithoutEof() {
         List<Token> tokens = List.of(token(NUMBER), token(NUMBER));
-        TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream consumer = new TokenStream(errorHandler, tokens);
 
         assertTrue(consumer.hasMore());
         consumer.consume(NUMBER, "Expected number token");
@@ -62,7 +62,7 @@ class TokenConsumerTest {
                 token(RIGHT_PAREN),
                 token(EOF)
         );
-        TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream consumer = new TokenStream(errorHandler, tokens);
 
         assertEquals(token(LEFT_PAREN), consumer.consume());
         assertEquals(token(NUMBER), consumer.consume());
@@ -80,7 +80,7 @@ class TokenConsumerTest {
                 token(RIGHT_PAREN),
                 token(EOF)
         );
-        TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream consumer = new TokenStream(errorHandler, tokens);
 
         assertEquals(token(LEFT_PAREN), consumer.consume(LEFT_PAREN, "expected left paren"));
         assertEquals(token(NUMBER), consumer.consume(NUMBER, "expected number"));
@@ -96,7 +96,7 @@ class TokenConsumerTest {
                 token(PLUS),
                 token(EOF)
         );
-        TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream consumer = new TokenStream(errorHandler, tokens);
 
         String errorMessage = "expected a plus";
         ParseException parseException = assertThrows(ParseException.class, () -> consumer.consume(NUMBER, errorMessage));
@@ -113,7 +113,7 @@ class TokenConsumerTest {
                 token(CHAR, (int) 'e'),
                 token(EOF)
         );
-        TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream consumer = new TokenStream(errorHandler, tokens);
 
         String string = consumer.consumeString("expected a string");
         assertEquals("Whee", string);
@@ -126,7 +126,7 @@ class TokenConsumerTest {
                 token(NUMBER, 5),
                 token(EOF)
         );
-        TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream consumer = new TokenStream(errorHandler, tokens);
 
         String errorMessage = "expected a string";
         ParseException parseException = assertThrows(ParseException.class, () -> consumer.consumeString(errorMessage));
@@ -143,7 +143,7 @@ class TokenConsumerTest {
                 token(NUMBER),
                 token(EOF)
         );
-        TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream consumer = new TokenStream(errorHandler, tokens);
 
         assertTrue(consumer.match(NUMBER));
         assertTrue(consumer.match(PLUS));
@@ -156,7 +156,7 @@ class TokenConsumerTest {
                 token(PLUS),
                 token(EOF)
         );
-        TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream consumer = new TokenStream(errorHandler, tokens);
 
         assertFalse(consumer.match(NUMBER));
     }
@@ -169,7 +169,7 @@ class TokenConsumerTest {
                 token(DIRECTIVE, DirectiveType.WORD),
                 token(EOF)
         );
-        TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream consumer = new TokenStream(errorHandler, tokens);
 
         assertTrue(consumer.match(NUMBER, 5));
         assertTrue(consumer.match(STRING, "whee"));
@@ -182,7 +182,7 @@ class TokenConsumerTest {
                 token(NUMBER, 5),
                 token(EOF)
         );
-        TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream consumer = new TokenStream(errorHandler, tokens);
 
         assertFalse(consumer.match(NUMBER, 77));
         assertFalse(consumer.match(STRING, 5));
@@ -197,7 +197,7 @@ class TokenConsumerTest {
                 token(RIGHT_PAREN),
                 token(EOF)
         );
-        TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream consumer = new TokenStream(errorHandler, tokens);
 
         assertEquals(token(LEFT_PAREN), consumer.consume());
         assertNull(consumer.getPrevious());
@@ -227,7 +227,7 @@ class TokenConsumerTest {
                 token(RIGHT_PAREN),
                 token(EOF)
         );
-        TokenConsumer consumer = new TokenConsumer(errorHandler, tokens);
+        TokenStream consumer = new TokenStream(errorHandler, tokens);
 
         assertFalse(consumer.match(NUMBER));
         assertTrue(consumer.match(LEFT_PAREN));

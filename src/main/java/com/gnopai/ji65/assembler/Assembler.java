@@ -3,6 +3,7 @@ package com.gnopai.ji65.assembler;
 import com.gnopai.ji65.config.ProgramConfig;
 import com.gnopai.ji65.parser.statement.*;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -17,6 +18,7 @@ public class Assembler implements StatementVisitor<Void> {
     private String currentSegment;
     private Environment environment;
 
+    @Inject
     public Assembler(FirstPassResolver firstPassResolver, InstructionAssembler instructionAssembler, DirectiveDataAssembler directiveDataAssembler, RepeatDirectiveProcessor repeatDirectiveProcessor, MacroProcessor macroProcessor) {
         this.instructionAssembler = instructionAssembler;
         this.firstPassResolver = firstPassResolver;

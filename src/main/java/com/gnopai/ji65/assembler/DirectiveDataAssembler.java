@@ -4,6 +4,7 @@ import com.gnopai.ji65.parser.expression.ExpressionEvaluator;
 import com.gnopai.ji65.parser.statement.DirectiveStatement;
 import com.gnopai.ji65.scanner.FileLoader;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -12,6 +13,7 @@ public class DirectiveDataAssembler {
     private final ExpressionEvaluator expressionEvaluator;
     private final FileLoader fileLoader;
 
+    @Inject
     public DirectiveDataAssembler(ExpressionEvaluator expressionEvaluator, FileLoader fileLoader) {
         this.expressionEvaluator = expressionEvaluator;
         this.fileLoader = fileLoader;

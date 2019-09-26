@@ -3,15 +3,13 @@ package com.gnopai.ji65.parser;
 import com.gnopai.ji65.parser.expression.PrimaryExpression;
 import com.gnopai.ji65.parser.statement.InstructionStatement;
 import com.gnopai.ji65.parser.statement.Statement;
-import com.gnopai.ji65.scanner.Token;
-import com.gnopai.ji65.scanner.TokenType;
 import com.gnopai.ji65.util.ErrorHandler;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static com.gnopai.ji65.AddressingModeType.*;
 import static com.gnopai.ji65.InstructionType.*;
+import static com.gnopai.ji65.parser.ParserTestUtil.parse;
+import static com.gnopai.ji65.parser.ParserTestUtil.token;
 import static com.gnopai.ji65.scanner.TokenType.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,7 +20,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testImplicit() {
-        Statement result = parse(
+        Statement result = parse(errorHandler,
                 token(INSTRUCTION, SEI),
                 token(EOL)
         );
@@ -36,7 +34,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testImmediate() {
-        Statement result = parse(
+        Statement result = parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(POUND),
                 token(NUMBER, 99),
@@ -53,7 +51,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testImmediate_trailingCharacters() {
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(POUND),
                 token(NUMBER, 99),
@@ -66,7 +64,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testAbsolute() {
-        Statement result = parse(
+        Statement result = parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(NUMBER, 99),
                 token(EOL)
@@ -82,7 +80,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testAbsolute_trailingCharacters() {
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(NUMBER, 99),
                 token(NUMBER, 9),
@@ -94,7 +92,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testRelative() {
-        Statement result = parse(
+        Statement result = parse(errorHandler,
                 token(INSTRUCTION, BNE),
                 token(NUMBER, 5),
                 token(EOL)
@@ -110,7 +108,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testAccumulator() {
-        Statement result = parse(
+        Statement result = parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(A),
                 token(EOL)
@@ -125,7 +123,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testAccumulator_trailingCharacters() {
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(A),
                 token(NUMBER, 9),
@@ -137,7 +135,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testXIndexed() {
-        Statement result = parse(
+        Statement result = parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(NUMBER, 50),
                 token(COMMA),
@@ -155,7 +153,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testXIndexed_trailingCharacters() {
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(NUMBER, 50),
                 token(COMMA),
@@ -169,7 +167,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testYIndexed() {
-        Statement result = parse(
+        Statement result = parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(NUMBER, 50),
                 token(COMMA),
@@ -187,7 +185,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testYIndexed_trailingCharacters() {
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(NUMBER, 50),
                 token(COMMA),
@@ -201,7 +199,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testIndexed_invalid() {
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(NUMBER, 50),
                 token(COMMA),
@@ -214,7 +212,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testIndexedIndirect() {
-        Statement result = parse(
+        Statement result = parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(LEFT_PAREN),
                 token(NUMBER, 50),
@@ -234,7 +232,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testIndexedIndirect_trailingCharacters() {
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(LEFT_PAREN),
                 token(NUMBER, 50),
@@ -250,7 +248,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testIndexedIndirect_missingClosingParen() {
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(LEFT_PAREN),
                 token(NUMBER, 50),
@@ -265,7 +263,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testIndexedIndirect_invalidRegister() {
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(LEFT_PAREN),
                 token(NUMBER, 50),
@@ -280,7 +278,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testIndirectIndexed() {
-        Statement result = parse(
+        Statement result = parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(LEFT_PAREN),
                 token(NUMBER, 50),
@@ -300,7 +298,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testIndirectIndexed_trailingCharacters() {
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(LEFT_PAREN),
                 token(NUMBER, 50),
@@ -316,7 +314,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testIndirectIndexed_invalidRegister() {
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(LEFT_PAREN),
                 token(NUMBER, 50),
@@ -331,7 +329,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testIndirect() {
-        Statement result = parse(
+        Statement result = parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(LEFT_PAREN),
                 token(NUMBER, 50),
@@ -349,7 +347,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testIndirect_trailingCharacters() {
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(LEFT_PAREN),
                 token(NUMBER, 50),
@@ -363,7 +361,7 @@ class InstructionStatementParseletTest {
 
     @Test
     void testIndirect_missingClosingParen() {
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler,
                 token(INSTRUCTION, LDA),
                 token(LEFT_PAREN),
                 token(NUMBER, 50),
@@ -371,21 +369,5 @@ class InstructionStatementParseletTest {
         ));
         assertEquals(token(EOL), parseException.getToken());
         assertEquals("Expected closing parenthesis for indirect address", parseException.getMessage());
-    }
-
-    private Token token(TokenType type) {
-        return token(type, null);
-    }
-
-    private Token token(TokenType type, Object value) {
-        return new Token(type, "", value, 0);
-    }
-
-    private Statement parse(Token... tokens) {
-        Parser parser = new Parser(
-                new ParseletFactory(),
-                new TokenConsumer(errorHandler, List.of(tokens))
-        );
-        return parser.statement();
     }
 }

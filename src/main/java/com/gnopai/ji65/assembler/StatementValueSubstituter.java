@@ -3,6 +3,7 @@ package com.gnopai.ji65.assembler;
 import com.gnopai.ji65.parser.expression.Expression;
 import com.gnopai.ji65.parser.statement.*;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -13,6 +14,7 @@ public class StatementValueSubstituter implements StatementVisitor<Statement> {
     private Expression value;
     private Environment environment;
 
+    @Inject
     public StatementValueSubstituter(ExpressionValueSubstituter expressionValueSubstituter) {
         this.expressionValueSubstituter = expressionValueSubstituter;
     }

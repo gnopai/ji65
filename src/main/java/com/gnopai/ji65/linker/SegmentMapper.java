@@ -5,6 +5,7 @@ import com.gnopai.ji65.assembler.Segment;
 import com.gnopai.ji65.config.MemoryConfig;
 import com.gnopai.ji65.config.ProgramConfig;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import static java.util.Optional.ofNullable;
 public class SegmentMapper {
     private final SegmentAddressCalculator segmentAddressCalculator;
 
+    @Inject
     public SegmentMapper(SegmentAddressCalculator segmentAddressCalculator) {
         this.segmentAddressCalculator = segmentAddressCalculator;
     }

@@ -2,6 +2,7 @@ package com.gnopai.ji65.scanner;
 
 import com.gnopai.ji65.util.ErrorHandler;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,7 @@ public class TokenReader {
     private int start;
     private int current;
 
+    @Inject
     public TokenReader(ErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
     }
