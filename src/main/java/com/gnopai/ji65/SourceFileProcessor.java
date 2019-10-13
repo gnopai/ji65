@@ -14,29 +14,46 @@ import javax.inject.Inject;
 import java.util.List;
 
 public class SourceFileProcessor {
+    private static final int MAX_FILE_DEPTH = 16;
+    static final String FILE_OPEN_ERROR = "Failed to open source file: %s";
+    static final String MAX_FILE_DEPTH_ERROR = "Maximum file depth of " + MAX_FILE_DEPTH + " reached while parsing %s";
+
     private final FileLoader fileLoader;
     private final Scanner scanner;
-    private final ParseletFactory parseletFactory;
     private final ErrorHandler errorHandler;
+    private int fileDepth = 0;
 
     @Inject
-    public SourceFileProcessor(FileLoader fileLoader, Scanner scanner, ParseletFactory parseletFactory, ErrorHandler errorHandler) {
+    public SourceFileProcessor(FileLoader fileLoader, Scanner scanner, ErrorHandler errorHandler) {
         this.fileLoader = fileLoader;
         this.scanner = scanner;
-        this.parseletFactory = parseletFactory;
         this.errorHandler = errorHandler;
     }
 
     public List<Statement> loadAndParse(String fileName) {
-        return fileLoader.loadSourceFile(fileName)
+        incrementFileDepth(fileName);
+        List<Statement> statements = fileLoader.loadSourceFile(fileName)
                 .map(this::parse)
-                .orElseThrow(() -> new RuntimeException("Failed to open source file: " + fileName));
+                .orElseThrow(() -> new RuntimeException(String.format(FILE_OPEN_ERROR, fileName)));
+        decrementFileDepth();
+        return statements;
+    }
+
+    private void incrementFileDepth(String fileName) {
+        if (fileDepth >= MAX_FILE_DEPTH) {
+            throw new RuntimeException(String.format(MAX_FILE_DEPTH_ERROR, fileName));
+        }
+        fileDepth++;
+    }
+
+    private void decrementFileDepth() {
+        fileDepth--;
     }
 
     public List<Statement> parse(SourceFile sourceFile) {
         List<Token> tokens = scanner.scan(sourceFile.getText());
         TokenStream tokenStream = new TokenStream(errorHandler, tokens);
-        Parser parser = new Parser(parseletFactory, tokenStream);
+        Parser parser = new Parser(new ParseletFactory(this), tokenStream);
         return parser.parse();
     }
 }

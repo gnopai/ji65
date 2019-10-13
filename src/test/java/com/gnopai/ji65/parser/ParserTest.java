@@ -125,7 +125,7 @@ class ParserTest {
     void testParse_invalidStatementToken() {
         Token badToken = token(TokenType.STRING, "uhoh");
         TokenStream tokenStream = tokenConsumer(badToken);
-        Parser parser = new Parser(new ParseletFactory(), tokenStream);
+        Parser parser = parser(tokenStream);
 
         ParseException parseException = assertThrows(ParseException.class, parser::parse);
         assertEquals(badToken, parseException.getToken());
@@ -137,7 +137,7 @@ class ParserTest {
                 token(TokenType.NUMBER, 5),
                 token(TokenType.STRING, "derp")
         );
-        Parser parser = new Parser(new ParseletFactory(), tokenStream);
+        Parser parser = parser(tokenStream);
 
         Expression expression = parser.expression();
         assertEquals(new PrimaryExpression(TokenType.NUMBER, 5), expression);
@@ -151,7 +151,7 @@ class ParserTest {
                 token(TokenType.NUMBER, 10),
                 token(TokenType.STRING, "derp")
         );
-        Parser parser = new Parser(new ParseletFactory(), tokenStream);
+        Parser parser = parser(tokenStream);
 
         Expression expression = parser.expression();
         Expression expectedExpression = new BinaryOperatorExpression(
@@ -172,7 +172,7 @@ class ParserTest {
                 token(TokenType.NUMBER, 6),
                 token(TokenType.STRING, "derp")
         );
-        Parser parser = new Parser(new ParseletFactory(), tokenStream);
+        Parser parser = parser(tokenStream);
 
         Expression expression = parser.expression();
         Expression expectedExpression = new BinaryOperatorExpression(
@@ -197,7 +197,7 @@ class ParserTest {
                 token(TokenType.NUMBER, 6),
                 token(TokenType.STRING, "derp")
         );
-        Parser parser = new Parser(new ParseletFactory(), tokenStream);
+        Parser parser = parser(tokenStream);
 
         Expression expression = parser.expression();
 
@@ -215,10 +215,14 @@ class ParserTest {
     @Test
     void testExpression_invalidPrefixParseletToken() {
         TokenStream tokenStream = tokenConsumer(token(TokenType.PLUS));
-        Parser parser = new Parser(new ParseletFactory(), tokenStream);
+        Parser parser = parser(tokenStream);
 
         ParseException parseException = assertThrows(ParseException.class, parser::expression);
         assertEquals(token(TokenType.PLUS), parseException.getToken());
+    }
+
+    private Parser parser(TokenStream tokenStream) {
+        return new Parser(new ParseletFactory(null), tokenStream);
     }
 
     private TokenStream tokenConsumer(Token... tokens) {

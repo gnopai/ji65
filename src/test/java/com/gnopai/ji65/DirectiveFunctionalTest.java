@@ -293,4 +293,30 @@ class DirectiveFunctionalTest {
         assertEquals((byte) 0x2E, cpu.getMemoryValue(programStartAddress.plus(29)));
         assertEquals((byte) 0x0, cpu.getMemoryValue(programStartAddress.plus(30)));
     }
+
+    @Test
+    void testIncludeSourceFileDirective() {
+        Address programStartAddress = new Address(0x4567);
+        ProgramConfig programConfig = ProgramConfig.builder()
+                .memoryConfigs(List.of(
+                        zeroPageMemoryConfig,
+                        programMemoryConfig.withStartAddress(programStartAddress))
+                )
+                .segmentConfigs(List.of(zeroPageSegmentConfig, programSegmentConfig))
+                .build();
+        Cpu cpu = Cpu.builder().build();
+        String fileName = Resources.getResource("source_sample.s").getFile();
+
+        assembleAndRun(cpu, programConfig,
+                "ldx #1",
+                "clc",
+                ".include \"" + fileName + "\"",
+                "ldy #9"
+        );
+
+        assertTrue(cpu.isCarryFlagSet());
+        assertEquals((byte) 0x05, cpu.getX());
+        assertEquals((byte) 0x09, cpu.getY());
+        assertEquals((byte) 0x07, cpu.getAccumulator());
+    }
 }

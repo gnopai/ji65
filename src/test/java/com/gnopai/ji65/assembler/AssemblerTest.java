@@ -208,6 +208,30 @@ class AssemblerTest {
     }
 
     @Test
+    void testDirectiveStatement_include() {
+        Statement statement1 = mock(Statement.class);
+        Statement statement2 = mock(Statement.class);
+        Statement statement3 = mock(Statement.class);
+        List<Statement> statements = List.of(statement1, statement2, statement3);
+        DirectiveStatement directiveStatement = DirectiveStatement.builder()
+                .type(DirectiveType.INCLUDE)
+                .statements(statements)
+                .build();
+
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor, macroProcessor);
+
+        AssembledSegments result = assembler.assemble(List.of(directiveStatement), programConfig, environment);
+
+        List<Segment> expectedSegments = List.of(new Segment(segmentConfig));
+        AssembledSegments assembledSegments = new AssembledSegments(expectedSegments, environment);
+        assertEquals(assembledSegments, result);
+        verify(firstPassResolver).resolve(List.of(directiveStatement), assembledSegments);
+        verify(statement1).accept(assembler);
+        verify(statement2).accept(assembler);
+        verify(statement3).accept(assembler);
+    }
+
+    @Test
     void testMacroStatement() {
         MacroStatement macroStatement = new MacroStatement("foo", List.of());
         Statement statement1 = mock(Statement.class);

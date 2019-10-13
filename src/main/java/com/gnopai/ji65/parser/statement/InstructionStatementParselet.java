@@ -13,7 +13,8 @@ public class InstructionStatementParselet implements StatementParselet {
         InstructionType instructionType = (InstructionType) token.getValue();
         InstructionStatement.InstructionStatementBuilder builder = InstructionStatement.builder().instructionType(instructionType);
 
-        if (parser.match(TokenType.EOL)) {
+        // FIXME extract some generic methods for EOL/EOF matching & consuming
+        if (parser.match(TokenType.EOL) || parser.match(TokenType.EOF)) {
             return builder.addressingModeType(AddressingModeType.IMPLICIT).build();
         }
 
