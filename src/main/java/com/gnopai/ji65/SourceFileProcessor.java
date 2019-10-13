@@ -13,11 +13,15 @@ import com.gnopai.ji65.util.ErrorHandler;
 import javax.inject.Inject;
 import java.util.List;
 
-// TODO only load files once? Just need a little tracker thing here I think...
 public class SourceFileProcessor {
+    private static final int MAX_FILE_DEPTH = 16;
+    static final String FILE_OPEN_ERROR = "Failed to open source file: %s";
+    static final String MAX_FILE_DEPTH_ERROR = "Maximum file depth of " + MAX_FILE_DEPTH + " reached while parsing %s";
+
     private final FileLoader fileLoader;
     private final Scanner scanner;
     private final ErrorHandler errorHandler;
+    private int fileDepth = 0;
 
     @Inject
     public SourceFileProcessor(FileLoader fileLoader, Scanner scanner, ErrorHandler errorHandler) {
@@ -27,9 +31,23 @@ public class SourceFileProcessor {
     }
 
     public List<Statement> loadAndParse(String fileName) {
-        return fileLoader.loadSourceFile(fileName)
+        incrementFileDepth(fileName);
+        List<Statement> statements = fileLoader.loadSourceFile(fileName)
                 .map(this::parse)
-                .orElseThrow(() -> new RuntimeException("Failed to open source file: " + fileName));
+                .orElseThrow(() -> new RuntimeException(String.format(FILE_OPEN_ERROR, fileName)));
+        decrementFileDepth();
+        return statements;
+    }
+
+    private void incrementFileDepth(String fileName) {
+        if (fileDepth >= MAX_FILE_DEPTH) {
+            throw new RuntimeException(String.format(MAX_FILE_DEPTH_ERROR, fileName));
+        }
+        fileDepth++;
+    }
+
+    private void decrementFileDepth() {
+        fileDepth--;
     }
 
     public List<Statement> parse(SourceFile sourceFile) {
