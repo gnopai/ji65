@@ -13,17 +13,16 @@ import com.gnopai.ji65.util.ErrorHandler;
 import javax.inject.Inject;
 import java.util.List;
 
+// TODO only load files once? Just need a little tracker thing here I think...
 public class SourceFileProcessor {
     private final FileLoader fileLoader;
     private final Scanner scanner;
-    private final ParseletFactory parseletFactory;
     private final ErrorHandler errorHandler;
 
     @Inject
-    public SourceFileProcessor(FileLoader fileLoader, Scanner scanner, ParseletFactory parseletFactory, ErrorHandler errorHandler) {
+    public SourceFileProcessor(FileLoader fileLoader, Scanner scanner, ErrorHandler errorHandler) {
         this.fileLoader = fileLoader;
         this.scanner = scanner;
-        this.parseletFactory = parseletFactory;
         this.errorHandler = errorHandler;
     }
 
@@ -36,7 +35,7 @@ public class SourceFileProcessor {
     public List<Statement> parse(SourceFile sourceFile) {
         List<Token> tokens = scanner.scan(sourceFile.getText());
         TokenStream tokenStream = new TokenStream(errorHandler, tokens);
-        Parser parser = new Parser(parseletFactory, tokenStream);
+        Parser parser = new Parser(new ParseletFactory(this), tokenStream);
         return parser.parse();
     }
 }

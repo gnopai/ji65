@@ -78,6 +78,10 @@ public class Assembler implements StatementVisitor<Void> {
                 repeatDirectiveProcessor.process(directiveStatement, environment)
                         .forEach(statement -> statement.accept(this));
                 break;
+            case INCLUDE:
+                directiveStatement.getStatements()
+                        .forEach(statement -> statement.accept(this));
+                break;
             case MACRO:
                 // handled in first pass
                 break;
