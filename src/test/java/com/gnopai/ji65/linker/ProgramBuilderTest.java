@@ -37,8 +37,7 @@ class ProgramBuilderTest {
                         (byte) 0x00,
                         (byte) 0x00)
                 )),
-                Map.of("start", 2, "four", 6),
-                new Address(2)
+                Map.of("start", 2, "four", 6)
         );
         assertEquals(expectedProgram, program);
     }
@@ -70,8 +69,7 @@ class ProgramBuilderTest {
                         (byte) 0x00,
                         (byte) 0x00))
         ),
-                Map.of("derp", 2, "start", 6),
-                new Address(6)
+                Map.of("derp", 2, "start", 6)
         );
         assertEquals(expectedProgram, program);
     }

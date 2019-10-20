@@ -1,5 +1,6 @@
 package com.gnopai.ji65.interpreter;
 
+import com.gnopai.ji65.Address;
 import com.gnopai.ji65.Cpu;
 import com.gnopai.ji65.Program;
 
@@ -13,11 +14,11 @@ public class Interpreter {
         this.instructionExecutor = instructionExecutor;
     }
 
-    public void run(Program program, Cpu cpu, ProgramEndStrategy programEndStrategy) {
+    public void run(Program program, Address startAddress, Cpu cpu, ProgramEndStrategy programEndStrategy) {
         program.getChunks().forEach(chunk ->
                 cpu.copyToMemory(chunk.getAddress(), chunk.getBytes())
         );
-        cpu.setProgramCounter(program.getStartAddress().getValue());
+        cpu.setProgramCounter(startAddress.getValue());
 
         while (!programEndStrategy.shouldEndProgram(cpu)) {
             instructionExecutor.execute(cpu);
