@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 
 public class ProgramBuilder {
@@ -63,12 +62,7 @@ public class ProgramBuilder {
                 .map(entry -> makeChunk(entry.getKey(), entry.getValue()))
                 .collect(toList());
 
-        // TODO temporary hack to have a place to start the program from
-        Address startAddress = ofNullable(labels.get("start"))
-                .map(Address::new)
-                .orElseThrow(() -> new RuntimeException("Expected 'start' label to know where to start running from"));
-
-        return new Program(chunks, Map.copyOf(labels), startAddress);
+        return new Program(chunks, Map.copyOf(labels));
     }
 
     public int getCurrentIndex() {

@@ -28,13 +28,16 @@ public class TestUtil {
     }
 
     public static void assembleAndRun(Cpu cpu, ProgramConfig programConfig, ProgramEndStrategy programEndStrategy, String... lines) {
-        String programText = "start:\n" + Arrays.stream(lines)
+        String startLabel = "start";
+        String programText = startLabel + ":\n" + Arrays.stream(lines)
                 .map(line -> line + "\n")
                 .collect(Collectors.joining(""));
         SourceFile sourceFile = new SourceFile(null, programText);
         Ji65 ji65 = new Ji65(new ErrorPrinter());
         Program program = ji65.assemble(sourceFile, programConfig);
-        ji65.run(program, cpu, programEndStrategy);
+        Address startAddress = program.getLabelAddress(startLabel)
+            .orElseThrow(() -> new RuntimeException("Label not found: " + startLabel));
+        ji65.run(program, startAddress, cpu, programEndStrategy);
     }
 
     private static ProgramConfig buildDefaultConfig() {

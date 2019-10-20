@@ -28,12 +28,12 @@ public class Ji65 {
         interpreter = injector.getInstance(Interpreter.class);
     }
 
-    public void run(Program program, Cpu cpu) {
-        run(program, cpu, new NeverEndProgram());
+    public void run(Program program, Address startAddress, Cpu cpu) {
+        run(program, startAddress, cpu, new NeverEndProgram());
     }
 
-    public void run(Program program, Cpu cpu, ProgramEndStrategy programEndStrategy) {
-        interpreter.run(program, cpu, programEndStrategy);
+    public void run(Program program, Address startAddress, Cpu cpu, ProgramEndStrategy programEndStrategy) {
+        interpreter.run(program, startAddress, cpu, programEndStrategy);
     }
 
     public Program assemble(SourceFile sourceFile, ProgramConfig programConfig) {

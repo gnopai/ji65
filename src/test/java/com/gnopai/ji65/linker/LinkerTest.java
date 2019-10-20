@@ -46,7 +46,7 @@ class LinkerTest {
 
         List<Byte> expectedBytes = List.of((byte) 0xBD, (byte) 80, (byte) 4);
         Program.Chunk expectedChunk = new Program.Chunk(new Address(0x7045), expectedBytes);
-        assertEquals(new Program(List.of(expectedChunk), Map.of("start", 1), new Address(1)), program);
+        assertEquals(new Program(List.of(expectedChunk), Map.of("start", 1)), program);
     }
 
     @Test
@@ -60,7 +60,7 @@ class LinkerTest {
         Program program = runLinker();
 
         Program.Chunk expectedChunk = new Program.Chunk(new Address(0x7040), bytes);
-        assertEquals(new Program(List.of(expectedChunk), Map.of("start", 1), new Address(1)), program);
+        assertEquals(new Program(List.of(expectedChunk), Map.of("start", 1)), program);
     }
 
     @Test
@@ -75,8 +75,7 @@ class LinkerTest {
 
         Program expectedProgram = new Program(
                 List.of(new Program.Chunk(new Address(0x7001), List.of())),
-                Map.of("derp", 17, "start", 1),
-                new Address(1)
+                Map.of("derp", 17, "start", 1)
         );
         assertEquals(expectedProgram, program);
     }
@@ -93,8 +92,7 @@ class LinkerTest {
 
         Program expectedProgram = new Program(
                 List.of(new Program.Chunk(new Address(0x7001), List.of())),
-                Map.of("start", 1),
-                new Address(1)
+                Map.of("start", 1)
         );
         assertEquals(expectedProgram, program);
     }
@@ -116,8 +114,7 @@ class LinkerTest {
                         (byte) 0, (byte) 0, (byte) 0, (byte) 0,
                         (byte) 0, (byte) 0, (byte) 0, (byte) 0
                 ))),
-                Map.of("start", 1),
-                new Address(1)
+                Map.of("start", 1)
         );
         assertEquals(expectedProgram, program);
     }
@@ -139,8 +136,7 @@ class LinkerTest {
                 List.of(new Program.Chunk(new Address(0x7001), List.of(
                         (byte) 0x22
                 ))),
-                Map.of("start", 1),
-                new Address(1)
+                Map.of("start", 1)
         );
         assertEquals(expectedProgram, program);
     }
@@ -162,8 +158,7 @@ class LinkerTest {
                 List.of(new Program.Chunk(new Address(0x7001), List.of(
                         (byte) 0xFA
                 ))),
-                Map.of("start", 1),
-                new Address(1)
+                Map.of("start", 1)
         );
         assertEquals(expectedProgram, program);
     }
@@ -199,7 +194,7 @@ class LinkerTest {
                 (byte) 0x86, (byte) 10
         ));
         Map<String, Integer> expectedLabels = Map.of("derp", 7, "start", 99);
-        assertEquals(new Program(List.of(expectedChunk), expectedLabels, new Address(99)), program);
+        assertEquals(new Program(List.of(expectedChunk), expectedLabels), program);
     }
 
     private Program runLinker() {
