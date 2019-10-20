@@ -33,7 +33,11 @@ public class TokenStream {
     }
 
     public Token consume(TokenType tokenType, String message) {
-        if (match(tokenType)) {
+        return consume(List.of(tokenType), message);
+    }
+
+    public Token consume(List<TokenType> tokenTypes, String message) {
+        if (match(tokenTypes)) {
             return current;
         }
         throw error(next, message);
@@ -53,7 +57,13 @@ public class TokenStream {
     }
 
     public boolean match(TokenType tokenType) {
-        if (tokenType.equals(next.getType())) {
+        return match(List.of(tokenType));
+    }
+
+    public boolean match(List<TokenType> tokenTypes) {
+        boolean matchFound = tokenTypes.stream()
+                .anyMatch(tokenType -> tokenType.equals(next.getType()));
+        if (matchFound) {
             consume();
             return true;
         }
