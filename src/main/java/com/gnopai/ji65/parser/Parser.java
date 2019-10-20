@@ -106,6 +106,14 @@ public class Parser {
         return tokenStream.match(tokenType);
     }
 
+    public boolean matchEndOfLine() {
+        return tokenStream.match(List.of(TokenType.EOL, TokenType.EOF));
+    }
+
+    public void consumeEndOfLine() {
+        tokenStream.consume(List.of(TokenType.EOL, TokenType.EOF), "Expected end of line");
+    }
+
     public boolean matchDirective(DirectiveType directiveType) {
         return tokenStream.match(TokenType.DIRECTIVE, directiveType);
     }

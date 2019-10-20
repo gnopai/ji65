@@ -17,8 +17,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -219,6 +218,52 @@ class ParserTest {
 
         ParseException parseException = assertThrows(ParseException.class, parser::expression);
         assertEquals(token(TokenType.PLUS), parseException.getToken());
+    }
+
+    @Test
+    void testMatchEndOfLine_eol() {
+        TokenStream tokenStream = tokenConsumer(token(TokenType.EOL));
+        Parser parser = parser(tokenStream);
+        assertTrue(parser.matchEndOfLine());
+    }
+
+    @Test
+    void testMatchEndOfLine_eof() {
+        TokenStream tokenStream = tokenConsumer(token(TokenType.EOF));
+        Parser parser = parser(tokenStream);
+        assertTrue(parser.matchEndOfLine());
+    }
+
+    @Test
+    void testMatchEndOfLine_notEndOfLine() {
+        TokenStream tokenStream = tokenConsumer(token(TokenType.COLON));
+        Parser parser = parser(tokenStream);
+        assertFalse(parser.matchEndOfLine());
+    }
+
+    @Test
+    void testConsumeEndOfLine_eol() {
+        TokenStream tokenStream = tokenConsumer(token(TokenType.EOL));
+        Parser parser = parser(tokenStream);
+        parser.consumeEndOfLine();
+        // no exception thrown
+    }
+
+    @Test
+    void testConsumeEndOfLine_eof() {
+        TokenStream tokenStream = tokenConsumer(token(TokenType.EOF));
+        Parser parser = parser(tokenStream);
+        parser.consumeEndOfLine();
+        // no exception thrown
+    }
+
+    @Test
+    void testConsumeEndOfLine_notEndOfLine() {
+        TokenStream tokenStream = tokenConsumer(token(TokenType.SEMICOLON));
+        Parser parser = parser(tokenStream);
+        ParseException parseException = assertThrows(ParseException.class, parser::consumeEndOfLine);
+        assertEquals(TokenType.SEMICOLON, parseException.getTokenType());
+        assertEquals("Expected end of line", parseException.getMessage());
     }
 
     private Parser parser(TokenStream tokenStream) {

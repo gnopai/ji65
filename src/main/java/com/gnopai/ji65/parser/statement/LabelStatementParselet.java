@@ -11,7 +11,7 @@ public class LabelStatementParselet implements StatementParselet {
         parser.consume(TokenType.COLON, "Expected colon after label");
 
         // consume end-of-line if present, but just move on if it's not
-        parser.match(TokenType.EOL);
+        parser.matchEndOfLine();
 
         return labelName.startsWith("@") ? new LocalLabelStatement(labelName) : new LabelStatement(labelName);
     }
