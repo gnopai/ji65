@@ -82,10 +82,11 @@ class MacroStatementParseletTest {
         ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler,
                 token(IDENTIFIER, "Whee"),
                 token(IDENTIFIER, "abc"),
+                token(IDENTIFIER, "nope"),
                 token(EOF)
         ));
 
-        assertEquals(token(EOF), parseException.getToken());
+        assertEquals(token(IDENTIFIER, "nope"), parseException.getToken());
         assertEquals("Expected end of line", parseException.getMessage());
     }
 }

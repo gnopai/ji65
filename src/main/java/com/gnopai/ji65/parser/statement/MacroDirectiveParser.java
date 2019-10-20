@@ -27,7 +27,7 @@ public class MacroDirectiveParser implements StatementParselet {
 
     private List<String> parseArguments(Parser parser) {
         List<String> arguments = new ArrayList<>();
-        if (parser.match(TokenType.EOL)) {
+        if (parser.matchEndOfLine()) {
             return arguments;
         }
         arguments.add(parseArgument(parser));
@@ -36,7 +36,7 @@ public class MacroDirectiveParser implements StatementParselet {
             arguments.add(parseArgument(parser));
         }
 
-        parser.consume(TokenType.EOL, "Expected end of line");
+        parser.consumeEndOfLine();
         return arguments;
     }
 
@@ -50,7 +50,7 @@ public class MacroDirectiveParser implements StatementParselet {
         while (!parser.matchDirective(MACRO_END)) {
             statements.add(parser.statement());
         }
-        parser.consume(TokenType.EOL, "Expected end of line");
+        parser.consumeEndOfLine();
         return statements;
     }
 }

@@ -13,13 +13,12 @@ public class InstructionStatementParselet implements StatementParselet {
         InstructionType instructionType = (InstructionType) token.getValue();
         InstructionStatement.InstructionStatementBuilder builder = InstructionStatement.builder().instructionType(instructionType);
 
-        // FIXME extract some generic methods for EOL/EOF matching & consuming
-        if (parser.match(TokenType.EOL) || parser.match(TokenType.EOF)) {
+        if (parser.matchEndOfLine()) {
             return builder.addressingModeType(AddressingModeType.IMPLICIT).build();
         }
 
         if (parser.match(TokenType.A)) {
-            parser.consume(TokenType.EOL, "Expected end of line");
+            parser.consumeEndOfLine();
             return builder.addressingModeType(AddressingModeType.ACCUMULATOR).build();
         }
 
@@ -38,7 +37,7 @@ public class InstructionStatementParselet implements StatementParselet {
             return indexed(parser, builder);
         }
 
-        parser.consume(TokenType.EOL, "Expected end of line");
+        parser.consumeEndOfLine();
         AddressingModeType addressingModeType = instructionType.isBranchInstruction() ? AddressingModeType.RELATIVE : AddressingModeType.ABSOLUTE;
         return builder.addressingModeType(addressingModeType).build();
     }
@@ -50,24 +49,24 @@ public class InstructionStatementParselet implements StatementParselet {
         if (parser.match(TokenType.COMMA)) {
             parser.consume(TokenType.X, "Expected X for index");
             parser.consume(TokenType.RIGHT_PAREN, "Expected closing parenthesis for indirect address");
-            parser.consume(TokenType.EOL, "Expected end of line");
+            parser.consumeEndOfLine();
             return builder.addressingModeType(AddressingModeType.INDEXED_INDIRECT).build();
         }
 
         parser.consume(TokenType.RIGHT_PAREN, "Expected closing parenthesis for indirect address");
         if (parser.match(TokenType.COMMA)) {
             parser.consume(TokenType.Y, "Expected Y for index");
-            parser.consume(TokenType.EOL, "Expected end of line");
+            parser.consumeEndOfLine();
             return builder.addressingModeType(AddressingModeType.INDIRECT_INDEXED).build();
         }
 
-        parser.consume(TokenType.EOL, "Expected end of line");
+        parser.consumeEndOfLine();
         return builder.addressingModeType(AddressingModeType.INDIRECT).build();
     }
 
     private Statement immediate(InstructionStatement.InstructionStatementBuilder builder, Parser parser) {
         Expression addressExpression = parser.expression();
-        parser.consume(TokenType.EOL, "Expected end of line");
+        parser.consumeEndOfLine();
         return builder
                 .addressingModeType(AddressingModeType.IMMEDIATE)
                 .addressExpression(addressExpression)
@@ -78,10 +77,10 @@ public class InstructionStatementParselet implements StatementParselet {
         Token register = parser.consume();
         switch (register.getType()) {
             case X:
-                parser.consume(TokenType.EOL, "Expected end of line");
+                parser.consumeEndOfLine();
                 return builder.addressingModeType(AddressingModeType.ABSOLUTE_X).build();
             case Y:
-                parser.consume(TokenType.EOL, "Expected end of line");
+                parser.consumeEndOfLine();
                 return builder.addressingModeType(AddressingModeType.ABSOLUTE_Y).build();
             default:
                 throw parser.error("Expected X or Y for index");

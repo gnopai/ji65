@@ -59,9 +59,10 @@ class IncludeBinaryDirectiveParserTest {
                 token(CHAR, (int) 'c'),
                 token(CHAR, (int) 'h'),
                 token(CHAR, (int) 'r'),
+                token(PLUS),
                 token(EOF)
         ));
-        assertEquals(token(EOF), exception.getToken());
+        assertEquals(token(PLUS), exception.getToken());
         assertEquals("Expected end of line", exception.getMessage());
     }
 }

@@ -18,13 +18,13 @@ public class RepeatDirectiveParser implements StatementParselet {
     public Statement parse(Token token, Parser parser) {
         Expression countExpression = parser.expression();
         Optional<String> indexIdentifierArgument = parseIndexIdentifier(parser);
-        parser.consume(TokenType.EOL, "Expected end of line");
+        parser.consumeEndOfLine();
 
         List<Statement> statements = new ArrayList<>();
         while (!parser.matchDirective(REPEAT_END)) {
             statements.add(parser.statement());
         }
-        parser.consume(TokenType.EOL, "Expected end of line");
+        parser.consumeEndOfLine();
 
         return DirectiveStatement.builder()
                 .type(REPEAT)

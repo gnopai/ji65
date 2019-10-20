@@ -18,7 +18,7 @@ public class MacroStatementParselet implements StatementParselet {
 
     private List<Expression> parseArguments(Parser parser) {
         List<Expression> arguments = new ArrayList<>();
-        if (parser.match(TokenType.EOL)) {
+        if (parser.matchEndOfLine()) {
             return arguments;
         }
 
@@ -26,7 +26,7 @@ public class MacroStatementParselet implements StatementParselet {
         while (parser.match(TokenType.COMMA)) {
             arguments.add(parser.expression());
         }
-        parser.consume(TokenType.EOL, "Expected end of line");
+        parser.consumeEndOfLine();
         return arguments;
     }
 }

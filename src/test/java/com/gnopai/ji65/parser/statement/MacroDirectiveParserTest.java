@@ -186,10 +186,11 @@ class MacroDirectiveParserTest {
                 token(INSTRUCTION, InstructionType.CLC),
                 token(EOL),
                 token(DIRECTIVE, DirectiveType.MACRO_END),
+                token(PLUS),
                 token(EOF)
         ));
 
-        assertEquals(token(EOF), parseException.getToken());
+        assertEquals(token(PLUS), parseException.getToken());
         assertEquals("Expected end of line", parseException.getMessage());
     }
 
