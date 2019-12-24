@@ -8,21 +8,26 @@ import com.gnopai.ji65.scanner.Token;
 
 import java.util.Map;
 
+import static java.util.Map.entry;
 import static java.util.Optional.ofNullable;
 
 public class DirectiveStatementParselet implements StatementParselet {
     private final Map<DirectiveType, StatementParselet> directiveParselets;
 
     public DirectiveStatementParselet(SourceFileProcessor sourceFileProcessor) {
-        directiveParselets = Map.of(
-                DirectiveType.SEGMENT, new SegmentDirectiveParser(),
-                DirectiveType.RESERVE, new ReserveDirectiveParser(),
-                DirectiveType.BYTE, new DataDirectiveParser(DirectiveType.BYTE),
-                DirectiveType.WORD, new DataDirectiveParser(DirectiveType.WORD),
-                DirectiveType.REPEAT, new RepeatDirectiveParser(),
-                DirectiveType.MACRO, new MacroDirectiveParser(),
-                DirectiveType.INCLUDE, new IncludeSourceFileDirectiveParser(sourceFileProcessor),
-                DirectiveType.INCLUDE_BINARY, new IncludeBinaryDirectiveParser()
+        directiveParselets = Map.ofEntries(
+                entry(DirectiveType.SEGMENT, new SegmentDirectiveParser()),
+                entry(DirectiveType.RESERVE, new ReserveDirectiveParser()),
+                entry(DirectiveType.BYTE, new DataDirectiveParser(DirectiveType.BYTE)),
+                entry(DirectiveType.WORD, new DataDirectiveParser(DirectiveType.WORD)),
+                entry(DirectiveType.REPEAT, new RepeatDirectiveParser()),
+                entry(DirectiveType.MACRO, new MacroDirectiveParser()),
+                entry(DirectiveType.INCLUDE, new IncludeSourceFileDirectiveParser(sourceFileProcessor)),
+                entry(DirectiveType.INCLUDE_BINARY, new IncludeBinaryDirectiveParser()),
+                entry(DirectiveType.TEST, new TestDirectiveParser()),
+                entry(DirectiveType.TEST_ASSERT, new TestAssertStatementParselet()),
+                entry(DirectiveType.TEST_SET, new TestSetStatementParselet()),
+                entry(DirectiveType.TEST_RUN, new TestRunStatementParselet())
         );
     }
 
