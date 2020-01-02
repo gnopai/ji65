@@ -11,6 +11,7 @@ import com.gnopai.ji65.config.SegmentType;
 import com.gnopai.ji65.parser.expression.ExpressionEvaluator;
 import com.gnopai.ji65.parser.expression.PrimaryExpression;
 import com.gnopai.ji65.scanner.TokenType;
+import com.gnopai.ji65.test.TestMaker;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -24,6 +25,7 @@ class LinkerTest {
     private final SegmentMapper segmentMapper = mock(SegmentMapper.class);
     private final LabelResolver labelResolver = mock(LabelResolver.class);
     private final ExpressionEvaluator expressionEvaluator = mock(ExpressionEvaluator.class);
+    private final TestMaker testMaker = mock(TestMaker.class);
 
     private final Environment environment = new Environment();
     private final AssembledSegments assembledSegments = new AssembledSegments(
@@ -120,6 +122,27 @@ class LinkerTest {
     }
 
     @Test
+    void testVisitTestData() {
+        TestData testData = TestData.builder().testName("whee").build();
+        com.gnopai.ji65.test.Test test = new com.gnopai.ji65.test.Test("foo", List.of());
+        when(testMaker.makeTest(testData, environment)).thenReturn(test);
+
+        Label startLabel = label("start", 1);
+        MappedSegments mappedSegments = mappedSegments(0x7001, testData, startLabel);
+        when(segmentMapper.mapSegments(programConfig, assembledSegments.getSegments()))
+                .thenReturn(mappedSegments);
+
+        Program program = runLinker();
+
+        Program expectedProgram = new Program(
+                List.of(new Program.Chunk(new Address(0x7001), List.of())),
+                Map.of("start", 1),
+                List.of(test)
+        );
+        assertEquals(expectedProgram, program);
+    }
+
+    @Test
     void testVisitRelativeUnresolvedExpression_positiveOffset() {
         PrimaryExpression expression = new PrimaryExpression(TokenType.NUMBER, 0x7024);
         RelativeUnresolvedExpression relativeUnresolvedExpression = new RelativeUnresolvedExpression(expression);
@@ -198,7 +221,7 @@ class LinkerTest {
     }
 
     private Program runLinker() {
-        return new Linker(segmentMapper, labelResolver, expressionEvaluator)
+        return new Linker(segmentMapper, labelResolver, expressionEvaluator, testMaker)
                 .link(assembledSegments, programConfig);
     }
 

@@ -5,6 +5,8 @@ import com.gnopai.ji65.Program;
 import com.gnopai.ji65.assembler.*;
 import com.gnopai.ji65.config.ProgramConfig;
 import com.gnopai.ji65.parser.expression.ExpressionEvaluator;
+import com.gnopai.ji65.test.Test;
+import com.gnopai.ji65.test.TestMaker;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -16,14 +18,16 @@ public class Linker implements SegmentDataVisitor {
     private final SegmentMapper segmentMapper;
     private final LabelResolver labelResolver;
     private final ExpressionEvaluator expressionEvaluator;
+    private final TestMaker testMaker;
     private ProgramBuilder programBuilder;
     private Environment environment;
 
     @Inject
-    public Linker(SegmentMapper segmentMapper, LabelResolver labelResolver, ExpressionEvaluator expressionEvaluator) {
+    public Linker(SegmentMapper segmentMapper, LabelResolver labelResolver, ExpressionEvaluator expressionEvaluator, TestMaker testMaker) {
         this.segmentMapper = segmentMapper;
         this.labelResolver = labelResolver;
         this.expressionEvaluator = expressionEvaluator;
+        this.testMaker = testMaker;
     }
 
     public Program link(AssembledSegments assembledSegments, ProgramConfig programConfig) {
@@ -92,6 +96,12 @@ public class Linker implements SegmentDataVisitor {
                 .mapToObj(i -> (byte) 0)
                 .collect(toList());
         programBuilder.bytes(bytes);
+    }
+
+    @Override
+    public void visit(TestData testData) {
+        Test test = testMaker.makeTest(testData, environment);
+        programBuilder.test(test);
     }
 
     private void updateEnvironmentProgramAddress() {

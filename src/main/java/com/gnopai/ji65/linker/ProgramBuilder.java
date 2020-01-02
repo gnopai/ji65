@@ -2,6 +2,7 @@ package com.gnopai.ji65.linker;
 
 import com.gnopai.ji65.Address;
 import com.gnopai.ji65.Program;
+import com.gnopai.ji65.test.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import static java.util.stream.Collectors.toList;
 public class ProgramBuilder {
     private final Map<Integer, byte[]> segmentBytes;
     private final Map<String, Integer> labels;
+    private final List<Test> tests;
 
     private byte[] bytes;
     private int startIndex;
@@ -21,6 +23,7 @@ public class ProgramBuilder {
     public ProgramBuilder() {
         segmentBytes = new HashMap<>();
         labels = new HashMap<>();
+        tests = new ArrayList<>();
     }
 
     public ProgramBuilder segment(MappedSegment segment) {
@@ -48,6 +51,11 @@ public class ProgramBuilder {
         return this;
     }
 
+    public ProgramBuilder test(Test test) {
+        tests.add(test);
+        return this;
+    }
+
     private void completeLastSegment() {
         if (bytes != null) {
             segmentBytes.put(startIndex, bytes);
@@ -62,7 +70,7 @@ public class ProgramBuilder {
                 .map(entry -> makeChunk(entry.getKey(), entry.getValue()))
                 .collect(toList());
 
-        return new Program(chunks, Map.copyOf(labels));
+        return new Program(chunks, Map.copyOf(labels), List.copyOf(tests));
     }
 
     public int getCurrentIndex() {

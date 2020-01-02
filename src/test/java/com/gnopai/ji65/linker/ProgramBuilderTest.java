@@ -49,9 +49,11 @@ class ProgramBuilderTest {
                 .label("derp", 0x02)
                 .bytes((byte) 0x15)
                 .bytes(List.of((byte) 0xEF, (byte) 0x44, (byte) 0x01))
+                .test(test("foo"))
                 .segment(mockSegment(8, 7))
                 .label("start", 0x06)
                 .bytes((byte) 0xBC)
+                .test(test("bar"))
                 .build();
 
         Program expectedProgram = new Program(List.of(
@@ -69,7 +71,8 @@ class ProgramBuilderTest {
                         (byte) 0x00,
                         (byte) 0x00))
         ),
-                Map.of("derp", 2, "start", 6)
+                Map.of("derp", 2, "start", 6),
+                List.of(test("foo"), test("bar"))
         );
         assertEquals(expectedProgram, program);
     }
@@ -79,5 +82,9 @@ class ProgramBuilderTest {
         when(mappedSegment.getStartAddress()).thenReturn(new Address(startAddress));
         when(mappedSegment.getSize()).thenReturn(size);
         return mappedSegment;
+    }
+
+    private com.gnopai.ji65.test.Test test(String name) {
+        return new com.gnopai.ji65.test.Test(name, List.of());
     }
 }
