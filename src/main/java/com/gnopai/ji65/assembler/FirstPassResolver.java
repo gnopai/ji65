@@ -90,6 +90,12 @@ public class FirstPassResolver implements StatementVisitor<Void> {
         return null;
     }
 
+    @Override
+    public Void visit(TestStatement testStatement) {
+        // no-op
+        return null;
+    }
+
     private boolean isCurrentSegmentZeroPage() {
         return assembledSegments.getSegment(currentSegment)
                 .map(Segment::isZeroPage)

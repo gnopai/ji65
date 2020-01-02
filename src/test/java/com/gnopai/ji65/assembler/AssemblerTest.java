@@ -11,6 +11,7 @@ import java.util.List;
 
 import static com.gnopai.ji65.assembler.AssembledSegments.DEFAULT_SEGMENT_NAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class AssemblerTest {
@@ -229,6 +230,47 @@ class AssemblerTest {
         verify(statement1).accept(assembler);
         verify(statement2).accept(assembler);
         verify(statement3).accept(assembler);
+    }
+
+    @Test
+    void testDirectiveStatement_test() {
+        TestStatement statement1 = TestStatement.builder().message("one").build();
+        TestStatement statement2 = TestStatement.builder().message("two").build();
+        TestStatement statement3 = TestStatement.builder().message("three").build();
+        List<TestStatement> statements = List.of(statement1, statement2, statement3);
+        DirectiveStatement directiveStatement = DirectiveStatement.builder()
+                .type(DirectiveType.TEST)
+                .name("testy test")
+                .statements(statements)
+                .build();
+
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor, macroProcessor);
+
+        AssembledSegments result = assembler.assemble(List.of(directiveStatement), programConfig, environment);
+
+        TestData expectedTestData = TestData.builder()
+                .testName("testy test")
+                .statements(statements)
+                .build();
+        List<Segment> expectedSegments = List.of(new Segment(segmentConfig, List.of(expectedTestData)));
+        AssembledSegments assembledSegments = new AssembledSegments(expectedSegments, environment);
+        assertEquals(assembledSegments, result);
+    }
+
+    @Test
+    void testTestStatementOutsideOfTest() {
+        TestStatement goodStatement = TestStatement.builder().message("yay").build();
+        DirectiveStatement directiveStatement = DirectiveStatement.builder()
+                .type(DirectiveType.TEST)
+                .name("testy test")
+                .statements(List.of(goodStatement))
+                .build();
+        TestStatement badStatement = TestStatement.builder().message("bad").build();
+
+        Assembler assembler = new Assembler(firstPassResolver, instructionAssembler, directiveDataAssembler, repeatDirectiveProcessor, macroProcessor);
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> assembler.assemble(List.of(directiveStatement, badStatement), programConfig, environment));
+        assertEquals("Test statement encountered outside of test", exception.getMessage());
     }
 
     @Test
