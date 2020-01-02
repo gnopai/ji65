@@ -3,6 +3,7 @@ package com.gnopai.ji65.parser.statement;
 import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.parser.ParseException;
 import com.gnopai.ji65.parser.expression.PrimaryExpression;
+import com.gnopai.ji65.test.Target;
 import com.gnopai.ji65.util.ErrorHandler;
 import org.junit.jupiter.api.Test;
 
@@ -63,7 +64,7 @@ class TestDirectiveParserTest {
                 .statements(List.of(
                         TestStatement.builder()
                                 .type(TestStatement.Type.SET)
-                                .target(TestStatement.Target.X)
+                                .target(Target.X)
                                 .value(new PrimaryExpression(NUMBER, 666))
                                 .build(),
                         TestStatement.builder()
@@ -72,7 +73,7 @@ class TestDirectiveParserTest {
                                 .build(),
                         TestStatement.builder()
                                 .type(TestStatement.Type.ASSERT)
-                                .target(TestStatement.Target.X)
+                                .target(Target.X)
                                 .value(new PrimaryExpression(NUMBER, 777))
                                 .build()
                         ))

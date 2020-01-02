@@ -1,6 +1,7 @@
 package com.gnopai.ji65.parser.statement;
 
 import com.gnopai.ji65.parser.expression.Expression;
+import com.gnopai.ji65.test.Target;
 import lombok.Builder;
 import lombok.Value;
 
@@ -18,8 +19,5 @@ public class TestStatement implements Statement {
         return statementVisitor.visit(this);
     }
 
-    // TODO move all this up? Probably needs to be shared between objects at the different stages...
     public enum Type { SET, RUN, ASSERT }
-
-    public enum Target { X, Y, A, MEMORY, LABEL }
 }

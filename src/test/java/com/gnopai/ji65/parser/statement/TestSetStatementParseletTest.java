@@ -3,6 +3,7 @@ package com.gnopai.ji65.parser.statement;
 import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.parser.ParseException;
 import com.gnopai.ji65.parser.expression.PrimaryExpression;
+import com.gnopai.ji65.test.Target;
 import com.gnopai.ji65.util.ErrorHandler;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +28,7 @@ class TestSetStatementParseletTest {
 
         TestStatement expectedResult = TestStatement.builder()
                 .type(TestStatement.Type.SET)
-                .target(TestStatement.Target.X)
+                .target(Target.X)
                 .value(new PrimaryExpression(NUMBER, 99))
                 .build();
         assertEquals(expectedResult, result);
@@ -44,7 +45,7 @@ class TestSetStatementParseletTest {
 
         TestStatement expectedResult = TestStatement.builder()
                 .type(TestStatement.Type.SET)
-                .target(TestStatement.Target.Y)
+                .target(Target.Y)
                 .value(new PrimaryExpression(NUMBER, 99))
                 .build();
         assertEquals(expectedResult, result);
@@ -61,7 +62,7 @@ class TestSetStatementParseletTest {
 
         TestStatement expectedResult = TestStatement.builder()
                 .type(TestStatement.Type.SET)
-                .target(TestStatement.Target.A)
+                .target(Target.A)
                 .value(new PrimaryExpression(NUMBER, 99))
                 .build();
         assertEquals(expectedResult, result);
@@ -78,7 +79,7 @@ class TestSetStatementParseletTest {
 
         TestStatement expectedResult = TestStatement.builder()
                 .type(TestStatement.Type.SET)
-                .target(TestStatement.Target.MEMORY)
+                .target(Target.MEMORY)
                 .targetAddress(new PrimaryExpression(NUMBER, 0x1234))
                 .value(new PrimaryExpression(NUMBER, 99))
                 .build();
