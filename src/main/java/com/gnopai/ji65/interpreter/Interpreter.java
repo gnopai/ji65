@@ -5,7 +5,9 @@ import com.gnopai.ji65.Cpu;
 import com.gnopai.ji65.Program;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class Interpreter {
     private final InstructionExecutor instructionExecutor;
 
