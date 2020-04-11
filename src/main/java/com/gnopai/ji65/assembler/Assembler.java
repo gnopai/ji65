@@ -16,6 +16,7 @@ public class Assembler implements StatementVisitor<Void> {
     private final MacroProcessor macroProcessor;
     private AssembledSegments assembledSegments;
     private String currentSegment;
+    private TestData.TestDataBuilder currentTest;
     private Environment environment;
 
     @Inject
@@ -85,6 +86,13 @@ public class Assembler implements StatementVisitor<Void> {
             case MACRO:
                 // handled in first pass
                 break;
+            case TEST:
+                currentTest = TestData.builder().testName(directiveStatement.getName());
+                directiveStatement.getStatements()
+                        .forEach(statement -> statement.accept(this));
+                assembledSegments.add(currentSegment, currentTest.build());
+                currentTest = null;
+                break;
             default:
                 directiveDataAssembler.assemble(directiveStatement, environment)
                         .forEach(data -> assembledSegments.add(currentSegment, data));
@@ -103,6 +111,15 @@ public class Assembler implements StatementVisitor<Void> {
     public Void visit(MacroStatement macroStatement) {
         macroProcessor.process(macroStatement, environment)
                 .forEach(statement -> statement.accept(this));
+        return null;
+    }
+
+    @Override
+    public Void visit(TestStatement testStatement) {
+        if (currentTest == null) {
+            throw new IllegalStateException("Test statement encountered outside of test");
+        }
+        currentTest.statement(testStatement);
         return null;
     }
 }

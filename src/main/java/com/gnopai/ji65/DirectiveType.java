@@ -21,6 +21,11 @@ public enum DirectiveType {
     MACRO_END("endmacro"),
     INCLUDE("include"),
     INCLUDE_BINARY("incbin"),
+    TEST("test"),
+    TEST_END("endtest"),
+    TEST_SET("testset"),
+    TEST_RUN("testrun"),
+    TEST_ASSERT("assert"),
     ;
 
     private final String identifier;

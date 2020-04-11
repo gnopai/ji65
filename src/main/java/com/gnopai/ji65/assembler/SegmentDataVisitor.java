@@ -12,4 +12,6 @@ public interface SegmentDataVisitor {
     void visit(RelativeUnresolvedExpression relativeUnresolvedExpression);
 
     void visit(ReservedData reservedData);
+
+    void visit(TestData testData);
 }

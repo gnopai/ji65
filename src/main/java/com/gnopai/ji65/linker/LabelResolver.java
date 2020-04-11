@@ -63,4 +63,9 @@ public class LabelResolver implements SegmentDataVisitor {
     public void visit(ReservedData reservedData) {
         offset += reservedData.getByteCount();
     }
+
+    @Override
+    public void visit(TestData testData) {
+        // no-op -- not part of program data and thus no bytes
+    }
 }

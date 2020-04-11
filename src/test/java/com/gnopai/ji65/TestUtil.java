@@ -4,6 +4,7 @@ import com.gnopai.ji65.config.*;
 import com.gnopai.ji65.interpreter.EndProgramAtValue;
 import com.gnopai.ji65.interpreter.ProgramEndStrategy;
 import com.gnopai.ji65.scanner.SourceFile;
+import com.gnopai.ji65.test.TestResult;
 import com.gnopai.ji65.util.ErrorPrinter;
 
 import java.util.Arrays;
@@ -29,15 +30,25 @@ public class TestUtil {
 
     public static void assembleAndRun(Cpu cpu, ProgramConfig programConfig, ProgramEndStrategy programEndStrategy, String... lines) {
         String startLabel = "start";
+        Ji65 ji65 = new Ji65(new ErrorPrinter());
+        Program program = assemble(ji65, programConfig, startLabel, lines);
+        Address startAddress = program.getLabelAddress(startLabel)
+            .orElseThrow(() -> new RuntimeException("Label not found: " + startLabel));
+        ji65.run(program, startAddress, cpu, programEndStrategy);
+    }
+
+    public static List<TestResult> assembleAndRunTests(String... lines) {
+        Ji65 ji65 = new Ji65(new ErrorPrinter());
+        Program program = assemble(ji65, DEFAULT_CONFIG, "start", lines);
+        return ji65.runTests(program);
+    }
+
+    private static Program assemble(Ji65 ji65, ProgramConfig programConfig, String startLabel, String... lines) {
         String programText = startLabel + ":\n" + Arrays.stream(lines)
                 .map(line -> line + "\n")
                 .collect(Collectors.joining(""));
         SourceFile sourceFile = new SourceFile(null, programText);
-        Ji65 ji65 = new Ji65(new ErrorPrinter());
-        Program program = ji65.assemble(sourceFile, programConfig);
-        Address startAddress = program.getLabelAddress(startLabel)
-            .orElseThrow(() -> new RuntimeException("Label not found: " + startLabel));
-        ji65.run(program, startAddress, cpu, programEndStrategy);
+        return ji65.assemble(sourceFile, programConfig);
     }
 
     private static ProgramConfig buildDefaultConfig() {

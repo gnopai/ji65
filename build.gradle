@@ -29,10 +29,10 @@ test {
     }
 }
 
-jar.baseName = 'jt65'
+jar.baseName = 'ji65'
 jar {
     manifest {
-        attributes("Implementation-Title": "contact-generator", "Implementation-Version": project.ext.version)
+        attributes("Implementation-Title": "ji65", "Implementation-Version": project.ext.version)
     }
 }
 

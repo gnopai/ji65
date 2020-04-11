@@ -76,6 +76,10 @@ public class Cpu {
         return nextByte;
     }
 
+    public byte peekNextProgramByte() {
+        return memory[programCounter];
+    }
+
     public void setCarryFlag(boolean value) {
         updateProcessorStatus(value, 0b10000000);
     }
