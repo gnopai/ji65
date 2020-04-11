@@ -42,10 +42,14 @@ public class Ji65 {
         interpreter.run(program, startAddress, cpu, programEndStrategy);
     }
 
-    // TODO use this somewhere -- leave for later?
-    public void runTests(Program program) {
-        List<TestResult> testResults = testRunner.runTests(program);
-        new StdoutTestReporter().reportResults(testResults);
+    public List<TestResult> runTests(Program program) {
+        return testRunner.runTests(program);
+    }
+
+    // TODO needed?
+    public void runTestsAndReportResults(Program program) {
+        List<TestResult> results = runTests(program);
+        new StdoutTestReporter().reportResults(results);
     }
 
     public Program assemble(SourceFile sourceFile, ProgramConfig programConfig) {
