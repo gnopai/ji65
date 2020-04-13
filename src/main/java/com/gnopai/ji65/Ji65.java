@@ -8,7 +8,7 @@ import com.gnopai.ji65.interpreter.NeverEndProgram;
 import com.gnopai.ji65.interpreter.ProgramEndStrategy;
 import com.gnopai.ji65.linker.Linker;
 import com.gnopai.ji65.scanner.SourceFile;
-import com.gnopai.ji65.test.StdoutTestReporter;
+import com.gnopai.ji65.test.TestReport;
 import com.gnopai.ji65.test.TestResult;
 import com.gnopai.ji65.test.TestRunner;
 import com.gnopai.ji65.util.ErrorHandler;
@@ -42,14 +42,9 @@ public class Ji65 {
         interpreter.run(program, startAddress, cpu, programEndStrategy);
     }
 
-    public List<TestResult> runTests(Program program) {
-        return testRunner.runTests(program);
-    }
-
-    // TODO needed?
-    public void runTestsAndReportResults(Program program) {
-        List<TestResult> results = runTests(program);
-        new StdoutTestReporter().reportResults(results);
+    public TestReport runTests(Program program) {
+        List<TestResult> testResults = testRunner.runTests(program);
+        return new TestReport(testResults);
     }
 
     public Program assemble(SourceFile sourceFile, ProgramConfig programConfig) {

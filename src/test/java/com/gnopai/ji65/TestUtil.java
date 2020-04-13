@@ -4,7 +4,7 @@ import com.gnopai.ji65.config.*;
 import com.gnopai.ji65.interpreter.EndProgramAtValue;
 import com.gnopai.ji65.interpreter.ProgramEndStrategy;
 import com.gnopai.ji65.scanner.SourceFile;
-import com.gnopai.ji65.test.TestResult;
+import com.gnopai.ji65.test.TestReport;
 import com.gnopai.ji65.util.ErrorPrinter;
 
 import java.util.Arrays;
@@ -37,7 +37,7 @@ public class TestUtil {
         ji65.run(program, startAddress, cpu, programEndStrategy);
     }
 
-    public static List<TestResult> assembleAndRunTests(String... lines) {
+    public static TestReport assembleAndRunTests(String... lines) {
         Ji65 ji65 = new Ji65(new ErrorPrinter());
         Program program = assemble(ji65, DEFAULT_CONFIG, "start", lines);
         return ji65.runTests(program);

@@ -7,4 +7,8 @@ public class AssertionResult {
     boolean successful;
     byte expected;
     byte actual;
+
+    public boolean isFailure() {
+        return !successful;
+    }
 }
