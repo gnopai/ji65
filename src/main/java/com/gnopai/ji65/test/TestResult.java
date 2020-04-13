@@ -12,4 +12,21 @@ public class TestResult {
     String name;
     @Singular
     List<AssertionResult> assertionResults;
+
+    public boolean allAssertionsPassed() {
+        return assertionResults.stream()
+                .allMatch(AssertionResult::isSuccessful);
+    }
+
+    public long getTotalAssertionsPassed() {
+        return assertionResults.stream()
+                .filter(AssertionResult::isSuccessful)
+                .count();
+    }
+
+    public long getTotalAssertionsFailed() {
+        return assertionResults.stream()
+                .filter(AssertionResult::isFailure)
+                .count();
+    }
 }
