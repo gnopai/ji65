@@ -11,7 +11,13 @@ import com.gnopai.ji65.scanner.Token;
 import com.gnopai.ji65.util.ErrorHandler;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
+import java.util.Optional;
 
 public class SourceFileProcessor {
     private static final int MAX_FILE_DEPTH = 16;
@@ -21,7 +27,7 @@ public class SourceFileProcessor {
     private final FileLoader fileLoader;
     private final Scanner scanner;
     private final ErrorHandler errorHandler;
-    private int fileDepth = 0;
+    private final Deque<SourceFile> fileStack = new ArrayDeque<>();
 
     @Inject
     public SourceFileProcessor(FileLoader fileLoader, Scanner scanner, ErrorHandler errorHandler) {
@@ -31,26 +37,43 @@ public class SourceFileProcessor {
     }
 
     public List<Statement> loadAndParse(String fileName) {
-        incrementFileDepth(fileName);
-        List<Statement> statements = fileLoader.loadSourceFile(fileName)
-                .map(this::parse)
+        Path path = findPath(fileName);
+        return fileLoader.loadSourceFile(path)
+                .map(this::loadAndParse)
                 .orElseThrow(() -> new RuntimeException(String.format(FILE_OPEN_ERROR, fileName)));
-        decrementFileDepth();
+    }
+
+    public List<Statement> loadAndParse(SourceFile sourceFile) {
+        addToStack(sourceFile);
+        List<Statement> statements = parse(sourceFile);
+        removeTopOfStack();
         return statements;
     }
 
-    private void incrementFileDepth(String fileName) {
-        if (fileDepth >= MAX_FILE_DEPTH) {
-            throw new RuntimeException(String.format(MAX_FILE_DEPTH_ERROR, fileName));
+    private Path findPath(String fileName) {
+        if (fileStack.isEmpty() || fileName.startsWith(File.separator)) {
+            return Paths.get(fileName);
         }
-        fileDepth++;
+
+        return Optional.ofNullable(fileStack.peek())
+                .map(SourceFile::getPath)
+                .map(Path::getParent)
+                .map(parent -> parent.resolve(fileName))
+                .orElse(Paths.get(fileName));
     }
 
-    private void decrementFileDepth() {
-        fileDepth--;
+    private void addToStack(SourceFile sourceFile) {
+        if (fileStack.size() >= MAX_FILE_DEPTH) {
+            throw new RuntimeException(String.format(MAX_FILE_DEPTH_ERROR, sourceFile.getPath()));
+        }
+        fileStack.push(sourceFile);
     }
 
-    public List<Statement> parse(SourceFile sourceFile) {
+    private void removeTopOfStack() {
+        fileStack.pop();
+    }
+
+    private List<Statement> parse(SourceFile sourceFile) {
         List<Token> tokens = scanner.scan(sourceFile.getText());
         TokenStream tokenStream = new TokenStream(errorHandler, tokens);
         Parser parser = new Parser(new ParseletFactory(this), tokenStream);
