@@ -19,12 +19,12 @@ class ConfigInterpreterTest {
         List<ConfigBlock> blocks = List.of(
                 new ConfigBlock(MEMORY_BLOCK, List.of(
                         new ConfigSegment("test", Map.of(
-                                "start", new Token(NUMBER, "$8000", 0x8000, 0),
-                                "size", new Token(NUMBER, "$2000", 0x2000, 0),
-                                "type", new Token(IDENTIFIER, "ro", null, 0),
-                                "file", new Token(STRING, "\"%O\"", "%O", 0),
-                                "fill", new Token(IDENTIFIER, "yes", null, 0),
-                                "fillval", new Token(NUMBER, "$FF", 0xFF, 0)
+                                "start", new Token(NUMBER, "$8000", 0x8000, 0, null),
+                                "size", new Token(NUMBER, "$2000", 0x2000, 0, null),
+                                "type", new Token(IDENTIFIER, "ro", null, 0, null),
+                                "file", new Token(STRING, "\"%O\"", "%O", 0, null),
+                                "fill", new Token(IDENTIFIER, "yes", null, 0, null),
+                                "fillval", new Token(NUMBER, "$FF", 0xFF, 0, null)
                         ))
                 )),
                 new ConfigBlock(SEGMENTS_BLOCK, List.of())
@@ -75,10 +75,10 @@ class ConfigInterpreterTest {
                 new ConfigBlock(MEMORY_BLOCK, List.of()),
                 new ConfigBlock(SEGMENTS_BLOCK, List.of(
                         new ConfigSegment("CODE", Map.of(
-                                "load", new Token(IDENTIFIER, "PRG", null, 0),
-                                "type", new Token(IDENTIFIER, "ro", null, 0),
-                                "start", new Token(NUMBER, "$8000", 0x8000, 0),
-                                "align", new Token(NUMBER, "$100", 0x100, 0)
+                                "load", new Token(IDENTIFIER, "PRG", null, 0, null),
+                                "type", new Token(IDENTIFIER, "ro", null, 0, null),
+                                "start", new Token(NUMBER, "$8000", 0x8000, 0, null),
+                                "align", new Token(NUMBER, "$100", 0x100, 0, null)
                         ))
                 ))
         );

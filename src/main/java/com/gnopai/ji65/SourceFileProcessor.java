@@ -74,7 +74,7 @@ public class SourceFileProcessor {
     }
 
     private List<Statement> parse(SourceFile sourceFile) {
-        List<Token> tokens = scanner.scan(sourceFile.getText());
+        List<Token> tokens = scanner.scan(sourceFile);
         TokenStream tokenStream = new TokenStream(errorHandler, tokens);
         Parser parser = new Parser(new ParseletFactory(this), tokenStream);
         return parser.parse();

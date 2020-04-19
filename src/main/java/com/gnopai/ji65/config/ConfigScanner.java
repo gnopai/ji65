@@ -1,5 +1,6 @@
 package com.gnopai.ji65.config;
 
+import com.gnopai.ji65.scanner.SourceFile;
 import com.gnopai.ji65.scanner.Token;
 import com.gnopai.ji65.scanner.TokenReader;
 import com.gnopai.ji65.scanner.TokenType;
@@ -15,8 +16,8 @@ public class ConfigScanner {
         this.tokenReader = tokenReader;
     }
 
-    public List<Token> scan(String source) {
-        return tokenReader.read(source, this::scanToken);
+    public List<Token> scan(SourceFile sourceFile) {
+        return tokenReader.read(sourceFile, this::scanToken);
     }
 
     private void scanToken(char c) {

@@ -57,6 +57,6 @@ class MultiTokenStatementParseletTest {
     }
 
     private Token token(TokenType type) {
-        return new Token(type, "", null, 0);
+        return new Token(type, "", null, 0, null);
     }
 }

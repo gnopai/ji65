@@ -18,9 +18,10 @@ class ScannerTest {
 
     @Test
     void testEmptySource() {
-        List<Token> tokens = runScanner("");
+        SourceFile sourceFile = new SourceFile(null, "");
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(EOF, "", null, 1)
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
     }
@@ -60,19 +61,20 @@ class ScannerTest {
     @Test
     void testSingleToken_string() {
         String text = "\"Ima String\"";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(CHAR, text, (int) 'I', 1),
-                new Token(CHAR, text, (int) 'm', 1),
-                new Token(CHAR, text, (int) 'a', 1),
-                new Token(CHAR, text, (int) ' ', 1),
-                new Token(CHAR, text, (int) 'S', 1),
-                new Token(CHAR, text, (int) 't', 1),
-                new Token(CHAR, text, (int) 'r', 1),
-                new Token(CHAR, text, (int) 'i', 1),
-                new Token(CHAR, text, (int) 'n', 1),
-                new Token(CHAR, text, (int) 'g', 1),
-                new Token(EOF, "", null, 1)
+                new Token(CHAR, text, (int) 'I', 1, sourceFile),
+                new Token(CHAR, text, (int) 'm', 1, sourceFile),
+                new Token(CHAR, text, (int) 'a', 1, sourceFile),
+                new Token(CHAR, text, (int) ' ', 1, sourceFile),
+                new Token(CHAR, text, (int) 'S', 1, sourceFile),
+                new Token(CHAR, text, (int) 't', 1, sourceFile),
+                new Token(CHAR, text, (int) 'r', 1, sourceFile),
+                new Token(CHAR, text, (int) 'i', 1, sourceFile),
+                new Token(CHAR, text, (int) 'n', 1, sourceFile),
+                new Token(CHAR, text, (int) 'g', 1, sourceFile),
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
         verifyNoErrors();
@@ -81,34 +83,37 @@ class ScannerTest {
     @Test
     void testUnterminatedString_endOfLine() {
         String text = "\"Ima String\n+\"";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(EOL, "\n", null, 1),
-                new Token(PLUS, "+", null, 2),
-                new Token(EOF, "", null, 2)
+                new Token(EOL, "\n", null, 1, sourceFile),
+                new Token(PLUS, "+", null, 2, sourceFile),
+                new Token(EOF, "", null, 2, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
-        verify(errorHandler).handleError("Unterminated string", 1);
+        verify(errorHandler).handleError("Unterminated string", sourceFile, 1);
     }
 
     @Test
     void testUnterminatedString_endOfSourceText() {
         String text = "\"Ima String";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(EOF, "", null, 1)
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
-        verify(errorHandler).handleError("Unterminated string", 1);
+        verify(errorHandler).handleError("Unterminated string", sourceFile, 1);
     }
 
     @Test
     void testSingleToken_decimalNumber() {
         String text = "1234";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(NUMBER, text, 1234, 1),
-                new Token(EOF, "", null, 1)
+                new Token(NUMBER, text, 1234, 1, sourceFile),
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
         verifyNoErrors();
@@ -117,22 +122,24 @@ class ScannerTest {
     @Test
     void testSingleToken_decimalNumber_trailingGarbage() {
         String text = "1234Y";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(EOF, "", null, 1)
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
-        verify(errorHandler).handleError("Invalid decimal number", 1);
+        verify(errorHandler).handleError("Invalid decimal number", sourceFile, 1);
         verifyNoMoreInteractions(errorHandler);
     }
 
     @Test
     void testSingleToken_binaryNumber_valid() {
         String text = "%00011010";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(NUMBER, text, 26, 1),
-                new Token(EOF, "", null, 1)
+                new Token(NUMBER, text, 26, 1, sourceFile),
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
         verifyNoErrors();
@@ -141,70 +148,76 @@ class ScannerTest {
     @Test
     void testSingleToken_binaryNumber_badChar() {
         String text = "%00011061";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(EOF, "", null, 1)
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
-        verify(errorHandler).handleError("Invalid binary number", 1);
+        verify(errorHandler).handleError("Invalid binary number", sourceFile, 1);
         verifyNoMoreInteractions(errorHandler);
     }
 
     @Test
     void testSingleToken_binaryNumber_tooShort() {
         String text = "%0001110";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(EOF, "", null, 1)
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
-        verify(errorHandler).handleError("Invalid binary number", 1);
+        verify(errorHandler).handleError("Invalid binary number", sourceFile, 1);
         verifyNoMoreInteractions(errorHandler);
     }
 
     @Test
     void testSingleToken_binaryNumber_noValue() {
         String text = "%";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(EOF, "", null, 1)
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
-        verify(errorHandler).handleError("Invalid binary number", 1);
+        verify(errorHandler).handleError("Invalid binary number", sourceFile, 1);
         verifyNoMoreInteractions(errorHandler);
     }
 
     @Test
     void testSingleToken_binaryNumber_tooLong() {
         String text = "%000111001";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(EOF, "", null, 1)
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
-        verify(errorHandler).handleError("Invalid binary number", 1);
+        verify(errorHandler).handleError("Invalid binary number", sourceFile, 1);
         verifyNoMoreInteractions(errorHandler);
     }
 
     @Test
     void testSingleToken_binaryNumber_trailingGarbage() {
         String text = "%00011100222";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(EOF, "", null, 1)
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
-        verify(errorHandler).handleError("Invalid binary number", 1);
+        verify(errorHandler).handleError("Invalid binary number", sourceFile, 1);
         verifyNoMoreInteractions(errorHandler);
     }
 
     @Test
     void testSingleToken_hexNumber_validFullLength() {
         String text = "$2a5F";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(NUMBER, text, 10847, 1),
-                new Token(EOF, "", null, 1)
+                new Token(NUMBER, text, 10847, 1, sourceFile),
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
         verifyNoErrors();
@@ -213,10 +226,11 @@ class ScannerTest {
     @Test
     void testSingleToken_hexNumber_validMinLength() {
         String text = "$d";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(NUMBER, text, 13, 1),
-                new Token(EOF, "", null, 1)
+                new Token(NUMBER, text, 13, 1, sourceFile),
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
         verifyNoErrors();
@@ -225,81 +239,85 @@ class ScannerTest {
     @Test
     void testSingleToken_hexNumber_badChar() {
         String text = "$12G3";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(EOF, "", null, 1)
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
-        verify(errorHandler).handleError("Invalid hex number", 1);
+        verify(errorHandler).handleError("Invalid hex number", sourceFile, 1);
         verifyNoMoreInteractions(errorHandler);
     }
 
     @Test
     void testSingleToken_hexNumber_tooShort() {
         String text = "$";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(EOF, "", null, 1)
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
-        verify(errorHandler).handleError("Invalid hex number", 1);
+        verify(errorHandler).handleError("Invalid hex number", sourceFile, 1);
         verifyNoMoreInteractions(errorHandler);
     }
 
     @Test
     void testSingleToken_hexNumber_tooLong() {
         String text = "$12345";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(EOF, "", null, 1)
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
-        verify(errorHandler).handleError("Invalid hex number", 1);
+        verify(errorHandler).handleError("Invalid hex number", sourceFile, 1);
         verifyNoMoreInteractions(errorHandler);
     }
 
     @Test
     void testWhitespace() {
-        assertEquals(
-                List.of(new Token(EOF, "", null, 1)),
-                runScanner(" ")
-        );
-        assertEquals(
-                List.of(new Token(EOF, "", null, 1)),
-                runScanner("\r")
-        );
-        assertEquals(
-                List.of(new Token(EOF, "", null, 1)),
-                runScanner("\t")
-        );
+        testWhitespaceIgnored(" ");
+        testWhitespaceIgnored("\r");
+        testWhitespaceIgnored("\t");
+
+        SourceFile sourceFile = new SourceFile(null, "\n");
         assertEquals(
                 List.of(
-                        new Token(EOL, "\n", null, 1),
-                        new Token(EOF, "", null, 2)),
-                runScanner("\n")
+                        new Token(EOL, "\n", null, 1, sourceFile),
+                        new Token(EOF, "", null, 2, sourceFile)),
+                runScanner(sourceFile)
         );
         verifyNoErrors();
     }
 
+    private void testWhitespaceIgnored(String text) {
+        SourceFile sourceFile = new SourceFile(null, text);
+        Token expectedToken = new Token(EOF, "", null, 1, sourceFile);
+        assertEquals(List.of(expectedToken), runScanner(sourceFile));
+    }
+
     @Test
     void testSingleToken_invalid() {
-        List<Token> tokens = runScanner("`");
+        SourceFile sourceFile = new SourceFile(null, "`");
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(EOF, "", null, 1)
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
-        verify(errorHandler).handleError("Unexpected character '`'", 1);
+        verify(errorHandler).handleError("Unexpected character '`'", sourceFile, 1);
         verifyNoMoreInteractions(errorHandler);
     }
 
     @Test
     void testComment_wholeLine() {
         String text = "; this is some stuff that is commented out\n+";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(EOL, "\n", null, 1),
-                new Token(PLUS, "+", null, 2),
-                new Token(EOF, "", null, 2)
+                new Token(EOL, "\n", null, 1, sourceFile),
+                new Token(PLUS, "+", null, 2, sourceFile),
+                new Token(EOF, "", null, 2, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
         verifyNoErrors();
@@ -308,13 +326,14 @@ class ScannerTest {
     @Test
     void testComment_partOfLine() {
         String text = "() ; this is some stuff that is commented out\n+";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(LEFT_PAREN, "(", null, 1),
-                new Token(RIGHT_PAREN, ")", null, 1),
-                new Token(EOL, "\n", null, 1),
-                new Token(PLUS, "+", null, 2),
-                new Token(EOF, "", null, 2)
+                new Token(LEFT_PAREN, "(", null, 1, sourceFile),
+                new Token(RIGHT_PAREN, ")", null, 1, sourceFile),
+                new Token(EOL, "\n", null, 1, sourceFile),
+                new Token(PLUS, "+", null, 2, sourceFile),
+                new Token(EOF, "", null, 2, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
         verifyNoErrors();
@@ -323,10 +342,11 @@ class ScannerTest {
     @Test
     void testSingleToken_directive_valid() {
         String text = ".byte";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(DIRECTIVE, text, DirectiveType.BYTE, 1),
-                new Token(EOF, "", null, 1)
+                new Token(DIRECTIVE, text, DirectiveType.BYTE, 1, sourceFile),
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
         verifyNoErrors();
@@ -335,22 +355,24 @@ class ScannerTest {
     @Test
     void testSingleToken_directive_invalid() {
         String text = ".derp";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(EOF, "", null, 1)
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
-        verify(errorHandler).handleError("Invalid directive", 1);
+        verify(errorHandler).handleError("Invalid directive", sourceFile, 1);
         verifyNoMoreInteractions(errorHandler);
     }
 
     @Test
     void testSingleToken_instruction() {
         String text = "LDA";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(INSTRUCTION, text, InstructionType.LDA, 1),
-                new Token(EOF, "", null, 1)
+                new Token(INSTRUCTION, text, InstructionType.LDA, 1, sourceFile),
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
         verifyNoErrors();
@@ -359,10 +381,11 @@ class ScannerTest {
     @Test
     void testSingleToken_registerX() {
         String text = "X";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(X, text, null, 1),
-                new Token(EOF, "", null, 1)
+                new Token(X, text, null, 1, sourceFile),
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
         verifyNoErrors();
@@ -371,10 +394,11 @@ class ScannerTest {
     @Test
     void testSingleToken_registerY() {
         String text = "Y";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(Y, text, null, 1),
-                new Token(EOF, "", null, 1)
+                new Token(Y, text, null, 1, sourceFile),
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
         verifyNoErrors();
@@ -383,10 +407,11 @@ class ScannerTest {
     @Test
     void testSingleToken_registerA() {
         String text = "A";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(A, text, null, 1),
-                new Token(EOF, "", null, 1)
+                new Token(A, text, null, 1, sourceFile),
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
         verifyNoErrors();
@@ -395,10 +420,11 @@ class ScannerTest {
     @Test
     void testSingleToken_identifier() {
         String text = "derp";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(IDENTIFIER, text, null, 1),
-                new Token(EOF, "", null, 1)
+                new Token(IDENTIFIER, text, null, 1, sourceFile),
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
         verifyNoErrors();
@@ -407,10 +433,11 @@ class ScannerTest {
     @Test
     void testSingleToken_identifierWithAtSign() {
         String text = "@derp";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(IDENTIFIER, text, null, 1),
-                new Token(EOF, "", null, 1)
+                new Token(IDENTIFIER, text, null, 1, sourceFile),
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
         verifyNoErrors();
@@ -419,10 +446,11 @@ class ScannerTest {
     @Test
     void testSingleToken_identifierWithAtSignThatLooksLikeSomethingElse() {
         String text = "@x";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(IDENTIFIER, text, null, 1),
-                new Token(EOF, "", null, 1)
+                new Token(IDENTIFIER, text, null, 1, sourceFile),
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
         verifyNoErrors();
@@ -431,39 +459,37 @@ class ScannerTest {
     @Test
     void testMultipleLines() {
         String text = "()\n+\n-";
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                new Token(LEFT_PAREN, "(", null, 1),
-                new Token(RIGHT_PAREN, ")", null, 1),
-                new Token(EOL, "\n", null, 1),
-                new Token(PLUS, "+", null, 2),
-                new Token(EOL, "\n", null, 2),
-                new Token(MINUS, "-", null, 3),
-                new Token(EOF, "", null, 3)
+                new Token(LEFT_PAREN, "(", null, 1, sourceFile),
+                new Token(RIGHT_PAREN, ")", null, 1, sourceFile),
+                new Token(EOL, "\n", null, 1, sourceFile),
+                new Token(PLUS, "+", null, 2, sourceFile),
+                new Token(EOL, "\n", null, 2, sourceFile),
+                new Token(MINUS, "-", null, 3, sourceFile),
+                new Token(EOF, "", null, 3, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
         verifyNoErrors();
     }
 
     private void testSimpleSingleToken(String text, TokenType type) {
-        testSingleToken(text, new Token(type, text, null, 1));
-    }
-
-    private void testSingleToken(String text, Token expectedToken) {
-        List<Token> tokens = runScanner(text);
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
         List<Token> expectedTokens = List.of(
-                expectedToken,
-                new Token(EOF, "", null, 1)
+                new Token(type, text, null, 1, sourceFile),
+                new Token(EOF, "", null, 1, sourceFile)
         );
         assertEquals(expectedTokens, tokens);
         verifyNoErrors();
     }
 
-    private List<Token> runScanner(String text) {
-        return new Scanner(new TokenReader(errorHandler)).scan(text);
+    private List<Token> runScanner(SourceFile sourceFile) {
+        return new Scanner(new TokenReader(errorHandler)).scan(sourceFile);
     }
 
     private void verifyNoErrors() {
-        verify(errorHandler, never()).handleError(anyString(), anyInt());
+        verify(errorHandler, never()).handleError(anyString(), any(SourceFile.class), anyInt());
     }
 }

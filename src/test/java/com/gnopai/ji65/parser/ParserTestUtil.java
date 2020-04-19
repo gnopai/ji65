@@ -17,7 +17,7 @@ public class ParserTestUtil {
 
     public static Token token(TokenType type, Object value) {
         String lexeme = value == null ? null : value.toString();
-        return new Token(type, lexeme, value, 0);
+        return new Token(type, lexeme, value, 0, null);
     }
 
     public static Statement parse(ErrorHandler errorHandler, Token... tokens) {

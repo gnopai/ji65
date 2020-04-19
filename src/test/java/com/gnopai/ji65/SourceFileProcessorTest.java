@@ -39,12 +39,11 @@ class SourceFileProcessorTest {
     void testSinglePath() {
         // given
         String fileName = "whee.s";
-        String fileText = "whee";
-        SourceFile sourceFile = new SourceFile(null, fileText);
+        SourceFile sourceFile = new SourceFile(null, "whee");
         Path path = Path.of(fileName);
         when(fileLoader.loadSourceFile(path)).thenReturn(Optional.of(sourceFile));
 
-        when(scanner.scan(fileText)).thenReturn(List.of(
+        when(scanner.scan(sourceFile)).thenReturn(List.of(
                 token(TokenType.INSTRUCTION, InstructionType.SEC),
                 token(TokenType.EOL),
                 token(TokenType.EOF)
@@ -69,21 +68,21 @@ class SourceFileProcessorTest {
         SourceFile firstSourceFile = new SourceFile(firstPath, "text1");
         when(fileLoader.loadSourceFile(firstPath))
                 .thenReturn(Optional.of(firstSourceFile));
-        when(scanner.scan("text1")).
+        when(scanner.scan(firstSourceFile)).
                 thenReturn(includeFileTokens(List.of(), "/some/dir/file2.s", List.of()));
 
         Path secondPath = Paths.get("/some/dir/file2.s");
         SourceFile secondSourceFile = new SourceFile(secondPath, "text2");
         when(fileLoader.loadSourceFile(secondPath))
                 .thenReturn(Optional.of(secondSourceFile));
-        when(scanner.scan("text2")).
+        when(scanner.scan(secondSourceFile)).
                 thenReturn(includeFileTokens(List.of(), "file3.s", List.of()));
 
         Path thirdPath = Paths.get("/some/dir/file3.s");
         SourceFile thirdSourceFile = new SourceFile(thirdPath, "text3");
         when(fileLoader.loadSourceFile(thirdPath))
                 .thenReturn(Optional.of(thirdSourceFile));
-        when(scanner.scan("text3")).thenReturn(instructionTokens(InstructionType.SEC));
+        when(scanner.scan(thirdSourceFile)).thenReturn(instructionTokens(InstructionType.SEC));
 
         // when
         List<Statement> statements = testClass.loadAndParse("file1.s");
@@ -126,12 +125,11 @@ class SourceFileProcessorTest {
     void testFileIncludeLoopErrorsOut() {
         // given
         String fileName = "whee.s";
-        String fileText = "whee";
-        SourceFile sourceFile = new SourceFile(Paths.get(fileName), fileText);
+        SourceFile sourceFile = new SourceFile(Paths.get(fileName), "whee");
         Path path = Path.of(fileName);
         when(fileLoader.loadSourceFile(path)).thenReturn(Optional.of(sourceFile));
 
-        when(scanner.scan(fileText)).thenReturn(includeFileTokens(
+        when(scanner.scan(sourceFile)).thenReturn(includeFileTokens(
                 instructionTokens(InstructionType.SEC),
                 "whee.s",
                 instructionTokens(InstructionType.SED)

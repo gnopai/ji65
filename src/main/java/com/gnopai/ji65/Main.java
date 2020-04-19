@@ -70,7 +70,6 @@ public class Main implements Callable<Integer> {
 
         return Optional.ofNullable(programConfigFile)
                 .map(this::loadFile)
-                .map(SourceFile::getText)
                 .map(configReader::read)
                 .orElse(getDefaultProgramConfig());
     }

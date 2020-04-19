@@ -291,6 +291,6 @@ class ParserTest {
     }
 
     private Token token(TokenType type, Object value) {
-        return new Token(type, null, value, 0);
+        return new Token(type, null, value, 0, null);
     }
 }

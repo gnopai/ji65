@@ -16,8 +16,8 @@ public class Scanner {
         this.tokenReader = tokenReader;
     }
 
-    public List<Token> scan(String source) {
-        return tokenReader.read(source, this::scanToken);
+    public List<Token> scan(SourceFile sourceFile) {
+        return tokenReader.read(sourceFile, this::scanToken);
     }
 
     private void scanToken(char c) {

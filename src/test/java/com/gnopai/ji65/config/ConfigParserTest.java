@@ -358,15 +358,15 @@ class ConfigParserTest {
     }
 
     private Token token(TokenType type, String value) {
-        return new Token(type, value, value, 0);
+        return new Token(type, value, value, 0, null);
     }
 
     private Token token(TokenType type, int value) {
-        return new Token(type, String.valueOf(value), value, 0);
+        return new Token(type, String.valueOf(value), value, 0, null);
     }
 
     private Token token(TokenType type) {
-        return new Token(type, null, null, 0);
+        return new Token(type, null, null, 0, null);
     }
 
 }
