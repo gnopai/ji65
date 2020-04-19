@@ -2,23 +2,20 @@ package com.gnopai.ji65;
 
 import lombok.Getter;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toUnmodifiableMap;
 
 @Getter
 public enum DirectiveType {
     SEGMENT("segment"),
     RESERVE("res"),
     WORD("word"),
-    BYTE("byte"),
+    BYTE("byte", "byt"),
     REPEAT("repeat"),
-    REPEAT_END("endrep"),
-    MACRO("macro"),
-    MACRO_END("endmacro"),
+    REPEAT_END("endrepeat", "endrep"),
+    MACRO("macro", "mac"),
+    MACRO_END("endmacro", "endmac"),
     INCLUDE("include"),
     INCLUDE_BINARY("incbin"),
     TEST("test"),
@@ -28,18 +25,23 @@ public enum DirectiveType {
     TEST_ASSERT("assert"),
     ;
 
-    private final String identifier;
+    private final List<String> identifiers;
 
-    DirectiveType(String identifier) {
-        this.identifier = identifier;
+    DirectiveType(String... identifiers) {
+        this.identifiers = List.of(identifiers);
     }
 
-    private static final Map<String, DirectiveType> TYPES_BY_IDENTIFIER =
-            Arrays.stream(values())
-                    .collect(toUnmodifiableMap(
-                            DirectiveType::getIdentifier,
-                            type -> type)
-                    );
+    private static final Map<String, DirectiveType> TYPES_BY_IDENTIFIER = buildTypesByIdentifier();
+
+    private static Map<String, DirectiveType> buildTypesByIdentifier() {
+        Map<String, DirectiveType> map = new HashMap<>();
+        Arrays.stream(values()).forEach(directiveType ->
+                directiveType.getIdentifiers().forEach(
+                        identifier -> map.put(identifier, directiveType)
+                )
+        );
+        return Map.copyOf(map);
+    }
 
     public static Optional<DirectiveType> fromIdentifier(String string) {
         return ofNullable(TYPES_BY_IDENTIFIER.get(string.toLowerCase()));
