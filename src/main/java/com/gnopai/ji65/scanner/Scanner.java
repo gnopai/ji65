@@ -28,6 +28,12 @@ public class Scanner {
             case ')':
                 addToken(RIGHT_PAREN);
                 break;
+            case '{':
+                addToken(LEFT_BRACE);
+                break;
+            case '}':
+                addToken(RIGHT_BRACE);
+                break;
             case ',':
                 addToken(COMMA);
                 break;
@@ -96,6 +102,9 @@ public class Scanner {
             case '"':
                 string();
                 break;
+            case '\'':
+                character();
+                break;
             case '0':
             case '1':
             case '2':
@@ -133,6 +142,11 @@ public class Scanner {
                     error("Unexpected character '" + c + "'");
                 }
         }
+    }
+
+    private void character() {
+        tokenReader.character()
+                .ifPresent(character -> addToken(CHAR, (int) character));
     }
 
     private void string() {

@@ -146,14 +146,29 @@ public class TokenReader {
         errorHandler.handleError(message, sourceFile, line);
     }
 
+    public Optional<Character> character() {
+        Optional<String> string = string('\'', "char");
+
+        if (string.isPresent() && string.map(String::length).get() == 1) {
+            return string.map(s -> s.charAt(0));
+        }
+
+        error("Invalid char");
+        return Optional.empty();
+    }
+
     public Optional<String> string() {
-        advanceUntilCharOrEndOfLine('"');
+        return string('"', "string");
+    }
+
+    private Optional<String> string(char delimiter, String typeName) {
+        advanceUntilCharOrEndOfLine(delimiter);
 
         if (peek() == '\n' || isAtEnd()) {
-            error("Unterminated string");
+            error("Unterminated " + typeName);
             return Optional.empty();
         }
-        advance(); // closing '"'
+        advance(); // consume closing delimiter char
 
         return Optional.of(sourceText().substring(start + 1, current - 1));
     }

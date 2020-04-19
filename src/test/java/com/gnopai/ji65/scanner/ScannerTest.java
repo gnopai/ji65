@@ -30,6 +30,8 @@ class ScannerTest {
     void testSingleToken_singleCharTokens() {
         testSimpleSingleToken("(", LEFT_PAREN);
         testSimpleSingleToken(")", RIGHT_PAREN);
+        testSimpleSingleToken("{", LEFT_BRACE);
+        testSimpleSingleToken("}", RIGHT_BRACE);
         testSimpleSingleToken(",", COMMA);
         testSimpleSingleToken("-", MINUS);
         testSimpleSingleToken("+", PLUS);
@@ -56,6 +58,69 @@ class ScannerTest {
         testSimpleSingleToken("<>", NOT_EQUAL);
         testSimpleSingleToken("&&", AND);
         testSimpleSingleToken("||", OR);
+    }
+
+    @Test
+    void testSingleToken_char() {
+        String text = "'X'";
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
+        List<Token> expectedTokens = List.of(
+                new Token(CHAR, text, (int) 'X', 1, sourceFile),
+                new Token(EOF, "", null, 1, sourceFile)
+        );
+        assertEquals(expectedTokens, tokens);
+        verifyNoErrors();
+    }
+
+    @Test
+    void testCharWithMoreThanOneCharacter() {
+        String text = "'XY'";
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
+        List<Token> expectedTokens = List.of(
+                new Token(EOF, "", null, 1, sourceFile)
+        );
+        assertEquals(expectedTokens, tokens);
+        verify(errorHandler).handleError("Invalid char", sourceFile, 1);
+    }
+
+    @Test
+    void testCharWithNoCharacters() {
+        String text = "''";
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
+        List<Token> expectedTokens = List.of(
+                new Token(EOF, "", null, 1, sourceFile)
+        );
+        assertEquals(expectedTokens, tokens);
+        verify(errorHandler).handleError("Invalid char", sourceFile, 1);
+    }
+
+    @Test
+    void testUnterminatedChar_endOfLine() {
+        String text = "'X\n+";
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
+        List<Token> expectedTokens = List.of(
+                new Token(EOL, "\n", null, 1, sourceFile),
+                new Token(PLUS, "+", null, 2, sourceFile),
+                new Token(EOF, "", null, 2, sourceFile)
+        );
+        assertEquals(expectedTokens, tokens);
+        verify(errorHandler).handleError("Unterminated char", sourceFile, 1);
+    }
+
+    @Test
+    void testUnterminatedChar_endOfSourceText() {
+        String text = "'X";
+        SourceFile sourceFile = new SourceFile(null, text);
+        List<Token> tokens = runScanner(sourceFile);
+        List<Token> expectedTokens = List.of(
+                new Token(EOF, "", null, 1, sourceFile)
+        );
+        assertEquals(expectedTokens, tokens);
+        verify(errorHandler).handleError("Unterminated char", sourceFile, 1);
     }
 
     @Test
