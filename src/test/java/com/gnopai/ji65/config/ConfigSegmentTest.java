@@ -16,7 +16,7 @@ class ConfigSegmentTest {
 
     @Test
     void testGetIntValue_valid() {
-        ConfigSegment segment = segmentWithValue(name, new Token(NUMBER, "", 1102, 0));
+        ConfigSegment segment = segmentWithValue(name, new Token(NUMBER, "", 1102, 0, null));
         assertEquals(Optional.of(1102), segment.getIntValue(name));
     }
 
@@ -28,7 +28,7 @@ class ConfigSegmentTest {
 
     @Test
     void testGetIntValue_notNumber() {
-        ConfigSegment segment = segmentWithValue(name, new Token(STRING, "\"derp\"", "derp", 0));
+        ConfigSegment segment = segmentWithValue(name, new Token(STRING, "\"derp\"", "derp", 0, null));
         ParseException parseException = assertThrows(ParseException.class, () -> segment.getIntValue(name));
         assertEquals("Expected numerical value", parseException.getMessage());
         assertEquals(STRING, parseException.getTokenType());
@@ -36,7 +36,7 @@ class ConfigSegmentTest {
 
     @Test
     void testGetByteValue_valid() {
-        ConfigSegment segment = segmentWithValue(name, new Token(NUMBER, "$FF", 0xFF, 0));
+        ConfigSegment segment = segmentWithValue(name, new Token(NUMBER, "$FF", 0xFF, 0, null));
         assertEquals(Optional.of((byte) 0xFF), segment.getByteValue(name));
     }
 
@@ -48,7 +48,7 @@ class ConfigSegmentTest {
 
     @Test
     void testGetByteValue_notNumber() {
-        ConfigSegment segment = segmentWithValue(name, new Token(STRING, "\"derp\"", "derp", 0));
+        ConfigSegment segment = segmentWithValue(name, new Token(STRING, "\"derp\"", "derp", 0, null));
         ParseException parseException = assertThrows(ParseException.class, () -> segment.getByteValue(name));
         assertEquals("Expected numerical value", parseException.getMessage());
         assertEquals(STRING, parseException.getTokenType());
@@ -56,7 +56,7 @@ class ConfigSegmentTest {
 
     @Test
     void testGetAddressValue_valid() {
-        ConfigSegment segment = segmentWithValue(name, new Token(NUMBER, "$2345", 0x2345, 0));
+        ConfigSegment segment = segmentWithValue(name, new Token(NUMBER, "$2345", 0x2345, 0, null));
         assertEquals(Optional.of(new Address(0x2345)), segment.getAddressValue(name));
     }
 
@@ -68,7 +68,7 @@ class ConfigSegmentTest {
 
     @Test
     void testGetAddressValue_notNumber() {
-        ConfigSegment segment = segmentWithValue(name, new Token(STRING, "\"derp\"", "derp", 0));
+        ConfigSegment segment = segmentWithValue(name, new Token(STRING, "\"derp\"", "derp", 0, null));
         ParseException parseException = assertThrows(ParseException.class, () -> segment.getAddressValue(name));
         assertEquals("Expected numerical value", parseException.getMessage());
         assertEquals(STRING, parseException.getTokenType());
@@ -76,13 +76,13 @@ class ConfigSegmentTest {
 
     @Test
     void testGetStringValue_validFromString() {
-        ConfigSegment segment = segmentWithValue(name, new Token(STRING, "\"derp\"", "derp", 0));
+        ConfigSegment segment = segmentWithValue(name, new Token(STRING, "\"derp\"", "derp", 0, null));
         assertEquals(Optional.of("derp"), segment.getStringValue(name));
     }
 
     @Test
     void testGetStringValue_validFromIdentifier() {
-        ConfigSegment segment = segmentWithValue(name, new Token(IDENTIFIER, "derp", null, 0));
+        ConfigSegment segment = segmentWithValue(name, new Token(IDENTIFIER, "derp", null, 0, null));
         assertEquals(Optional.of("derp"), segment.getStringValue(name));
     }
 
@@ -94,7 +94,7 @@ class ConfigSegmentTest {
 
     @Test
     void testGetStringValue_notString() {
-        ConfigSegment segment = segmentWithValue(name, new Token(NUMBER, "45", 45, 0));
+        ConfigSegment segment = segmentWithValue(name, new Token(NUMBER, "45", 45, 0, null));
         ParseException parseException = assertThrows(ParseException.class, () -> segment.getStringValue(name));
         assertEquals("Expected string value", parseException.getMessage());
         assertEquals(NUMBER, parseException.getTokenType());
@@ -102,7 +102,7 @@ class ConfigSegmentTest {
 
     @Test
     void testGetValueUsingMapper_valid() {
-        ConfigSegment segment = segmentWithValue(name, new Token(IDENTIFIER, "ro", null, 0));
+        ConfigSegment segment = segmentWithValue(name, new Token(IDENTIFIER, "ro", null, 0, null));
         Optional<MemoryType> enumValue = segment.getValue(name, MemoryType::fromName);
         assertEquals(Optional.of(MemoryType.READ_ONLY), enumValue);
     }
@@ -115,7 +115,7 @@ class ConfigSegmentTest {
 
     @Test
     void testGetValueUsingMapper_invalid() {
-        ConfigSegment segment = segmentWithValue(name, new Token(STRING, "\"derp\"", "derp", 0));
+        ConfigSegment segment = segmentWithValue(name, new Token(STRING, "\"derp\"", "derp", 0, null));
         ParseException parseException = assertThrows(ParseException.class, () -> segment.getValue(name, MemoryType::fromName));
         assertEquals("Invalid value", parseException.getMessage());
         assertEquals(STRING, parseException.getTokenType());
@@ -123,13 +123,13 @@ class ConfigSegmentTest {
 
     @Test
     void testGetBooleanValue_validAndTrue() {
-        ConfigSegment segment = segmentWithValue(name, new Token(IDENTIFIER, "yes", null, 0));
+        ConfigSegment segment = segmentWithValue(name, new Token(IDENTIFIER, "yes", null, 0, null));
         assertEquals(Optional.of(true), segment.getBooleanValue(name));
     }
 
     @Test
     void testGetBooleanValue_validAndFalse() {
-        ConfigSegment segment = segmentWithValue(name, new Token(IDENTIFIER, "nope", null, 0));
+        ConfigSegment segment = segmentWithValue(name, new Token(IDENTIFIER, "nope", null, 0, null));
         assertEquals(Optional.of(false), segment.getBooleanValue(name));
     }
 
@@ -141,7 +141,7 @@ class ConfigSegmentTest {
 
     @Test
     void testGetBooleanValue_notString() {
-        ConfigSegment segment = segmentWithValue(name, new Token(NUMBER, "45", 45, 0));
+        ConfigSegment segment = segmentWithValue(name, new Token(NUMBER, "45", 45, 0, null));
         ParseException parseException = assertThrows(ParseException.class, () -> segment.getBooleanValue(name));
         assertEquals("Expected string value", parseException.getMessage());
         assertEquals(NUMBER, parseException.getTokenType());

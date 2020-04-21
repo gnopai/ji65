@@ -91,7 +91,7 @@ public class TokenStream {
     }
 
     public ParseException error(Token token, String message) {
-        errorHandler.handleError(message, token.getLine());
+        errorHandler.handleError(message, token.getSourceFile(), token.getLine());
         hasError = true;
         return new ParseException(token, message);
     }

@@ -69,6 +69,10 @@ public class FirstPassResolver implements StatementVisitor<Void> {
                 currentSegment = directiveStatement.getName();
                 environment.goToRootScope();
                 break;
+            case INCLUDE:
+                directiveStatement.getStatements()
+                        .forEach(statement -> statement.accept(this));
+                break;
             case MACRO:
                 environment.defineMacro(Macro.of(directiveStatement));
                 break;

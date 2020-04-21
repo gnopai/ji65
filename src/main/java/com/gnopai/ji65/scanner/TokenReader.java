@@ -13,7 +13,7 @@ import static com.gnopai.ji65.scanner.TokenType.NUMBER;
 
 public class TokenReader {
     private final ErrorHandler errorHandler;
-    private String source;
+    private SourceFile sourceFile;
     private List<Token> tokens;
     private int line;
     private int start;
@@ -24,8 +24,8 @@ public class TokenReader {
         this.errorHandler = errorHandler;
     }
 
-    public List<Token> read(String source, Consumer<Character> consumer) {
-        this.source = source;
+    public List<Token> read(SourceFile sourceFile, Consumer<Character> consumer) {
+        this.sourceFile = sourceFile;
         tokens = new ArrayList<>();
         line = 1;
         current = 0;
@@ -36,14 +36,14 @@ public class TokenReader {
             consumer.accept(c);
         }
 
-        tokens.add(new Token(EOF, "", null, line));
+        tokens.add(new Token(EOF, "", null, line, sourceFile));
 
         return tokens;
     }
 
     public char advance() {
         current++;
-        return source.charAt(current - 1);
+        return sourceText().charAt(current - 1);
     }
 
     public void advanceUntilNextLine() {
@@ -66,7 +66,7 @@ public class TokenReader {
 
     public String getAlphaNumericValueWithOffset(int offset) {
         advanceWhileAlphaNumeric();
-        return source.substring(start + offset, current);
+        return sourceText().substring(start + offset, current);
     }
 
     public void advanceWhileAlphaNumeric() {
@@ -78,7 +78,7 @@ public class TokenReader {
     }
 
     public char peek() {
-        return isAtEnd() ? '\0' : source.charAt(current);
+        return isAtEnd() ? '\0' : sourceText().charAt(current);
     }
 
     public boolean match(char expected) {
@@ -86,7 +86,7 @@ public class TokenReader {
             return false;
         }
 
-        if (source.charAt(current) != expected) {
+        if (sourceText().charAt(current) != expected) {
             return false;
         }
 
@@ -99,8 +99,8 @@ public class TokenReader {
     }
 
     public void addToken(TokenType type, Object literal) {
-        String lexeme = source.substring(start, current);
-        Token token = new Token(type, lexeme, literal, line);
+        String lexeme = sourceText().substring(start, current);
+        Token token = new Token(type, lexeme, literal, line, sourceFile);
         tokens.add(token);
     }
 
@@ -139,23 +139,38 @@ public class TokenReader {
     }
 
     private boolean isAtEnd() {
-        return current >= source.length();
+        return current >= sourceText().length();
     }
 
     public void error(String message) {
-        errorHandler.handleError(message, line);
+        errorHandler.handleError(message, sourceFile, line);
+    }
+
+    public Optional<Character> character() {
+        Optional<String> string = string('\'', "char");
+
+        if (string.isPresent() && string.map(String::length).get() == 1) {
+            return string.map(s -> s.charAt(0));
+        }
+
+        error("Invalid char");
+        return Optional.empty();
     }
 
     public Optional<String> string() {
-        advanceUntilCharOrEndOfLine('"');
+        return string('"', "string");
+    }
+
+    private Optional<String> string(char delimiter, String typeName) {
+        advanceUntilCharOrEndOfLine(delimiter);
 
         if (peek() == '\n' || isAtEnd()) {
-            error("Unterminated string");
+            error("Unterminated " + typeName);
             return Optional.empty();
         }
-        advance(); // closing '"'
+        advance(); // consume closing delimiter char
 
-        return Optional.of(source.substring(start + 1, current - 1));
+        return Optional.of(sourceText().substring(start + 1, current - 1));
     }
 
     public void incrementLine() {
@@ -175,4 +190,7 @@ public class TokenReader {
         return (c >= '0' && c <= '9');
     }
 
+    private String sourceText() {
+        return sourceFile.getText();
+    }
 }

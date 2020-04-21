@@ -50,7 +50,7 @@ public class Ji65 {
     public Program assemble(SourceFile sourceFile, ProgramConfig programConfig) {
         Environment environment = new Environment();
         return Optional.of(sourceFile)
-                .map(sourceFileProcessor::parse)
+                .map(sourceFileProcessor::loadAndParse)
                 .map(statements -> assembler.assemble(statements, programConfig, environment))
                 .map(assembledSegments -> linker.link(assembledSegments, programConfig))
                 .orElseThrow();

@@ -8,4 +8,5 @@ public class Token {
     String lexeme;
     Object value;
     int line;
+    SourceFile sourceFile;
 }

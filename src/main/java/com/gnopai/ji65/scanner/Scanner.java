@@ -16,8 +16,8 @@ public class Scanner {
         this.tokenReader = tokenReader;
     }
 
-    public List<Token> scan(String source) {
-        return tokenReader.read(source, this::scanToken);
+    public List<Token> scan(SourceFile sourceFile) {
+        return tokenReader.read(sourceFile, this::scanToken);
     }
 
     private void scanToken(char c) {
@@ -27,6 +27,12 @@ public class Scanner {
                 break;
             case ')':
                 addToken(RIGHT_PAREN);
+                break;
+            case '{':
+                addToken(LEFT_BRACE);
+                break;
+            case '}':
+                addToken(RIGHT_BRACE);
                 break;
             case ',':
                 addToken(COMMA);
@@ -96,6 +102,9 @@ public class Scanner {
             case '"':
                 string();
                 break;
+            case '\'':
+                character();
+                break;
             case '0':
             case '1':
             case '2':
@@ -133,6 +142,11 @@ public class Scanner {
                     error("Unexpected character '" + c + "'");
                 }
         }
+    }
+
+    private void character() {
+        tokenReader.character()
+                .ifPresent(character -> addToken(CHAR, (int) character));
     }
 
     private void string() {

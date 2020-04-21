@@ -2,7 +2,6 @@ package com.gnopai.ji65.scanner;
 
 import com.google.common.primitives.Bytes;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,28 +11,15 @@ import java.util.Optional;
 
 public class FileLoader {
 
-    public Optional<SourceFile> loadSourceFile(File file) {
+    public Optional<SourceFile> loadSourceFile(Path path) {
         try {
-            return loadSourceFile(file.toPath());
+            List<String> lines = Files.readAllLines(path);
+            String text = String.join("\n", lines);
+            return Optional.of(new SourceFile(path, text));
         } catch (Exception e) {
             // TODO error?
             return Optional.empty();
         }
-    }
-
-    public Optional<SourceFile> loadSourceFile(String fileName) {
-        try {
-            return loadSourceFile(Paths.get(fileName));
-        } catch (Exception e) {
-            // TODO error?
-            return Optional.empty();
-        }
-    }
-
-    private Optional<SourceFile> loadSourceFile(Path path) throws Exception {
-        List<String> lines = Files.readAllLines(path);
-        String text = String.join("\n", lines);
-        return Optional.of(new SourceFile(path, text));
     }
 
     public Optional<List<Byte>> loadBinaryFile(String fileName) {

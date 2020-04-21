@@ -61,7 +61,7 @@ public class Main implements Callable<Integer> {
     }
 
     private SourceFile loadFile(File file) {
-        return new FileLoader().loadSourceFile(file)
+        return new FileLoader().loadSourceFile(file.toPath())
                 .orElseThrow(() -> new RuntimeException("Error loading file: " + file));
     }
 
@@ -70,7 +70,6 @@ public class Main implements Callable<Integer> {
 
         return Optional.ofNullable(programConfigFile)
                 .map(this::loadFile)
-                .map(SourceFile::getText)
                 .map(configReader::read)
                 .orElse(getDefaultProgramConfig());
     }

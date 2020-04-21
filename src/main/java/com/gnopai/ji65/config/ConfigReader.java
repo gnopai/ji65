@@ -1,6 +1,7 @@
 package com.gnopai.ji65.config;
 
 import com.gnopai.ji65.parser.TokenStream;
+import com.gnopai.ji65.scanner.SourceFile;
 import com.gnopai.ji65.scanner.Token;
 import com.gnopai.ji65.scanner.TokenReader;
 import com.gnopai.ji65.util.ErrorHandler;
@@ -15,17 +16,17 @@ public class ConfigReader {
         this.errorHandler = errorHandler;
     }
 
-    public ProgramConfig read(String configText) {
-        return Optional.of(configText)
+    public ProgramConfig read(SourceFile sourceFile) {
+        return Optional.of(sourceFile)
                 .map(this::scan)
                 .map(this::parse)
                 .map(this::interpret)
                 .orElseThrow();
     }
 
-    private List<Token> scan(String configText) {
+    private List<Token> scan(SourceFile sourceFile) {
         ConfigScanner configScanner = new ConfigScanner(new TokenReader(errorHandler));
-        return configScanner.scan(configText);
+        return configScanner.scan(sourceFile);
     }
 
     private List<ConfigBlock> parse(List<Token> tokens) {
