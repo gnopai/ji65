@@ -1,6 +1,8 @@
-package com.gnopai.ji65;
+package com.gnopai.ji65.parser;
 
-import com.gnopai.ji65.parser.Macro;
+import com.gnopai.ji65.AddressingModeType;
+import com.gnopai.ji65.DirectiveType;
+import com.gnopai.ji65.InstructionType;
 import com.gnopai.ji65.parser.statement.InstructionStatement;
 import com.gnopai.ji65.parser.statement.MultiStatement;
 import com.gnopai.ji65.parser.statement.Statement;
@@ -15,9 +17,9 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
-import static com.gnopai.ji65.ParsingService.FILE_OPEN_ERROR;
-import static com.gnopai.ji65.ParsingService.MAX_FILE_DEPTH_ERROR;
 import static com.gnopai.ji65.parser.ParserTestUtil.token;
+import static com.gnopai.ji65.parser.ParsingService.FILE_OPEN_ERROR;
+import static com.gnopai.ji65.parser.ParsingService.MAX_FILE_DEPTH_ERROR;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;

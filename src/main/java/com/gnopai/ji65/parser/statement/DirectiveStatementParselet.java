@@ -1,9 +1,9 @@
 package com.gnopai.ji65.parser.statement;
 
 import com.gnopai.ji65.DirectiveType;
-import com.gnopai.ji65.ParsingService;
 import com.gnopai.ji65.parser.ParseException;
 import com.gnopai.ji65.parser.Parser;
+import com.gnopai.ji65.parser.ParsingService;
 import com.gnopai.ji65.scanner.Token;
 
 import java.util.Map;

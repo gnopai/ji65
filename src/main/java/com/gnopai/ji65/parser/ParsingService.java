@@ -1,9 +1,5 @@
-package com.gnopai.ji65;
+package com.gnopai.ji65.parser;
 
-import com.gnopai.ji65.parser.Macro;
-import com.gnopai.ji65.parser.ParseletFactory;
-import com.gnopai.ji65.parser.Parser;
-import com.gnopai.ji65.parser.TokenStream;
 import com.gnopai.ji65.parser.statement.Statement;
 import com.gnopai.ji65.scanner.FileLoader;
 import com.gnopai.ji65.scanner.Scanner;
@@ -17,7 +13,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-// TODO move to parser package?
 public class ParsingService {
     private static final int MAX_FILE_DEPTH = 16;
     static final String FILE_OPEN_ERROR = "Failed to open source file: %s";

@@ -7,6 +7,7 @@ import com.gnopai.ji65.interpreter.Interpreter;
 import com.gnopai.ji65.interpreter.NeverEndProgram;
 import com.gnopai.ji65.interpreter.ProgramEndStrategy;
 import com.gnopai.ji65.linker.Linker;
+import com.gnopai.ji65.parser.ParsingService;
 import com.gnopai.ji65.scanner.SourceFile;
 import com.gnopai.ji65.test.TestReport;
 import com.gnopai.ji65.test.TestResult;

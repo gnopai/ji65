@@ -2,9 +2,9 @@ package com.gnopai.ji65.parser.statement;
 
 import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.InstructionType;
-import com.gnopai.ji65.ParsingService;
 import com.gnopai.ji65.parser.Macro;
 import com.gnopai.ji65.parser.ParseException;
+import com.gnopai.ji65.parser.ParsingService;
 import com.gnopai.ji65.util.ErrorHandler;
 import org.junit.jupiter.api.Test;
 
