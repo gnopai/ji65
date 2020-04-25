@@ -1,6 +1,5 @@
 package com.gnopai.ji65.parser;
 
-import com.gnopai.ji65.SourceFileProcessor;
 import com.gnopai.ji65.parser.expression.*;
 import com.gnopai.ji65.parser.statement.*;
 import com.gnopai.ji65.scanner.TokenType;
@@ -15,14 +14,14 @@ public class ParseletFactory {
     private final Map<TokenType, InfixParselet> infixParselets;
     private final Map<TokenType, PrefixParselet> prefixParselets;
 
-    public ParseletFactory(SourceFileProcessor sourceFileProcessor) {
+    public ParseletFactory(ParsingService parsingService) {
         statementParselets = Map.of(
                 TokenType.INSTRUCTION, new InstructionStatementParselet(),
-                TokenType.DIRECTIVE, new DirectiveStatementParselet(sourceFileProcessor),
+                TokenType.DIRECTIVE, new DirectiveStatementParselet(parsingService),
                 TokenType.IDENTIFIER, new MultiTokenStatementParselet(Map.of(
                         TokenType.COLON, new LabelStatementParselet(),
                         TokenType.EQUAL, new AssignmentStatementParselet()
-                ), new MacroStatementParselet()),
+                ), new MacroCallParselet(parsingService)),
                 TokenType.COLON, new UnnamedLabelStatementParselet()
         );
 

@@ -120,21 +120,21 @@ class StatementValueSubstituterTest {
     }
 
     @Test
-    void testMacroStatement() {
-        Expression argumentExpression1 = mock(Expression.class);
-        Expression argumentExpression2 = mock(Expression.class);
-        MacroStatement macroStatement = new MacroStatement("Whee", List.of(argumentExpression1, argumentExpression2));
-
-        Expression tweakedExpression1 = mock(Expression.class);
-        Expression tweakedExpression2 = mock(Expression.class);
-        when(expressionValueSubstituter.substituteValue(name, value, argumentExpression1, environment)).thenReturn(tweakedExpression1);
-        when(expressionValueSubstituter.substituteValue(name, value, argumentExpression2, environment)).thenReturn(tweakedExpression2);
+    void testMultiStatement() {
+        Statement statement1 = mock(Statement.class);
+        Statement statement2 = mock(Statement.class);
+        MultiStatement multiStatement = new MultiStatement(List.of(statement1, statement2));
 
         StatementValueSubstituter testClass = new StatementValueSubstituter(expressionValueSubstituter);
 
-        Statement statement = testClass.substituteValuesInStatement(macroStatement, name, value, environment);
+        Statement substitutedStatement1 = mock(Statement.class);
+        Statement substitutedStatement2 = mock(Statement.class);
+        when(statement1.accept(testClass)).thenReturn(substitutedStatement1);
+        when(statement2.accept(testClass)).thenReturn(substitutedStatement2);
 
-        MacroStatement expectedMacroStatement = new MacroStatement("Whee", List.of(tweakedExpression1, tweakedExpression2));
-        assertEquals(expectedMacroStatement, statement);
+        Statement statement = testClass.substituteValuesInStatement(multiStatement, name, value, environment);
+
+        MultiStatement expectedStatement = new MultiStatement(List.of(substitutedStatement1, substitutedStatement2));
+        assertEquals(expectedStatement, statement);
     }
 }

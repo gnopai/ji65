@@ -13,19 +13,17 @@ public class Assembler implements StatementVisitor<Void> {
     private final FirstPassResolver firstPassResolver;
     private final DirectiveDataAssembler directiveDataAssembler;
     private final RepeatDirectiveProcessor repeatDirectiveProcessor;
-    private final MacroProcessor macroProcessor;
     private AssembledSegments assembledSegments;
     private String currentSegment;
     private TestData.TestDataBuilder currentTest;
     private Environment environment;
 
     @Inject
-    public Assembler(FirstPassResolver firstPassResolver, InstructionAssembler instructionAssembler, DirectiveDataAssembler directiveDataAssembler, RepeatDirectiveProcessor repeatDirectiveProcessor, MacroProcessor macroProcessor) {
+    public Assembler(FirstPassResolver firstPassResolver, InstructionAssembler instructionAssembler, DirectiveDataAssembler directiveDataAssembler, RepeatDirectiveProcessor repeatDirectiveProcessor) {
         this.instructionAssembler = instructionAssembler;
         this.firstPassResolver = firstPassResolver;
         this.directiveDataAssembler = directiveDataAssembler;
         this.repeatDirectiveProcessor = repeatDirectiveProcessor;
-        this.macroProcessor = macroProcessor;
     }
 
     public AssembledSegments assemble(List<Statement> statements, ProgramConfig programConfig, Environment environment) {
@@ -79,12 +77,8 @@ public class Assembler implements StatementVisitor<Void> {
                 repeatDirectiveProcessor.process(directiveStatement, environment)
                         .forEach(statement -> statement.accept(this));
                 break;
-            case INCLUDE:
-                directiveStatement.getStatements()
-                        .forEach(statement -> statement.accept(this));
-                break;
             case MACRO:
-                // handled in first pass
+                // fully handled in parsing stage
                 break;
             case TEST:
                 currentTest = TestData.builder().testName(directiveStatement.getName());
@@ -108,9 +102,8 @@ public class Assembler implements StatementVisitor<Void> {
     }
 
     @Override
-    public Void visit(MacroStatement macroStatement) {
-        macroProcessor.process(macroStatement, environment)
-                .forEach(statement -> statement.accept(this));
+    public Void visit(MultiStatement multiStatement) {
+        multiStatement.getStatements().forEach(statement -> statement.accept(this));
         return null;
     }
 

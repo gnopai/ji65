@@ -1,8 +1,5 @@
-package com.gnopai.ji65;
+package com.gnopai.ji65.parser;
 
-import com.gnopai.ji65.parser.ParseletFactory;
-import com.gnopai.ji65.parser.Parser;
-import com.gnopai.ji65.parser.TokenStream;
 import com.gnopai.ji65.parser.statement.Statement;
 import com.gnopai.ji65.scanner.FileLoader;
 import com.gnopai.ji65.scanner.Scanner;
@@ -14,12 +11,9 @@ import javax.inject.Inject;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-public class SourceFileProcessor {
+public class ParsingService {
     private static final int MAX_FILE_DEPTH = 16;
     static final String FILE_OPEN_ERROR = "Failed to open source file: %s";
     static final String MAX_FILE_DEPTH_ERROR = "Maximum file depth of " + MAX_FILE_DEPTH + " reached while parsing %s";
@@ -28,9 +22,10 @@ public class SourceFileProcessor {
     private final Scanner scanner;
     private final ErrorHandler errorHandler;
     private final Deque<SourceFile> fileStack = new ArrayDeque<>();
+    private final Map<String, Macro> macros = new HashMap<>();
 
     @Inject
-    public SourceFileProcessor(FileLoader fileLoader, Scanner scanner, ErrorHandler errorHandler) {
+    public ParsingService(FileLoader fileLoader, Scanner scanner, ErrorHandler errorHandler) {
         this.fileLoader = fileLoader;
         this.scanner = scanner;
         this.errorHandler = errorHandler;
@@ -45,9 +40,16 @@ public class SourceFileProcessor {
 
     public List<Statement> loadAndParse(SourceFile sourceFile) {
         addToStack(sourceFile);
-        List<Statement> statements = parse(sourceFile);
+        List<Token> tokens = scanner.scan(sourceFile);
+        List<Statement> statements = parseTokensFromCurrentFile(tokens);
         removeTopOfStack();
         return statements;
+    }
+
+    public List<Statement> parseTokensFromCurrentFile(List<Token> tokens) {
+        TokenStream tokenStream = new TokenStream(errorHandler, tokens);
+        Parser parser = new Parser(new ParseletFactory(this), tokenStream);
+        return parser.parse();
     }
 
     private Path findPath(String fileName) {
@@ -73,10 +75,11 @@ public class SourceFileProcessor {
         fileStack.pop();
     }
 
-    private List<Statement> parse(SourceFile sourceFile) {
-        List<Token> tokens = scanner.scan(sourceFile);
-        TokenStream tokenStream = new TokenStream(errorHandler, tokens);
-        Parser parser = new Parser(new ParseletFactory(this), tokenStream);
-        return parser.parse();
+    public Optional<Macro> getMacro(String name) {
+        return Optional.ofNullable(macros.get(name));
+    }
+
+    public void defineMacro(Macro macro) {
+        macros.put(macro.getName(), macro);
     }
 }

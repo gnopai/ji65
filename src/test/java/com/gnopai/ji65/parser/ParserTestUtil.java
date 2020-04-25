@@ -1,6 +1,5 @@
 package com.gnopai.ji65.parser;
 
-import com.gnopai.ji65.SourceFileProcessor;
 import com.gnopai.ji65.parser.statement.Statement;
 import com.gnopai.ji65.scanner.Token;
 import com.gnopai.ji65.scanner.TokenType;
@@ -21,13 +20,21 @@ public class ParserTestUtil {
     }
 
     public static Statement parse(ErrorHandler errorHandler, Token... tokens) {
-        SourceFileProcessor sourceFileProcessor = mock(SourceFileProcessor.class);
-        return parse(errorHandler, sourceFileProcessor, tokens);
+        return parse(errorHandler, List.of(tokens));
+
+    }
+    public static Statement parse(ErrorHandler errorHandler, List<Token> tokens) {
+        ParsingService parsingService = mock(ParsingService.class);
+        return parse(errorHandler, parsingService, tokens);
     }
 
-    public static Statement parse(ErrorHandler errorHandler, SourceFileProcessor sourceFileProcessor, Token... tokens) {
-        TokenStream tokenStream = new TokenStream(errorHandler, List.of(tokens));
-        ParseletFactory parseletFactory = new ParseletFactory(sourceFileProcessor);
+    public static Statement parse(ErrorHandler errorHandler, ParsingService parsingService, Token... tokens) {
+        return parse(errorHandler, parsingService, List.of(tokens));
+    }
+
+    public static Statement parse(ErrorHandler errorHandler, ParsingService parsingService, List<Token> tokens) {
+        TokenStream tokenStream = new TokenStream(errorHandler, tokens);
+        ParseletFactory parseletFactory = new ParseletFactory(parsingService);
         Parser parser = new Parser(parseletFactory, tokenStream);
         return parser.statement();
     }

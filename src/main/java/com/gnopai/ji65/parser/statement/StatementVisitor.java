@@ -13,7 +13,7 @@ public interface StatementVisitor<T> {
 
     T visit(AssignmentStatement assignmentStatement);
 
-    T visit(MacroStatement macroStatement);
+    T visit(MultiStatement multiStatement);
 
     T visit(TestStatement testStatement);
 }

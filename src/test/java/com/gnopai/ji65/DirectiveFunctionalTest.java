@@ -232,7 +232,7 @@ class DirectiveFunctionalTest {
                 ".endmacro",
 
                 "foo 1, $2000",
-                "foo 1+2+3, $2001",
+                "foo {1+2+3}, $2001",
                 "foo $35, $2002"
         );
 
