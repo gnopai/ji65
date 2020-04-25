@@ -21,7 +21,7 @@ public class DirectiveStatementParselet implements StatementParselet {
                 entry(DirectiveType.BYTE, new DataDirectiveParser(DirectiveType.BYTE)),
                 entry(DirectiveType.WORD, new DataDirectiveParser(DirectiveType.WORD)),
                 entry(DirectiveType.REPEAT, new RepeatDirectiveParser()),
-                entry(DirectiveType.MACRO, new MacroDirectiveParser()),
+                entry(DirectiveType.MACRO, new MacroDirectiveParser(sourceFileProcessor)),
                 entry(DirectiveType.INCLUDE, new IncludeSourceFileDirectiveParser(sourceFileProcessor)),
                 entry(DirectiveType.INCLUDE_BINARY, new IncludeBinaryDirectiveParser()),
                 entry(DirectiveType.TEST, new TestDirectiveParser()),

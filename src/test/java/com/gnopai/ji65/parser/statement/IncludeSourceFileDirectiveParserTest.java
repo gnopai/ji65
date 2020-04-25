@@ -37,11 +37,7 @@ class IncludeSourceFileDirectiveParserTest {
                 token(EOL)
         );
 
-        DirectiveStatement expectedResult = DirectiveStatement.builder()
-                .type(DirectiveType.INCLUDE)
-                .name("whee.s")
-                .statements(statements)
-                .build();
+        MultiStatement expectedResult = new MultiStatement(statements);
         assertEquals(expectedResult, result);
     }
 }

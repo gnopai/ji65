@@ -1,7 +1,8 @@
 package com.gnopai.ji65;
 
-import com.gnopai.ji65.parser.statement.DirectiveStatement;
+import com.gnopai.ji65.assembler.Macro;
 import com.gnopai.ji65.parser.statement.InstructionStatement;
+import com.gnopai.ji65.parser.statement.MultiStatement;
 import com.gnopai.ji65.parser.statement.Statement;
 import com.gnopai.ji65.scanner.*;
 import com.gnopai.ji65.util.ErrorHandler;
@@ -18,8 +19,7 @@ import static com.gnopai.ji65.SourceFileProcessor.FILE_OPEN_ERROR;
 import static com.gnopai.ji65.SourceFileProcessor.MAX_FILE_DEPTH_ERROR;
 import static com.gnopai.ji65.parser.ParserTestUtil.token;
 import static java.util.stream.Collectors.toList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -89,22 +89,14 @@ class SourceFileProcessorTest {
 
         // then
         List<Statement> expectedStatements = List.of(
-                DirectiveStatement.builder()
-                        .type(DirectiveType.INCLUDE)
-                        .name("/some/dir/file2.s")
-                        .statements(List.of(
-                                DirectiveStatement.builder()
-                                        .type(DirectiveType.INCLUDE)
-                                        .name("file3.s")
-                                        .statements(List.of(
-                                                InstructionStatement.builder()
-                                                        .instructionType(InstructionType.SEC)
-                                                        .addressingModeType(AddressingModeType.IMPLICIT)
-                                                        .build()
-                                        ))
+                new MultiStatement(List.of(
+                        new MultiStatement(List.of(
+                                InstructionStatement.builder()
+                                        .instructionType(InstructionType.SEC)
+                                        .addressingModeType(AddressingModeType.IMPLICIT)
                                         .build()
                         ))
-                        .build()
+                ))
         );
         assertEquals(expectedStatements, statements);
     }
@@ -140,6 +132,18 @@ class SourceFileProcessorTest {
                 () -> testClass.loadAndParse(fileName)
         );
         assertEquals(String.format(MAX_FILE_DEPTH_ERROR, fileName), exception.getMessage());
+    }
+
+    @Test
+    void testMacro() {
+        String macroName = "Whee";
+        Macro macro = new Macro(macroName, List.of(token(TokenType.PLUS)), List.of());
+
+        assertFalse(testClass.getMacro(macroName).isPresent());
+
+        testClass.defineMacro(macro);
+
+        assertEquals(Optional.of(macro), testClass.getMacro(macroName));
     }
 
     private List<Token> includeFileTokens(List<Token> tokensBefore, String fileNameString, List<Token> tokensAfter) {

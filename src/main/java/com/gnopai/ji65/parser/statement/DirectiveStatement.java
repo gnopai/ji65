@@ -5,13 +5,13 @@ import com.gnopai.ji65.parser.expression.Expression;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
-import lombok.experimental.Wither;
+import lombok.With;
 
 import java.util.List;
 
 @Value
 @Builder
-@Wither
+@With
 public class DirectiveStatement implements Statement {
     DirectiveType type;
     String name;

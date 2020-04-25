@@ -1,6 +1,5 @@
 package com.gnopai.ji65.parser.statement;
 
-import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.SourceFileProcessor;
 import com.gnopai.ji65.parser.Parser;
 import com.gnopai.ji65.scanner.Token;
@@ -21,10 +20,6 @@ public class IncludeSourceFileDirectiveParser implements StatementParselet {
         String fileName = parser.consumeString("Expected file name");
         parser.consumeEndOfLine();
         List<Statement> statements = sourceFileProcessor.loadAndParse(fileName);
-        return DirectiveStatement.builder()
-                .type(DirectiveType.INCLUDE)
-                .name(fileName)
-                .statements(statements)
-                .build();
+        return new MultiStatement(statements);
     }
 }

@@ -67,8 +67,8 @@ public class StatementValueSubstituter implements StatementVisitor<Statement> {
     }
 
     @Override
-    public Statement visit(MacroStatement macroStatement) {
-        return macroStatement.withArguments(substituteExpressions(macroStatement.getArguments()));
+    public Statement visit(MultiStatement multiStatement) {
+        return new MultiStatement(substituteValuesInStatements(multiStatement.getStatements()));
     }
 
     @Override

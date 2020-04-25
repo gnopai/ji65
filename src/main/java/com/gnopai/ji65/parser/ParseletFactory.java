@@ -22,7 +22,7 @@ public class ParseletFactory {
                 TokenType.IDENTIFIER, new MultiTokenStatementParselet(Map.of(
                         TokenType.COLON, new LabelStatementParselet(),
                         TokenType.EQUAL, new AssignmentStatementParselet()
-                ), new MacroStatementParselet()),
+                ), new MacroStatementParselet(sourceFileProcessor)),
                 TokenType.COLON, new UnnamedLabelStatementParselet()
         );
 

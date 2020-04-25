@@ -21,12 +21,20 @@ public class ParserTestUtil {
     }
 
     public static Statement parse(ErrorHandler errorHandler, Token... tokens) {
+        return parse(errorHandler, List.of(tokens));
+
+    }
+    public static Statement parse(ErrorHandler errorHandler, List<Token> tokens) {
         SourceFileProcessor sourceFileProcessor = mock(SourceFileProcessor.class);
         return parse(errorHandler, sourceFileProcessor, tokens);
     }
 
     public static Statement parse(ErrorHandler errorHandler, SourceFileProcessor sourceFileProcessor, Token... tokens) {
-        TokenStream tokenStream = new TokenStream(errorHandler, List.of(tokens));
+        return parse(errorHandler, sourceFileProcessor, List.of(tokens));
+    }
+
+    public static Statement parse(ErrorHandler errorHandler, SourceFileProcessor sourceFileProcessor, List<Token> tokens) {
+        TokenStream tokenStream = new TokenStream(errorHandler, tokens);
         ParseletFactory parseletFactory = new ParseletFactory(sourceFileProcessor);
         Parser parser = new Parser(parseletFactory, tokenStream);
         return parser.statement();

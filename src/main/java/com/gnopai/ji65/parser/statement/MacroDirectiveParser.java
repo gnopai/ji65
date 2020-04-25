@@ -1,5 +1,7 @@
 package com.gnopai.ji65.parser.statement;
 
+import com.gnopai.ji65.SourceFileProcessor;
+import com.gnopai.ji65.assembler.Macro;
 import com.gnopai.ji65.parser.Parser;
 import com.gnopai.ji65.scanner.Token;
 import com.gnopai.ji65.scanner.TokenType;
@@ -9,19 +11,28 @@ import java.util.List;
 
 import static com.gnopai.ji65.DirectiveType.MACRO;
 import static com.gnopai.ji65.DirectiveType.MACRO_END;
+import static com.gnopai.ji65.scanner.TokenType.DIRECTIVE;
+import static com.gnopai.ji65.scanner.TokenType.EOF;
 
 public class MacroDirectiveParser implements StatementParselet {
+    private final SourceFileProcessor sourceFileProcessor;
+
+    public MacroDirectiveParser(SourceFileProcessor sourceFileProcessor) {
+        this.sourceFileProcessor = sourceFileProcessor;
+    }
+
     @Override
     public Statement parse(Token token, Parser parser) {
         Token macroName = parser.consume(TokenType.IDENTIFIER, "Expected macro identifier");
         List<String> arguments = parseArguments(parser);
-        List<Statement> statements = parseStatements(parser);
+        List<Token> tokens = parseTokens(parser);
+
+        Macro macro = new Macro(macroName.getLexeme(), tokens, arguments);
+        sourceFileProcessor.defineMacro(macro);
 
         return DirectiveStatement.builder()
                 .type(MACRO)
                 .name(macroName.getLexeme())
-                .statements(statements)
-                .arguments(arguments)
                 .build();
     }
 
@@ -45,12 +56,27 @@ public class MacroDirectiveParser implements StatementParselet {
         return argument.getLexeme();
     }
 
-    private List<Statement> parseStatements(Parser parser) {
-        List<Statement> statements = new ArrayList<>();
-        while (!parser.matchDirective(MACRO_END)) {
-            statements.add(parser.statement());
+    private List<Token> parseTokens(Parser parser) {
+        List<Token> tokens = new ArrayList<>();
+        Token token = parser.consume();
+        while (!isEndOfMacro(token)) {
+            tokens.add(token);
+            token = parser.consume();
         }
+
+        if (!MACRO_END.equals(token.getValue())) {
+            throw parser.error("Expected macro end");
+        }
+
         parser.consumeEndOfLine();
-        return statements;
+        return tokens;
+    }
+
+    private boolean isEndOfMacro(Token token) {
+        TokenType tokenType = token.getType();
+        if (EOF.equals(tokenType)) {
+            return true;
+        }
+        return DIRECTIVE.equals(tokenType) && MACRO_END.equals(token.getValue());
     }
 }

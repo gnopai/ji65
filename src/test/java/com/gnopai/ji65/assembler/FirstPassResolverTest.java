@@ -137,44 +137,16 @@ class FirstPassResolverTest {
     }
 
     @Test
-    void testDirectiveStatement_macro() {
-        Statement statement1 = mock(Statement.class);
-        Statement statement2 = mock(Statement.class);
-        String macroName = "Whee";
-        DirectiveStatement directiveStatement = DirectiveStatement.builder()
-                .type(DirectiveType.MACRO)
-                .name(macroName)
-                .statement(statement1)
-                .statement(statement2)
-                .argument("a")
-                .build();
-        Environment environment = new Environment();
-        AssembledSegments assembledSegments = new AssembledSegments(List.of(segment(DEFAULT_SEGMENT_NAME, SegmentType.READ_ONLY)), environment);
-
-        FirstPassResolver testClass = new FirstPassResolver(expressionEvaluator);
-
-        testClass.resolve(List.of(directiveStatement), assembledSegments);
-
-        Macro expectedMacro = new Macro(macroName, List.of(statement1, statement2), List.of("a"));
-        assertEquals(Optional.of(expectedMacro), environment.getMacro(macroName));
-    }
-
-    @Test
-    void testDirectiveStatement_include() {
+    void testMultiStatement() {
         Statement statement1 = mock(Statement.class);
         Statement statement2 = mock(Statement.class);
         Statement statement3 = mock(Statement.class);
-        List<Statement> statements = List.of(statement1, statement2, statement3);
-        DirectiveStatement directiveStatement = DirectiveStatement.builder()
-                .type(DirectiveType.INCLUDE)
-                .statements(statements)
-                .build();
-
+        MultiStatement multiStatement = new MultiStatement(List.of(statement1, statement2, statement3));
         AssembledSegments assembledSegments = new AssembledSegments(List.of(segment(DEFAULT_SEGMENT_NAME, SegmentType.READ_ONLY)), new Environment());
 
         FirstPassResolver testClass = new FirstPassResolver(expressionEvaluator);
 
-        testClass.resolve(List.of(directiveStatement), assembledSegments);
+        testClass.resolve(List.of(multiStatement), assembledSegments);
 
         verify(statement1).accept(testClass);
         verify(statement2).accept(testClass);

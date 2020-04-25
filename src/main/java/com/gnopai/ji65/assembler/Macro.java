@@ -1,7 +1,6 @@
 package com.gnopai.ji65.assembler;
 
-import com.gnopai.ji65.parser.statement.DirectiveStatement;
-import com.gnopai.ji65.parser.statement.Statement;
+import com.gnopai.ji65.scanner.Token;
 import lombok.Value;
 
 import java.util.List;
@@ -9,12 +8,8 @@ import java.util.List;
 @Value
 public class Macro {
     String name;
-    List<Statement> statements;
+    List<Token> tokens;
     List<String> argumentNames;
-
-    public static Macro of(DirectiveStatement directiveStatement) {
-        return new Macro(directiveStatement.getName(), directiveStatement.getStatements(), directiveStatement.getArguments());
-    }
 
     public int getArgumentCount() {
         return argumentNames.size();
