@@ -1,6 +1,6 @@
 package com.gnopai.ji65;
 
-import com.gnopai.ji65.assembler.Macro;
+import com.gnopai.ji65.parser.Macro;
 import com.gnopai.ji65.parser.statement.InstructionStatement;
 import com.gnopai.ji65.parser.statement.MultiStatement;
 import com.gnopai.ji65.parser.statement.Statement;

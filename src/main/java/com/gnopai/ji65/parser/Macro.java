@@ -1,4 +1,4 @@
-package com.gnopai.ji65.assembler;
+package com.gnopai.ji65.parser;
 
 import com.gnopai.ji65.scanner.Token;
 import lombok.Value;
