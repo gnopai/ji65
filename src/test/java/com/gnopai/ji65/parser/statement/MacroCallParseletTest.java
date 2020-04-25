@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class MacroStatementParseletTest {
+class MacroCallParseletTest {
     private final ErrorHandler errorHandler = mock(ErrorHandler.class);
     private final SourceFileProcessor sourceFileProcessor = mock(SourceFileProcessor.class);
 

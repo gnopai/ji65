@@ -13,11 +13,10 @@ import static com.gnopai.ji65.scanner.TokenType.*;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
-// TODO rename? Maybe MacroCallParselet?
-public class MacroStatementParselet implements StatementParselet {
+public class MacroCallParselet implements StatementParselet {
     private final SourceFileProcessor sourceFileProcessor;
 
-    public MacroStatementParselet(SourceFileProcessor sourceFileProcessor) {
+    public MacroCallParselet(SourceFileProcessor sourceFileProcessor) {
         this.sourceFileProcessor = sourceFileProcessor;
     }
 
