@@ -1,6 +1,6 @@
 package com.gnopai.ji65.parser.statement;
 
-import com.gnopai.ji65.SourceFileProcessor;
+import com.gnopai.ji65.ParsingService;
 import com.gnopai.ji65.parser.Macro;
 import com.gnopai.ji65.parser.Parser;
 import com.gnopai.ji65.scanner.Token;
@@ -14,10 +14,10 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 public class MacroCallParselet implements StatementParselet {
-    private final SourceFileProcessor sourceFileProcessor;
+    private final ParsingService parsingService;
 
-    public MacroCallParselet(SourceFileProcessor sourceFileProcessor) {
-        this.sourceFileProcessor = sourceFileProcessor;
+    public MacroCallParselet(ParsingService parsingService) {
+        this.parsingService = parsingService;
     }
 
     @Override
@@ -25,12 +25,12 @@ public class MacroCallParselet implements StatementParselet {
         Macro macro = getMacro(token.getLexeme(), parser);
         List<List<Token>> arguments = parseArguments(parser);
         List<Token> tokens = substituteArguments(macro, arguments);
-        List<Statement> statements = sourceFileProcessor.parseTokensFromCurrentFile(tokens);
+        List<Statement> statements = parsingService.parseTokensFromCurrentFile(tokens);
         return new MultiStatement(statements);
     }
 
     private Macro getMacro(String name, Parser parser) {
-        return sourceFileProcessor.getMacro(name)
+        return parsingService.getMacro(name)
                 .orElseThrow(() -> parser.error("Unknown macro referenced: " + name));
     }
 

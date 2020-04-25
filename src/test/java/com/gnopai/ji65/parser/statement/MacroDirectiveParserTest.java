@@ -2,7 +2,7 @@ package com.gnopai.ji65.parser.statement;
 
 import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.InstructionType;
-import com.gnopai.ji65.SourceFileProcessor;
+import com.gnopai.ji65.ParsingService;
 import com.gnopai.ji65.parser.Macro;
 import com.gnopai.ji65.parser.ParseException;
 import com.gnopai.ji65.util.ErrorHandler;
@@ -20,11 +20,11 @@ import static org.mockito.Mockito.verify;
 
 class MacroDirectiveParserTest {
     private final ErrorHandler errorHandler = mock(ErrorHandler.class);
-    private final SourceFileProcessor sourceFileProcessor = mock(SourceFileProcessor.class);
+    private final ParsingService parsingService = mock(ParsingService.class);
 
     @Test
     void testSingleLine_noArguments() {
-        Statement result = parse(errorHandler, sourceFileProcessor,
+        Statement result = parse(errorHandler, parsingService,
                 token(DIRECTIVE, DirectiveType.MACRO),
                 token(IDENTIFIER, "Whee"),
                 token(EOL),
@@ -44,12 +44,12 @@ class MacroDirectiveParserTest {
                 token(INSTRUCTION, InstructionType.CLC),
                 token(EOL)
         ), List.of());
-        verify(sourceFileProcessor).defineMacro(expectedMacro);
+        verify(parsingService).defineMacro(expectedMacro);
     }
 
     @Test
     void testSingleLine_singleArgument() {
-        Statement result = parse(errorHandler, sourceFileProcessor,
+        Statement result = parse(errorHandler, parsingService,
                 token(DIRECTIVE, DirectiveType.MACRO),
                 token(IDENTIFIER, "Whee"),
                 token(IDENTIFIER, "a"),
@@ -70,12 +70,12 @@ class MacroDirectiveParserTest {
                 token(INSTRUCTION, InstructionType.CLC),
                 token(EOL)
         ), List.of("a"));
-        verify(sourceFileProcessor).defineMacro(expectedMacro);
+        verify(parsingService).defineMacro(expectedMacro);
     }
 
     @Test
     void testSingleLine_multipleArguments() {
-        Statement result = parse(errorHandler, sourceFileProcessor,
+        Statement result = parse(errorHandler, parsingService,
                 token(DIRECTIVE, DirectiveType.MACRO),
                 token(IDENTIFIER, "Whee"),
                 token(IDENTIFIER, "a"),
@@ -100,12 +100,12 @@ class MacroDirectiveParserTest {
                 token(INSTRUCTION, InstructionType.CLC),
                 token(EOL)
         ), List.of("a", "b", "c"));
-        verify(sourceFileProcessor).defineMacro(expectedMacro);
+        verify(parsingService).defineMacro(expectedMacro);
     }
 
     @Test
     void testMultipleLines_singleArgument() {
-        Statement result = parse(errorHandler, sourceFileProcessor,
+        Statement result = parse(errorHandler, parsingService,
                 token(DIRECTIVE, DirectiveType.MACRO),
                 token(IDENTIFIER, "Whee"),
                 token(IDENTIFIER, "a"),
@@ -130,12 +130,12 @@ class MacroDirectiveParserTest {
                 token(INSTRUCTION, InstructionType.CLV),
                 token(EOL)
         ), List.of("a"));
-        verify(sourceFileProcessor).defineMacro(expectedMacro);
+        verify(parsingService).defineMacro(expectedMacro);
     }
 
     @Test
     void testMultipleLines_multipleArguments() {
-        Statement result = parse(errorHandler, sourceFileProcessor,
+        Statement result = parse(errorHandler, parsingService,
                 token(DIRECTIVE, DirectiveType.MACRO),
                 token(IDENTIFIER, "Whee"),
                 token(IDENTIFIER, "a"),
@@ -174,12 +174,12 @@ class MacroDirectiveParserTest {
                 token(IDENTIFIER, "c"),
                 token(EOL)
         ), List.of("a", "b", "c"));
-        verify(sourceFileProcessor).defineMacro(expectedMacro);
+        verify(parsingService).defineMacro(expectedMacro);
     }
 
     @Test
     void testSingleStatement_missingName() {
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler, sourceFileProcessor,
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler, parsingService,
                 token(DIRECTIVE, DirectiveType.MACRO),
                 token(EOL),
                 token(INSTRUCTION, InstructionType.CLC),
@@ -194,7 +194,7 @@ class MacroDirectiveParserTest {
 
     @Test
     void testSingleStatement_missingArgument() {
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler, sourceFileProcessor,
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler, parsingService,
                 token(DIRECTIVE, DirectiveType.MACRO),
                 token(IDENTIFIER, "Whee"),
                 token(IDENTIFIER, "a"),
@@ -212,7 +212,7 @@ class MacroDirectiveParserTest {
 
     @Test
     void testSingleStatement_missingEndOfLineAfterArguments() {
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler, sourceFileProcessor,
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler, parsingService,
                 token(DIRECTIVE, DirectiveType.MACRO),
                 token(IDENTIFIER, "Whee"),
                 token(IDENTIFIER, "a"),
@@ -228,7 +228,7 @@ class MacroDirectiveParserTest {
 
     @Test
     void testSingleStatement_missingEndOfLineAfterMacroEnd() {
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler, sourceFileProcessor,
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler, parsingService,
                 token(DIRECTIVE, DirectiveType.MACRO),
                 token(IDENTIFIER, "Whee"),
                 token(IDENTIFIER, "a"),
@@ -246,7 +246,7 @@ class MacroDirectiveParserTest {
 
     @Test
     void testSingleStatement_missingMacroEnd() {
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler, sourceFileProcessor,
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler, parsingService,
                 token(DIRECTIVE, DirectiveType.MACRO),
                 token(IDENTIFIER, "Whee"),
                 token(IDENTIFIER, "a"),

@@ -1,6 +1,6 @@
 package com.gnopai.ji65.parser.statement;
 
-import com.gnopai.ji65.SourceFileProcessor;
+import com.gnopai.ji65.ParsingService;
 import com.gnopai.ji65.parser.Macro;
 import com.gnopai.ji65.parser.Parser;
 import com.gnopai.ji65.scanner.Token;
@@ -15,10 +15,10 @@ import static com.gnopai.ji65.scanner.TokenType.DIRECTIVE;
 import static com.gnopai.ji65.scanner.TokenType.EOF;
 
 public class MacroDirectiveParser implements StatementParselet {
-    private final SourceFileProcessor sourceFileProcessor;
+    private final ParsingService parsingService;
 
-    public MacroDirectiveParser(SourceFileProcessor sourceFileProcessor) {
-        this.sourceFileProcessor = sourceFileProcessor;
+    public MacroDirectiveParser(ParsingService parsingService) {
+        this.parsingService = parsingService;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class MacroDirectiveParser implements StatementParselet {
         List<Token> tokens = parseTokens(parser);
 
         Macro macro = new Macro(macroName.getLexeme(), tokens, arguments);
-        sourceFileProcessor.defineMacro(macro);
+        parsingService.defineMacro(macro);
 
         return DirectiveStatement.builder()
                 .type(MACRO)

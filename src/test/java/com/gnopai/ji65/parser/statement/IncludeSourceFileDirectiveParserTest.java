@@ -1,7 +1,7 @@
 package com.gnopai.ji65.parser.statement;
 
 import com.gnopai.ji65.DirectiveType;
-import com.gnopai.ji65.SourceFileProcessor;
+import com.gnopai.ji65.ParsingService;
 import com.gnopai.ji65.util.ErrorHandler;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +16,7 @@ import static org.mockito.Mockito.when;
 
 class IncludeSourceFileDirectiveParserTest {
     private final ErrorHandler errorHandler = mock(ErrorHandler.class);
-    private final SourceFileProcessor sourceFileProcessor = mock(SourceFileProcessor.class);
+    private final ParsingService parsingService = mock(ParsingService.class);
 
     @Test
     void test() {
@@ -24,9 +24,9 @@ class IncludeSourceFileDirectiveParserTest {
         Statement statement2 = mock(Statement.class);
         Statement statement3 = mock(Statement.class);
         List<Statement> statements = List.of(statement1, statement2, statement3);
-        when(sourceFileProcessor.loadAndParse("whee.s")).thenReturn(statements);
+        when(parsingService.loadAndParse("whee.s")).thenReturn(statements);
 
-        Statement result = parse(errorHandler, sourceFileProcessor,
+        Statement result = parse(errorHandler, parsingService,
                 token(DIRECTIVE, DirectiveType.INCLUDE),
                 token(CHAR, (int) 'w'),
                 token(CHAR, (int) 'h'),

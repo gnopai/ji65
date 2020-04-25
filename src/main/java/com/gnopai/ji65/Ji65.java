@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class Ji65 {
-    private final SourceFileProcessor sourceFileProcessor;
+    private final ParsingService parsingService;
     private final Assembler assembler;
     private final Linker linker;
     private final Interpreter interpreter;
@@ -27,7 +27,7 @@ public class Ji65 {
 
     public Ji65(ErrorHandler errorHandler) {
         Injector injector = Guice.createInjector(new Ji65Module(errorHandler));
-        sourceFileProcessor = injector.getInstance(SourceFileProcessor.class);
+        parsingService = injector.getInstance(ParsingService.class);
         assembler = injector.getInstance(Assembler.class);
         linker = injector.getInstance(Linker.class);
         interpreter = injector.getInstance(Interpreter.class);
@@ -50,7 +50,7 @@ public class Ji65 {
     public Program assemble(SourceFile sourceFile, ProgramConfig programConfig) {
         Environment environment = new Environment();
         return Optional.of(sourceFile)
-                .map(sourceFileProcessor::loadAndParse)
+                .map(parsingService::loadAndParse)
                 .map(statements -> assembler.assemble(statements, programConfig, environment))
                 .map(assembledSegments -> linker.link(assembledSegments, programConfig))
                 .orElseThrow();

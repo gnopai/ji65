@@ -15,24 +15,24 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
-import static com.gnopai.ji65.SourceFileProcessor.FILE_OPEN_ERROR;
-import static com.gnopai.ji65.SourceFileProcessor.MAX_FILE_DEPTH_ERROR;
+import static com.gnopai.ji65.ParsingService.FILE_OPEN_ERROR;
+import static com.gnopai.ji65.ParsingService.MAX_FILE_DEPTH_ERROR;
 import static com.gnopai.ji65.parser.ParserTestUtil.token;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class SourceFileProcessorTest {
+class ParsingServiceTest {
     private final FileLoader fileLoader = mock(FileLoader.class);
     private final Scanner scanner = mock(Scanner.class);
     private final ErrorHandler errorHandler = mock(ErrorHandler.class);
 
-    private SourceFileProcessor testClass;
+    private ParsingService testClass;
 
     @BeforeEach
     void setUp() {
-        testClass = new SourceFileProcessor(fileLoader, scanner, errorHandler);
+        testClass = new ParsingService(fileLoader, scanner, errorHandler);
     }
 
     @Test

@@ -1,7 +1,7 @@
 package com.gnopai.ji65.parser.statement;
 
 import com.gnopai.ji65.InstructionType;
-import com.gnopai.ji65.SourceFileProcessor;
+import com.gnopai.ji65.ParsingService;
 import com.gnopai.ji65.parser.Macro;
 import com.gnopai.ji65.parser.ParseException;
 import com.gnopai.ji65.scanner.Token;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 
 class MacroCallParseletTest {
     private final ErrorHandler errorHandler = mock(ErrorHandler.class);
-    private final SourceFileProcessor sourceFileProcessor = mock(SourceFileProcessor.class);
+    private final ParsingService parsingService = mock(ParsingService.class);
 
     private final String macroName = "Whee";
 
@@ -95,9 +95,9 @@ class MacroCallParseletTest {
                 token(IDENTIFIER, "arg1"),
                 token(EOL)
         ), List.of("arg1"));
-        when(sourceFileProcessor.getMacro("Whee")).thenReturn(Optional.of(macro));
+        when(parsingService.getMacro("Whee")).thenReturn(Optional.of(macro));
 
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler, sourceFileProcessor,
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler, parsingService,
                 token(IDENTIFIER, "Whee"),
                 token(LEFT_BRACE),
                 token(IDENTIFIER, "abc"),
@@ -360,9 +360,9 @@ class MacroCallParseletTest {
 
     @Test
     void testMacroDoesNotExist() {
-        when(sourceFileProcessor.getMacro("nope")).thenReturn(Optional.empty());
+        when(parsingService.getMacro("nope")).thenReturn(Optional.empty());
 
-        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler, sourceFileProcessor,
+        ParseException parseException = assertThrows(ParseException.class, () -> parse(errorHandler, parsingService,
                 token(IDENTIFIER, "nope"),
                 token(IDENTIFIER, "abc"),
                 token(EOL)
@@ -374,12 +374,12 @@ class MacroCallParseletTest {
 
     private void testMacro(TestCase testCase) {
         Macro macro = new Macro(macroName, testCase.getMacroTokens(), List.of("arg1", "arg2", "arg3"));
-        when(sourceFileProcessor.getMacro(macroName)).thenReturn(Optional.of(macro));
+        when(parsingService.getMacro(macroName)).thenReturn(Optional.of(macro));
 
         Statement statement = mock(Statement.class);
-        when(sourceFileProcessor.parseTokensFromCurrentFile(testCase.getExpectedTokens())).thenReturn(List.of(statement));
+        when(parsingService.parseTokensFromCurrentFile(testCase.getExpectedTokens())).thenReturn(List.of(statement));
 
-        Statement result = parse(errorHandler, sourceFileProcessor, testCase.getInputTokens());
+        Statement result = parse(errorHandler, parsingService, testCase.getInputTokens());
 
         MultiStatement expectedResult = new MultiStatement(List.of(statement));
         assertEquals(expectedResult, result);

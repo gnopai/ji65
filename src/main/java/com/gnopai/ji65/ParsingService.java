@@ -17,9 +17,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-// TODO rename? Maybe something like ParseService?
 // TODO move to parser package?
-public class SourceFileProcessor {
+public class ParsingService {
     private static final int MAX_FILE_DEPTH = 16;
     static final String FILE_OPEN_ERROR = "Failed to open source file: %s";
     static final String MAX_FILE_DEPTH_ERROR = "Maximum file depth of " + MAX_FILE_DEPTH + " reached while parsing %s";
@@ -31,7 +30,7 @@ public class SourceFileProcessor {
     private final Map<String, Macro> macros = new HashMap<>();
 
     @Inject
-    public SourceFileProcessor(FileLoader fileLoader, Scanner scanner, ErrorHandler errorHandler) {
+    public ParsingService(FileLoader fileLoader, Scanner scanner, ErrorHandler errorHandler) {
         this.fileLoader = fileLoader;
         this.scanner = scanner;
         this.errorHandler = errorHandler;
@@ -83,7 +82,6 @@ public class SourceFileProcessor {
 
     public Optional<Macro> getMacro(String name) {
         return Optional.ofNullable(macros.get(name));
-        // TODO move Macro out of assembler package, probably into parser?
     }
 
     public void defineMacro(Macro macro) {
