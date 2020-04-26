@@ -192,7 +192,7 @@ class InstructionAssemblerTest {
 
         SegmentData segmentData = assemble(instructionStatement);
 
-        InstructionData expectedData = new InstructionData(expectedOpcode, new UnresolvedExpression(addressExpression, true));
+        InstructionData expectedData = new InstructionData(expectedOpcode, new UnresolvedExpression(addressExpression, false));
         assertEquals(expectedData, segmentData);
     }
 
