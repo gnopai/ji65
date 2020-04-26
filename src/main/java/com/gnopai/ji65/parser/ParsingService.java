@@ -32,7 +32,7 @@ public class ParsingService {
     }
 
     public List<Statement> loadAndParse(String fileName) {
-        Path path = findPath(fileName);
+        Path path = resolveFilePath(fileName);
         return fileLoader.loadSourceFile(path)
                 .map(this::loadAndParse)
                 .orElseThrow(() -> new RuntimeException(String.format(FILE_OPEN_ERROR, fileName)));
@@ -52,7 +52,7 @@ public class ParsingService {
         return parser.parse();
     }
 
-    private Path findPath(String fileName) {
+    public Path resolveFilePath(String fileName) {
         if (fileStack.isEmpty() || fileName.startsWith(File.separator)) {
             return Paths.get(fileName);
         }
