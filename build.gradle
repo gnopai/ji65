@@ -37,6 +37,7 @@ test {
 }
 
 jar.baseName = 'ji65'
+jar.dependsOn test
 jar {
     manifest {
         attributes(

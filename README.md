@@ -10,8 +10,24 @@ Running It
 ----------
 
 The app currently runs on Java 12 and uses gradle-wrapper for building and whatnot. It might work on 10 or 11, but no guarantees.
-Currently to run the it, you'll need to check it out of Github, import the project via the Gradle file, and then run...?
-This is still kind of a work in progress, but nearly to the point of actually being useful.
+It builds a single jar that can be imported into any 6502 project and easily run from something like a Makefile.
+
+To build:
+
+`$ ./gradlew clean jar`    
+
+To run:
+
+```
+$ java -jar build/libs/ji65-*.jar -h
+Usage: ji65 [-hpV] [-C=CONFIG_FILE] FILE
+Assemble and test 6502 code
+      FILE          the file to assemble and run tests for
+  -C=CONFIG_FILE    the program config file to use
+  -h, --help        Show this help message and exit.
+  -p                display passing tests and assertions
+  -V, --version     Print version information and exit.
+```
 
 Things To Do
 ------------
