@@ -29,6 +29,12 @@ public class Cpu {
         return memory[address.getValue()];
     }
 
+    public void load(Program program) {
+        program.getChunks().forEach(chunk ->
+                copyToMemory(chunk.getAddress(), chunk.getBytes())
+        );
+    }
+
     public void copyToMemory(Address address, List<Byte> bytes) {
         int i = address.getValue();
         for (byte b : bytes) {

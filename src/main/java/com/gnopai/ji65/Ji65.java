@@ -40,7 +40,8 @@ public class Ji65 {
     }
 
     public void run(Program program, Address startAddress, Cpu cpu, ProgramEndStrategy programEndStrategy) {
-        interpreter.run(program, startAddress, cpu, programEndStrategy);
+        cpu.load(program);
+        interpreter.run(startAddress, cpu, programEndStrategy);
     }
 
     public TestReport runTests(Program program) {

@@ -117,14 +117,13 @@ class TestRunnerTest {
     void testRunStep_runSubRoutine() {
         Address address = new Address(0x1234);
         RunSubRoutine runSubRoutine = new RunSubRoutine(address);
-        Program program = program();
         Cpu cpu = Cpu.builder().build();
 
         TestRunner testClass = new TestRunner(interpreter, testResultTracker);
 
-        testClass.runStep(cpu, runSubRoutine, program);
+        testClass.runStep(cpu, runSubRoutine);
 
-        verify(interpreter).run(eq(program), eq(address), eq(cpu), any(ProgramEndStrategy.class));
+        verify(interpreter).run(eq(address), eq(cpu), any(ProgramEndStrategy.class));
         verifyNoMoreInteractions(testResultTracker);
     }
 
@@ -164,7 +163,7 @@ class TestRunnerTest {
                 ))
         );
 
-        verify(interpreter).run(eq(program), eq(subRoutineAddress), any(Cpu.class), any(ProgramEndStrategy.class));
+        verify(interpreter).run(eq(subRoutineAddress), any(Cpu.class), any(ProgramEndStrategy.class));
         assertEquals(expectedResults, results);
     }
 

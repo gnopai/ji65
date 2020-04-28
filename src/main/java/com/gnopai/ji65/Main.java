@@ -7,6 +7,7 @@ import com.gnopai.ji65.test.StdoutTestReporter;
 import com.gnopai.ji65.test.TestReport;
 import com.gnopai.ji65.util.ErrorHandler;
 import com.gnopai.ji65.util.ErrorPrinter;
+import lombok.Builder;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -33,6 +34,16 @@ public class Main implements Callable<Integer> {
 
     @Option(names = "-p", description = "display passing tests and assertions")
     private boolean showPassingTests;
+
+    @Builder
+    private Main(File sourceFile, File programConfigFile, boolean showPassingTests) {
+        this.sourceFile = sourceFile;
+        this.programConfigFile = programConfigFile;
+        this.showPassingTests = showPassingTests;
+    }
+
+    private Main() {
+    }
 
     public static void main(String[] args) {
         Main main = new Main();
