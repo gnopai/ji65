@@ -26,10 +26,11 @@ public class TestRunner {
     }
 
     private void runTest(Test test, Program program) {
-        testResultTracker.startTest(test);
         Cpu cpu = Cpu.builder().build();
+        cpu.load(program);
+        testResultTracker.startTest(test);
         test.getSteps()
-                .forEach(step -> step.run(this, cpu, program));
+                .forEach(step -> step.run(this, cpu));
     }
 
     void runStep(Cpu cpu, SetValue setValue) {
@@ -53,8 +54,8 @@ public class TestRunner {
         }
     }
 
-    void runStep(Cpu cpu, RunSubRoutine runSubRoutine, Program program) {
-        interpreter.run(program, runSubRoutine.getAddress(), cpu, new EndProgramAtRtsOnEmptyStack());
+    void runStep(Cpu cpu, RunSubRoutine runSubRoutine) {
+        interpreter.run(runSubRoutine.getAddress(), cpu, new EndProgramAtRtsOnEmptyStack());
     }
 
     private Byte getValue(Cpu cpu, Target target, Address targetAddress) {
