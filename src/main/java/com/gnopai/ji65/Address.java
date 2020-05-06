@@ -30,4 +30,9 @@ public class Address {
     public byte getLowByte() {
         return (byte) (value % 256);
     }
+
+    @Override
+    public String toString() {
+        return String.format("$%04X", value);
+    }
 }

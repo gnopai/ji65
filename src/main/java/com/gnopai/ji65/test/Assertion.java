@@ -1,7 +1,6 @@
 package com.gnopai.ji65.test;
 
 import com.gnopai.ji65.Address;
-import com.gnopai.ji65.Cpu;
 import lombok.Builder;
 import lombok.Value;
 
@@ -14,7 +13,7 @@ public class Assertion implements TestStep {
     String message;
 
     @Override
-    public void run(TestRunner testRunner, Cpu cpu) {
+    public void run(TestRunner testRunner, TestableCpu cpu) {
         testRunner.runStep(cpu, this);
     }
 }

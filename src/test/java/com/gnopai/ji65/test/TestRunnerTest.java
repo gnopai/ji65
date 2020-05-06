@@ -20,7 +20,7 @@ class TestRunnerTest {
     void testRunStep_setValueOnRegister() {
         byte value = (byte) 0xFF;
         SetValue setValue = new SetValue(Target.X, null, value);
-        Cpu cpu = Cpu.builder().build();
+        TestableCpu cpu = new TestableCpu();
 
         TestRunner testClass = new TestRunner(interpreter, testResultTracker);
 
@@ -34,7 +34,7 @@ class TestRunnerTest {
         byte value = (byte) 0xFF;
         Address address = new Address(0x1234);
         SetValue setValue = new SetValue(Target.MEMORY, address, value);
-        Cpu cpu = Cpu.builder().build();
+        TestableCpu cpu = new TestableCpu();
 
         TestRunner testClass = new TestRunner(interpreter, testResultTracker);
 
@@ -49,7 +49,7 @@ class TestRunnerTest {
         Address address = new Address(0x1234);
         String message = "Foooooo";
         Assertion assertion = new Assertion(Target.MEMORY, address, value, message);
-        Cpu cpu = Cpu.builder().build();
+        TestableCpu cpu = new TestableCpu();
         cpu.setMemoryValue(address, value);
 
         TestRunner testClass = new TestRunner(interpreter, testResultTracker);
@@ -66,7 +66,7 @@ class TestRunnerTest {
         Address address = new Address(0x1234);
         String message = "Foooooo";
         Assertion assertion = new Assertion(Target.MEMORY, address, expectedValue, message);
-        Cpu cpu = Cpu.builder().build();
+        TestableCpu cpu = new TestableCpu();
 
         byte actualValue = (byte) 0x94;
         cpu.setMemoryValue(address, actualValue);
@@ -84,7 +84,7 @@ class TestRunnerTest {
         byte value = (byte) 0xFF;
         String message = "Foooooo";
         Assertion assertion = new Assertion(Target.Y, null, value, message);
-        Cpu cpu = Cpu.builder().build();
+        TestableCpu cpu = new TestableCpu();
         cpu.setY(value);
 
         TestRunner testClass = new TestRunner(interpreter, testResultTracker);
@@ -100,7 +100,7 @@ class TestRunnerTest {
         byte expectedValue = (byte) 0xFF;
         String message = "Foooooo";
         Assertion assertion = new Assertion(Target.A, null, expectedValue, message);
-        Cpu cpu = Cpu.builder().build();
+        TestableCpu cpu = new TestableCpu();
 
         byte actualValue = (byte) 0x94;
         cpu.setAccumulator(actualValue);
@@ -117,7 +117,7 @@ class TestRunnerTest {
     void testRunStep_runSubRoutine() {
         Address address = new Address(0x1234);
         RunSubRoutine runSubRoutine = new RunSubRoutine(address);
-        Cpu cpu = Cpu.builder().build();
+        TestableCpu cpu = new TestableCpu();
 
         TestRunner testClass = new TestRunner(interpreter, testResultTracker);
 
