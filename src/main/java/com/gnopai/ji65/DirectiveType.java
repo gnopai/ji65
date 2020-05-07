@@ -23,6 +23,9 @@ public enum DirectiveType {
     TEST_SET("testset"),
     TEST_RUN("testrun"),
     TEST_ASSERT("assert"),
+    TEST_MOCK("testmock"),
+    TEST_VERIFY_WRITE("verifywrite"),
+    TEST_VERIFY_READ("verifyread"),
     ;
 
     private final List<String> identifiers;
