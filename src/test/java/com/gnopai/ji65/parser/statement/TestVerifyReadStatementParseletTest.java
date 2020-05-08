@@ -3,6 +3,7 @@ package com.gnopai.ji65.parser.statement;
 import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.parser.ParseException;
 import com.gnopai.ji65.parser.expression.PrimaryExpression;
+import com.gnopai.ji65.test.TestStepType;
 import com.gnopai.ji65.util.ErrorHandler;
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +26,7 @@ class TestVerifyReadStatementParseletTest {
         );
 
         TestStatement expectedResult = TestStatement.builder()
-                .type(TestStatement.Type.VERIFY_READ)
+                .type(TestStepType.VERIFY_READ)
                 .targetAddress(new PrimaryExpression(NUMBER, 0x28))
                 .value(new PrimaryExpression(NUMBER, 1))
                 .build();
@@ -41,7 +42,7 @@ class TestVerifyReadStatementParseletTest {
         );
 
         TestStatement expectedResult = TestStatement.builder()
-                .type(TestStatement.Type.VERIFY_READ)
+                .type(TestStepType.VERIFY_READ)
                 .targetAddress(new PrimaryExpression(NUMBER, 0x2088))
                 .value(new PrimaryExpression(NUMBER, 1))
                 .build();
@@ -58,7 +59,7 @@ class TestVerifyReadStatementParseletTest {
         );
 
         TestStatement expectedResult = TestStatement.builder()
-                .type(TestStatement.Type.VERIFY_READ)
+                .type(TestStepType.VERIFY_READ)
                 .targetAddress(new PrimaryExpression(NUMBER, 0x2088))
                 .value(new PrimaryExpression(NUMBER, 3))
                 .build();

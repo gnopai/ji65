@@ -5,6 +5,7 @@ import com.gnopai.ji65.parser.expression.Expression;
 import com.gnopai.ji65.scanner.Token;
 import com.gnopai.ji65.scanner.TokenType;
 import com.gnopai.ji65.test.Target;
+import com.gnopai.ji65.test.TestStepType;
 
 import java.util.Map;
 import java.util.Optional;
@@ -52,7 +53,7 @@ public class TestAssertStatementParselet implements StatementParselet {
         parser.consumeEndOfLine();
 
         return testStatementBuilder
-                .type(TestStatement.Type.ASSERT)
+                .type(TestStepType.ASSERT)
                 .value(value)
                 .message(message)
                 .build();

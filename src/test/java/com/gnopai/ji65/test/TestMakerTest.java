@@ -25,7 +25,7 @@ class TestMakerTest {
         when(expressionEvaluator.evaluate(valueExpression, environment))
                 .thenReturn(77);
         TestStatement testStatement = TestStatement.builder()
-                .type(TestStatement.Type.SET)
+                .type(TestStepType.SET)
                 .target(Target.X)
                 .value(valueExpression)
                 .build();
@@ -56,7 +56,7 @@ class TestMakerTest {
         when(expressionEvaluator.evaluate(valueExpression, environment))
                 .thenReturn(77);
         TestStatement testStatement = TestStatement.builder()
-                .type(TestStatement.Type.SET)
+                .type(TestStepType.SET)
                 .target(Target.MEMORY)
                 .targetAddress(addressExpression)
                 .value(valueExpression)
@@ -83,7 +83,7 @@ class TestMakerTest {
     @Test
     void testSetValueStep_missingValue() {
         TestStatement testStatement = TestStatement.builder()
-                .type(TestStatement.Type.SET)
+                .type(TestStepType.SET)
                 .target(Target.X)
                 .build();
         TestData testData = TestData.builder()
@@ -102,7 +102,7 @@ class TestMakerTest {
         when(expressionEvaluator.evaluate(valueExpression, environment))
                 .thenReturn(77);
         TestStatement testStatement = TestStatement.builder()
-                .type(TestStatement.Type.ASSERT)
+                .type(TestStepType.ASSERT)
                 .target(Target.X)
                 .value(valueExpression)
                 .message("Woooo")
@@ -135,7 +135,7 @@ class TestMakerTest {
         when(expressionEvaluator.evaluate(valueExpression, environment))
                 .thenReturn(77);
         TestStatement testStatement = TestStatement.builder()
-                .type(TestStatement.Type.ASSERT)
+                .type(TestStepType.ASSERT)
                 .target(Target.MEMORY)
                 .targetAddress(addressExpression)
                 .value(valueExpression)
@@ -164,7 +164,7 @@ class TestMakerTest {
     @Test
     void testAssertionStep_missingValue() {
         TestStatement testStatement = TestStatement.builder()
-                .type(TestStatement.Type.ASSERT)
+                .type(TestStepType.ASSERT)
                 .target(Target.X)
                 .build();
         TestData testData = TestData.builder()
@@ -183,7 +183,7 @@ class TestMakerTest {
         when(expressionEvaluator.evaluate(targetAddress, environment))
                 .thenReturn(0x1234);
         TestStatement testStatement = TestStatement.builder()
-                .type(TestStatement.Type.RUN)
+                .type(TestStepType.RUN)
                 .targetAddress(targetAddress)
                 .build();
         TestData testData = TestData.builder()
@@ -206,7 +206,7 @@ class TestMakerTest {
     @Test
     void testRunSubRoutineStep_missingAddress() {
         TestStatement testStatement = TestStatement.builder()
-                .type(TestStatement.Type.RUN)
+                .type(TestStepType.RUN)
                 .build();
         TestData testData = TestData.builder()
                 .testName("whee")
@@ -219,12 +219,114 @@ class TestMakerTest {
     }
 
     @Test
+    void testMockMemoryStep() {
+        Expression addressExpression = mock(Expression.class);
+        when(expressionEvaluator.evaluate(addressExpression, environment))
+                .thenReturn(0x1234);
+        Expression valueExpression1 = mock(Expression.class);
+        when(expressionEvaluator.evaluate(valueExpression1, environment))
+                .thenReturn(0x4F);
+        Expression valueExpression2 = mock(Expression.class);
+        when(expressionEvaluator.evaluate(valueExpression2, environment))
+                .thenReturn(0x09);
+
+        TestStatement testStatement = TestStatement.builder()
+                .type(TestStepType.MOCK)
+                .targetAddress(addressExpression)
+                .values(List.of(valueExpression1, valueExpression2))
+                .build();
+        TestData testData = TestData.builder()
+                .testName("whee")
+                .statement(testStatement)
+                .build();
+
+        TestMaker testClass = new TestMaker(expressionEvaluator);
+
+        com.gnopai.ji65.test.Test test = testClass.makeTest(testData, environment);
+
+        com.gnopai.ji65.test.Test expectedTest = new com.gnopai.ji65.test.Test("whee", List.of(
+                MockMemory.builder()
+                        .address(new Address(0x1234))
+                        .values(List.of((byte) 0x4F, (byte) 0x09))
+                        .build()
+        ));
+        assertEquals(expectedTest, test);
+    }
+
+    @Test
+    void testVerifyReadStep() {
+        Expression addressExpression = mock(Expression.class);
+        when(expressionEvaluator.evaluate(addressExpression, environment))
+                .thenReturn(0x1234);
+        Expression countExpression = mock(Expression.class);
+        when(expressionEvaluator.evaluate(countExpression, environment))
+                .thenReturn(5);
+
+        TestStatement testStatement = TestStatement.builder()
+                .type(TestStepType.VERIFY_READ)
+                .targetAddress(addressExpression)
+                .value(countExpression)
+                .build();
+        TestData testData = TestData.builder()
+                .testName("whee")
+                .statement(testStatement)
+                .build();
+
+        TestMaker testClass = new TestMaker(expressionEvaluator);
+
+        com.gnopai.ji65.test.Test test = testClass.makeTest(testData, environment);
+
+        com.gnopai.ji65.test.Test expectedTest = new com.gnopai.ji65.test.Test("whee", List.of(
+                VerifyRead.builder()
+                        .address(new Address(0x1234))
+                        .expectedCount(5)
+                        .build()
+        ));
+        assertEquals(expectedTest, test);
+    }
+
+    @Test
+    void testVerifyWriteStep() {
+        Expression addressExpression = mock(Expression.class);
+        when(expressionEvaluator.evaluate(addressExpression, environment))
+                .thenReturn(0x1234);
+        Expression valueExpression1 = mock(Expression.class);
+        when(expressionEvaluator.evaluate(valueExpression1, environment))
+                .thenReturn(0x4F);
+        Expression valueExpression2 = mock(Expression.class);
+        when(expressionEvaluator.evaluate(valueExpression2, environment))
+                .thenReturn(0x09);
+
+        TestStatement testStatement = TestStatement.builder()
+                .type(TestStepType.VERIFY_WRITE)
+                .targetAddress(addressExpression)
+                .values(List.of(valueExpression1, valueExpression2))
+                .build();
+        TestData testData = TestData.builder()
+                .testName("whee")
+                .statement(testStatement)
+                .build();
+
+        TestMaker testClass = new TestMaker(expressionEvaluator);
+
+        com.gnopai.ji65.test.Test test = testClass.makeTest(testData, environment);
+
+        com.gnopai.ji65.test.Test expectedTest = new com.gnopai.ji65.test.Test("whee", List.of(
+                VerifyWrite.builder()
+                        .address(new Address(0x1234))
+                        .expectedValues(List.of((byte) 0x4F, (byte) 0x09))
+                        .build()
+        ));
+        assertEquals(expectedTest, test);
+    }
+
+    @Test
     void testMultipleSteps() {
         Expression setValueExpression = mock(Expression.class);
         when(expressionEvaluator.evaluate(setValueExpression, environment))
                 .thenReturn(77);
         TestStatement setValueStatement = TestStatement.builder()
-                .type(TestStatement.Type.SET)
+                .type(TestStepType.SET)
                 .target(Target.X)
                 .value(setValueExpression)
                 .build();
@@ -233,7 +335,7 @@ class TestMakerTest {
         when(expressionEvaluator.evaluate(runAddress, environment))
                 .thenReturn(0x8056);
         TestStatement runStatement = TestStatement.builder()
-                .type(TestStatement.Type.RUN)
+                .type(TestStepType.RUN)
                 .targetAddress(runAddress)
                 .build();
 
@@ -241,7 +343,7 @@ class TestMakerTest {
         when(expressionEvaluator.evaluate(assertValueExpression, environment))
                 .thenReturn(99);
         TestStatement assertStatement = TestStatement.builder()
-                .type(TestStatement.Type.ASSERT)
+                .type(TestStepType.ASSERT)
                 .target(Target.X)
                 .value(assertValueExpression)
                 .build();

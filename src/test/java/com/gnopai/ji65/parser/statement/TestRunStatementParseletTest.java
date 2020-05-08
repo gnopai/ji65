@@ -3,6 +3,7 @@ package com.gnopai.ji65.parser.statement;
 import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.parser.ParseException;
 import com.gnopai.ji65.parser.expression.PrimaryExpression;
+import com.gnopai.ji65.test.TestStepType;
 import com.gnopai.ji65.util.ErrorHandler;
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +26,7 @@ class TestRunStatementParseletTest {
         );
 
         TestStatement expectedResult = TestStatement.builder()
-                .type(TestStatement.Type.RUN)
+                .type(TestStepType.RUN)
                 .targetAddress(new PrimaryExpression(NUMBER, 0x1234))
                 .build();
         assertEquals(expectedResult, result);

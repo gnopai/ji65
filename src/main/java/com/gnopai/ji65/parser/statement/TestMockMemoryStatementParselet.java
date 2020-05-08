@@ -3,6 +3,7 @@ package com.gnopai.ji65.parser.statement;
 import com.gnopai.ji65.parser.Parser;
 import com.gnopai.ji65.parser.expression.Expression;
 import com.gnopai.ji65.scanner.Token;
+import com.gnopai.ji65.test.TestStepType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ public class TestMockMemoryStatementParselet implements StatementParselet {
         parser.consumeEndOfLine();
 
         return TestStatement.builder()
-                .type(TestStatement.Type.MOCK)
+                .type(TestStepType.MOCK)
                 .targetAddress(address)
                 .values(values)
                 .build();

@@ -10,7 +10,8 @@ import com.gnopai.ji65.parser.statement.TestStatement;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 public class TestMaker {
     private final ExpressionEvaluator expressionEvaluator;
@@ -23,50 +24,70 @@ public class TestMaker {
     public Test makeTest(TestData testData, Environment environment) {
         List<TestStep> testSteps = testData.getStatements()
                 .stream()
-                .map(testStatement -> makeStep(testStatement, environment))
-                .collect(Collectors.toList());
+                .map(testStatement -> testStatement.makeTestStep(this, environment))
+                .collect(toList());
         return new Test(testData.getTestName(), testSteps);
     }
 
-    private TestStep makeStep(TestStatement testStatement, Environment environment) {
-        switch (testStatement.getType()) {
-            case SET:
-                return makeSetValueStep(testStatement, environment);
-            case RUN:
-                return makeRunSubRoutineStep(testStatement, environment);
-            case ASSERT:
-                return makeAssertionStep(testStatement, environment);
-        }
-
-        throw new IllegalStateException("Unknown test type: " + testStatement.getType());
-    }
-
-    private TestStep makeSetValueStep(TestStatement testStatement, Environment environment) {
+    TestStep makeSetValueStep(TestStatement testStatement, Environment environment) {
         return SetValue.builder()
                 .target(testStatement.getTarget())
                 .targetAddress(resolveAddress(testStatement.getTargetAddress(), environment)
                         .orElse(null))
-                .value(resolveExpression(testStatement.getValue(), environment)
+                .value(resolveExpression(testStatement.getFirstValue(), environment)
                         .orElseThrow())
                 .build();
     }
 
-    private TestStep makeAssertionStep(TestStatement testStatement, Environment environment) {
+    TestStep makeAssertionStep(TestStatement testStatement, Environment environment) {
         return Assertion.builder()
                 .target(testStatement.getTarget())
                 .targetAddress(resolveAddress(testStatement.getTargetAddress(), environment)
                         .orElse(null))
-                .expectedValue(resolveExpression(testStatement.getValue(), environment)
+                .expectedValue(resolveExpression(testStatement.getFirstValue(), environment)
                         .orElseThrow())
                 .message(testStatement.getMessage())
                 .build();
     }
 
-    private TestStep makeRunSubRoutineStep(TestStatement testStatement, Environment environment) {
+    TestStep makeRunSubRoutineStep(TestStatement testStatement, Environment environment) {
         return RunSubRoutine.builder()
                 .address(resolveAddress(testStatement.getTargetAddress(), environment)
                         .orElseThrow())
                 .build();
+    }
+
+    TestStep makeMockMemoryStep(TestStatement testStatement, Environment environment) {
+        return MockMemory.builder()
+                .address(resolveAddress(testStatement.getTargetAddress(), environment)
+                        .orElseThrow())
+                .values(resolveExpressions(testStatement.getValues(), environment))
+                .build();
+    }
+
+    TestStep makeVerifyReadStep(TestStatement testStatement, Environment environment) {
+        return VerifyRead.builder()
+                .address(resolveAddress(testStatement.getTargetAddress(), environment)
+                        .orElseThrow())
+                .expectedCount(resolveExpression(testStatement.getFirstValue(), environment)
+                        .orElseThrow())
+                .build();
+    }
+
+    TestStep makeVerifyWriteStep(TestStatement testStatement, Environment environment) {
+        return VerifyWrite.builder()
+                .address(resolveAddress(testStatement.getTargetAddress(), environment)
+                        .orElseThrow())
+                .expectedValues(resolveExpressions(testStatement.getValues(), environment))
+                .build();
+    }
+
+    private List<Byte> resolveExpressions(List<Expression> expressions, Environment environment) {
+        return expressions.stream()
+                .map(expression -> resolveExpression(expression, environment))
+                .map(Optional::orElseThrow)
+                .map(Integer::byteValue)
+                .collect(toList());
     }
 
     private Optional<Integer> resolveExpression(Expression expression, Environment environment) {
