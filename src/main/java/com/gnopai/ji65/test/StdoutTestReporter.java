@@ -68,37 +68,21 @@ public class StdoutTestReporter implements TestReporter {
 
     private Optional<String> createAssertionResultOutput(TestResult testResult, AssertionResult assertionResult) {
         if (assertionResult.isFailure()) {
-            return Optional.of(format("    %s: assertion FAILED, expected $%02X but got $%02X",
+            return Optional.of(format("    %s: assertion FAILED, expected %s but got %s%s",
                     testResult.getName(),
-                    assertionResult.getExpected(),
-                    assertionResult.getActual()
+                    assertionResult.getExpectedAsString(),
+                    assertionResult.getActualAsString(),
+                    Optional.ofNullable(assertionResult.getMessage()).map(m -> ": " + m).orElse("")
             ));
         }
 
         if (showPassingTests) {
-            return Optional.of(format("    %s: assertion passed with value $%02X",
+            return Optional.of(format("    %s: assertion passed with value %s",
                     testResult.getName(),
-                    assertionResult.getActual()
+                    assertionResult.getActualAsString()
             ));
         }
 
         return Optional.empty();
-    }
-
-    public static void main(String[] args) {
-        TestReport testReport = new TestReport(List.of(
-                TestResult.builder()
-                        .name("testSomeStuff")
-                        .assertionResult(new AssertionResult(true, (byte) 0x55, (byte) 0x55))
-                        .assertionResult(new AssertionResult(true, (byte) 0x66, (byte) 0x66))
-                        .build(),
-                TestResult.builder()
-                        .name("a_much_longer_test_name")
-                        .assertionResult(new AssertionResult(true, (byte) 0x10, (byte) 0x10))
-                        .assertionResult(new AssertionResult(false, (byte) 0xEF, (byte) 0xFF))
-                        .build()
-        ));
-        new StdoutTestReporter(false)
-                .reportResults(testReport);
     }
 }

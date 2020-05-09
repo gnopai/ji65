@@ -22,15 +22,15 @@ public class TestResultTracker {
                 .name(test.getName());
     }
 
-    public void assertionPassed(byte value) {
+    public void assertionPassed(Object value) {
         ensureTestStarted();
         AssertionResult assertionResult = new AssertionResult(true, value, value);
         currentTest.assertionResult(assertionResult);
     }
 
-    public void assertionFailed(byte expected, byte actual) {
+    public void assertionFailed(Object expected, Object actual, String message) {
         ensureTestStarted();
-        AssertionResult assertionResult = new AssertionResult(false, expected, actual);
+        AssertionResult assertionResult = new AssertionResult(false, expected, actual, message);
         currentTest.assertionResult(assertionResult);
     }
 

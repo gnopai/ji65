@@ -76,14 +76,14 @@ class StdoutTestReporterTest {
         TestReport testReport = new TestReport(List.of(
                 TestResult.builder()
                         .name("ima_test")
-                        .assertionResult(new AssertionResult(false, (byte) 0x66, (byte) 0x00))
+                        .assertionResult(new AssertionResult(false, (byte) 0x66, (byte) 0x00, "ohno"))
                         .build()
         ));
         List<String> output = testCreateOutputNotShowingPassingTests(testReport);
 
         List<String> expectedOutput = List.of(
                 "1 test run: 0 assertions passed, 1 assertion FAILED",
-                "    ima_test: assertion FAILED, expected $66 but got $00"
+                "    ima_test: assertion FAILED, expected $66 but got $00: ohno"
                 );
         assertEquals(expectedOutput, output);
     }
@@ -93,7 +93,7 @@ class StdoutTestReporterTest {
         TestReport testReport = new TestReport(List.of(
                 TestResult.builder()
                         .name("ima_test")
-                        .assertionResult(new AssertionResult(false, (byte) 0x66, (byte) 0x00))
+                        .assertionResult(new AssertionResult(false, (byte) 0x66, (byte) 0x00, "ohno"))
                         .assertionResult(new AssertionResult(false, (byte) 0x43, (byte) 0xFE))
                         .build()
         ));
@@ -101,7 +101,7 @@ class StdoutTestReporterTest {
 
         List<String> expectedOutput = List.of(
                 "1 test run: 0 assertions passed, 2 assertions FAILED",
-                "    ima_test: assertion FAILED, expected $66 but got $00",
+                "    ima_test: assertion FAILED, expected $66 but got $00: ohno",
                 "    ima_test: assertion FAILED, expected $43 but got $FE"
         );
         assertEquals(expectedOutput, output);
@@ -114,7 +114,7 @@ class StdoutTestReporterTest {
                         .name("ima_test")
                         .assertionResult(new AssertionResult(false, (byte) 0x66, (byte) 0x00))
                         .assertionResult(new AssertionResult(true, (byte) 0x39, (byte) 0x39))
-                        .assertionResult(new AssertionResult(false, (byte) 0x43, (byte) 0xFE))
+                        .assertionResult(new AssertionResult(false, (byte) 0x43, (byte) 0xFE, "hrm"))
                         .assertionResult(new AssertionResult(true, (byte) 0x0F, (byte) 0x0F))
                         .build()
         ));
@@ -124,7 +124,7 @@ class StdoutTestReporterTest {
                 "1 test run: 2 assertions passed, 2 assertions FAILED",
                 "    ima_test: assertion FAILED, expected $66 but got $00",
                 "    ima_test: assertion passed with value $39",
-                "    ima_test: assertion FAILED, expected $43 but got $FE",
+                "    ima_test: assertion FAILED, expected $43 but got $FE: hrm",
                 "    ima_test: assertion passed with value $0F"
         );
         assertEquals(expectedOutput, output);
@@ -137,7 +137,7 @@ class StdoutTestReporterTest {
                         .name("ima_test")
                         .assertionResult(new AssertionResult(false, (byte) 0x66, (byte) 0x00))
                         .assertionResult(new AssertionResult(true, (byte) 0x39, (byte) 0x39))
-                        .assertionResult(new AssertionResult(false, (byte) 0x43, (byte) 0xFE))
+                        .assertionResult(new AssertionResult(false, (byte) 0x43, (byte) 0xFE, "eeee!"))
                         .assertionResult(new AssertionResult(true, (byte) 0x0F, (byte) 0x0F))
                         .build()
         ));
@@ -146,7 +146,7 @@ class StdoutTestReporterTest {
         List<String> expectedOutput = List.of(
                 "1 test run: 2 assertions passed, 2 assertions FAILED",
                 "    ima_test: assertion FAILED, expected $66 but got $00",
-                "    ima_test: assertion FAILED, expected $43 but got $FE"
+                "    ima_test: assertion FAILED, expected $43 but got $FE: eeee!"
         );
         assertEquals(expectedOutput, output);
     }
@@ -192,7 +192,7 @@ class StdoutTestReporterTest {
                         .build(),
                 TestResult.builder()
                         .name("another_test")
-                        .assertionResult(new AssertionResult(false, (byte) 0x43, (byte) 0xFE))
+                        .assertionResult(new AssertionResult(false, (byte) 0x43, (byte) 0xFE, "derpy doo"))
                         .assertionResult(new AssertionResult(true, (byte) 0x0F, (byte) 0x0F))
                         .build(),
                 TestResult.builder()
@@ -205,7 +205,7 @@ class StdoutTestReporterTest {
         List<String> expectedOutput = List.of(
                 "3 tests run: 3 assertions passed, 2 assertions FAILED",
                 "    ima_test: assertion FAILED, expected $66 but got $00",
-                "    another_test: assertion FAILED, expected $43 but got $FE"
+                "    another_test: assertion FAILED, expected $43 but got $FE: derpy doo"
         );
         assertEquals(expectedOutput, output);
     }
