@@ -26,6 +26,12 @@ public class TestRunner {
 
     private void runTest(Test test, Program program) {
         TestableCpu cpu = new TestableCpu();
+        test.getSteps().stream()
+                .map(TestStep::getWatchedAddresses)
+                .flatMap(List::stream)
+                .distinct()
+                .forEach(cpu::addWatch);
+
         cpu.load(program);
         testResultTracker.startTest(test);
         test.getSteps()
@@ -46,15 +52,35 @@ public class TestRunner {
     void runStep(TestableCpu cpu, Assertion assertion) {
         byte value = getValue(cpu, assertion.getTarget(), assertion.getTargetAddress());
         byte expectedValue = (byte) assertion.getExpectedValue();
-        if (value == expectedValue) {
-            testResultTracker.assertionPassed(value);
-        } else {
-            testResultTracker.assertionFailed(expectedValue, value);
-        }
+        doAssert(expectedValue, value, assertion.getMessage());
     }
 
     void runStep(TestableCpu cpu, RunSubRoutine runSubRoutine) {
         interpreter.run(runSubRoutine.getAddress(), cpu, new EndProgramAtRtsOnEmptyStack());
+    }
+
+    void runStep(TestableCpu cpu, MockMemory mockMemory) {
+        cpu.mockMemoryValues(mockMemory.getAddress(), mockMemory.getValues());
+    }
+
+    void runStep(TestableCpu cpu, VerifyRead verifyRead) {
+        int actualReadCount = cpu.getWatchReadCount(verifyRead.getAddress());
+        String message = "Unexpected read count for address " + verifyRead.getAddress();
+        doAssert(verifyRead.getExpectedCount(), actualReadCount, message);
+    }
+
+    void runStep(TestableCpu cpu, VerifyWrite verifyWrite) {
+        List<Byte> actualBytesWritten = cpu.getWatchBytesWritten(verifyWrite.getAddress());
+        String message = "Unexpected bytes written to address " + verifyWrite.getAddress();
+        doAssert(verifyWrite.getExpectedValues(), actualBytesWritten, message);
+    }
+
+    private <T> void doAssert(T expected, T actual, String message) {
+        if (actual.equals(expected)) {
+            testResultTracker.assertionPassed(actual);
+        } else {
+            testResultTracker.assertionFailed(expected, actual, message);
+        }
     }
 
     private Byte getValue(TestableCpu cpu, Target target, Address targetAddress) {

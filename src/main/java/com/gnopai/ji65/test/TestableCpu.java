@@ -31,7 +31,17 @@ public class TestableCpu extends Cpu {
     }
 
     public void mockMemoryValues(Address address, Byte... values) {
-        memoryMocks.put(address, new MemoryMock(List.of(values)));
+        mockMemoryValues(address, List.of(values));
+    }
+
+    public void mockMemoryValues(Address address, List<Byte> values) {
+        memoryMocks.put(address, new MemoryMock(values));
+    }
+
+    public List<Byte> getMockedValues(Address address) {
+        return Optional.ofNullable(memoryMocks.get(address))
+                .map(MemoryMock::getValues)
+                .orElse(List.of());
     }
 
     private Optional<MemoryWatch> getWatch(Address address) {
@@ -73,6 +83,10 @@ public class TestableCpu extends Cpu {
 
         private MemoryMock(List<Byte> values) {
             this.values = values;
+        }
+
+        public List<Byte> getValues() {
+            return values;
         }
 
         public byte getNextValue() {

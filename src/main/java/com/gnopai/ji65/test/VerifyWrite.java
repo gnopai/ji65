@@ -16,4 +16,9 @@ public class VerifyWrite implements TestStep {
     public void run(TestRunner testRunner, TestableCpu cpu) {
         testRunner.runStep(cpu, this);
     }
+
+    @Override
+    public List<Address> getWatchedAddresses() {
+        return List.of(address);
+    }
 }
