@@ -1,14 +1,12 @@
 package com.gnopai.ji65;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.List;
 
 @Data
 @Builder(toBuilder = true)
+@AllArgsConstructor
 public class Cpu {
     @Getter(AccessLevel.NONE)
     private final byte[] memory = new byte[65536];

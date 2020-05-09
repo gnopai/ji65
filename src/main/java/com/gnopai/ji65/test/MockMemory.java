@@ -4,10 +4,13 @@ import com.gnopai.ji65.Address;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.List;
+
 @Value
 @Builder
-public class RunSubRoutine implements TestStep {
+public class MockMemory implements TestStep {
     Address address;
+    List<Byte> values;
 
     @Override
     public void run(TestRunner testRunner, TestableCpu cpu) {

@@ -20,7 +20,7 @@ class TestRunnerTest {
     void testRunStep_setValueOnRegister() {
         byte value = (byte) 0xFF;
         SetValue setValue = new SetValue(Target.X, null, value);
-        Cpu cpu = Cpu.builder().build();
+        TestableCpu cpu = new TestableCpu();
 
         TestRunner testClass = new TestRunner(interpreter, testResultTracker);
 
@@ -34,7 +34,7 @@ class TestRunnerTest {
         byte value = (byte) 0xFF;
         Address address = new Address(0x1234);
         SetValue setValue = new SetValue(Target.MEMORY, address, value);
-        Cpu cpu = Cpu.builder().build();
+        TestableCpu cpu = new TestableCpu();
 
         TestRunner testClass = new TestRunner(interpreter, testResultTracker);
 
@@ -49,7 +49,7 @@ class TestRunnerTest {
         Address address = new Address(0x1234);
         String message = "Foooooo";
         Assertion assertion = new Assertion(Target.MEMORY, address, value, message);
-        Cpu cpu = Cpu.builder().build();
+        TestableCpu cpu = new TestableCpu();
         cpu.setMemoryValue(address, value);
 
         TestRunner testClass = new TestRunner(interpreter, testResultTracker);
@@ -66,7 +66,7 @@ class TestRunnerTest {
         Address address = new Address(0x1234);
         String message = "Foooooo";
         Assertion assertion = new Assertion(Target.MEMORY, address, expectedValue, message);
-        Cpu cpu = Cpu.builder().build();
+        TestableCpu cpu = new TestableCpu();
 
         byte actualValue = (byte) 0x94;
         cpu.setMemoryValue(address, actualValue);
@@ -75,7 +75,7 @@ class TestRunnerTest {
 
         testClass.runStep(cpu, assertion);
 
-        verify(testResultTracker).assertionFailed(expectedValue, actualValue);
+        verify(testResultTracker).assertionFailed(expectedValue, actualValue, message);
         verifyNoMoreInteractions(testResultTracker);
     }
 
@@ -84,7 +84,7 @@ class TestRunnerTest {
         byte value = (byte) 0xFF;
         String message = "Foooooo";
         Assertion assertion = new Assertion(Target.Y, null, value, message);
-        Cpu cpu = Cpu.builder().build();
+        TestableCpu cpu = new TestableCpu();
         cpu.setY(value);
 
         TestRunner testClass = new TestRunner(interpreter, testResultTracker);
@@ -100,7 +100,7 @@ class TestRunnerTest {
         byte expectedValue = (byte) 0xFF;
         String message = "Foooooo";
         Assertion assertion = new Assertion(Target.A, null, expectedValue, message);
-        Cpu cpu = Cpu.builder().build();
+        TestableCpu cpu = new TestableCpu();
 
         byte actualValue = (byte) 0x94;
         cpu.setAccumulator(actualValue);
@@ -109,7 +109,7 @@ class TestRunnerTest {
 
         testClass.runStep(cpu, assertion);
 
-        verify(testResultTracker).assertionFailed(expectedValue, actualValue);
+        verify(testResultTracker).assertionFailed(expectedValue, actualValue, message);
         verifyNoMoreInteractions(testResultTracker);
     }
 
@@ -117,7 +117,7 @@ class TestRunnerTest {
     void testRunStep_runSubRoutine() {
         Address address = new Address(0x1234);
         RunSubRoutine runSubRoutine = new RunSubRoutine(address);
-        Cpu cpu = Cpu.builder().build();
+        TestableCpu cpu = new TestableCpu();
 
         TestRunner testClass = new TestRunner(interpreter, testResultTracker);
 
@@ -128,11 +128,108 @@ class TestRunnerTest {
     }
 
     @org.junit.jupiter.api.Test
+    void testRunStep_mockMemory() {
+        List<Byte> values = List.of((byte) 0x55, (byte) 0xFE);
+        Address address = new Address(0x1234);
+        MockMemory mockMemory = new MockMemory(address, values);
+        TestableCpu cpu = new TestableCpu();
+
+        TestRunner testClass = new TestRunner(interpreter, testResultTracker);
+
+        testClass.runStep(cpu, mockMemory);
+
+        assertEquals(values, cpu.getMockedValues(address));
+    }
+
+    @org.junit.jupiter.api.Test
+    void testRunStep_verifyRead_passes() {
+        int expectedReads = 2;
+        Address address = new Address(0x558E);
+        VerifyRead verifyRead = new VerifyRead(address, expectedReads);
+        TestableCpu cpu = new TestableCpu();
+
+        cpu.addWatch(address);
+        cpu.getMemoryValue(address);
+        cpu.getMemoryValue(address);
+
+        TestRunner testClass = new TestRunner(interpreter, testResultTracker);
+
+        testClass.runStep(cpu, verifyRead);
+
+        verify(testResultTracker).assertionPassed(expectedReads);
+        verifyNoMoreInteractions(testResultTracker);
+    }
+
+    @org.junit.jupiter.api.Test
+    void testRunStep_verifyRead_fails() {
+        int expectedReads = 2;
+        Address address = new Address(0x558E);
+        VerifyRead verifyRead = new VerifyRead(address, expectedReads);
+        TestableCpu cpu = new TestableCpu();
+
+        cpu.addWatch(address);
+        cpu.getMemoryValue(address);
+
+        TestRunner testClass = new TestRunner(interpreter, testResultTracker);
+
+        testClass.runStep(cpu, verifyRead);
+
+        String expectedMessage = "Unexpected read count for address $558E";
+        verify(testResultTracker).assertionFailed(expectedReads, 1, expectedMessage);
+        verifyNoMoreInteractions(testResultTracker);
+    }
+
+    @org.junit.jupiter.api.Test
+    void testRunStep_verifyWrite_passes() {
+        List<Byte> expectedBytes = List.of((byte) 0x66, (byte) 0xEE, (byte) 0x80);
+        Address address = new Address(0x558E);
+        VerifyWrite verifyWrite = new VerifyWrite(address, expectedBytes);
+        TestableCpu cpu = new TestableCpu();
+
+        cpu.addWatch(address);
+        cpu.setMemoryValue(address, expectedBytes.get(0));
+        cpu.setMemoryValue(address, expectedBytes.get(1));
+        cpu.setMemoryValue(address, expectedBytes.get(2));
+
+        TestRunner testClass = new TestRunner(interpreter, testResultTracker);
+
+        testClass.runStep(cpu, verifyWrite);
+
+        verify(testResultTracker).assertionPassed(expectedBytes);
+        verifyNoMoreInteractions(testResultTracker);
+    }
+
+    @org.junit.jupiter.api.Test
+    void testRunStep_verifyWrite_fails() {
+        List<Byte> expectedBytes = List.of((byte) 0x66, (byte) 0xEE, (byte) 0x80);
+        Address address = new Address(0x558E);
+        VerifyWrite verifyWrite = new VerifyWrite(address, expectedBytes);
+        TestableCpu cpu = new TestableCpu();
+
+        cpu.addWatch(address);
+        cpu.setMemoryValue(address, (byte) 0x99);
+        cpu.setMemoryValue(address, (byte) 0x66);
+
+        TestRunner testClass = new TestRunner(interpreter, testResultTracker);
+
+        testClass.runStep(cpu, verifyWrite);
+
+        List<Byte> actualBytes = List.of((byte) 0x99, (byte) 0x66);
+        String expectedMessage = "Unexpected bytes written to address $558E";
+        verify(testResultTracker).assertionFailed(expectedBytes, actualBytes, expectedMessage);
+        verifyNoMoreInteractions(testResultTracker);
+    }
+
+    @org.junit.jupiter.api.Test
     void testRunTests() {
+        Address address1 = new Address(0x549A);
+        Address address2 = new Address(0x7DE8);
+        byte byteToWrite = (byte) 0xA5;
         Address subRoutineAddress = new Address(0x7777);
         Program program = program(
                 new Test("test 1", List.of(
                         new SetValue(Target.X, null, 0x55),
+                        new VerifyRead(address1, 9),
                         new Assertion(Target.X, null, 0x55, null)
                         )),
                 new Test("test 2", List.of(
@@ -140,8 +237,15 @@ class TestRunnerTest {
                         new Assertion(Target.X, null, 0x55, null)
                 )),
                 new Test("test 3", List.of(
+                        (runner, cpu) -> {
+                            cpu.getMemoryValue(address1);
+                            cpu.getMemoryValue(address1);
+                            cpu.setMemoryValue(address2, byteToWrite);
+                        },
                         new SetValue(Target.X, null, 0x55),
                         new SetValue(Target.Y, null, 0x66),
+                        new VerifyRead(address1, 2),
+                        new VerifyWrite(address2, List.of(byteToWrite)),
                         new Assertion(Target.X, null, 0x55, null),
                         new Assertion(Target.Y, null, 0x66, null)
                 ))
@@ -152,12 +256,15 @@ class TestRunnerTest {
 
         List<TestResult> expectedResults = List.of(
                 new TestResult("test 1", List.of(
+                        new AssertionResult(false, 9, 0, "Unexpected read count for address $549A"),
                         new AssertionResult(true, (byte) 0x55, (byte) 0x55)
                 )),
                 new TestResult("test 2", List.of(
                         new AssertionResult(false, (byte) 0x55, (byte) 0x0)
                 )),
                 new TestResult("test 3", List.of(
+                        new AssertionResult(true, 2, 2),
+                        new AssertionResult(true, List.of(byteToWrite), List.of(byteToWrite)),
                         new AssertionResult(true, (byte) 0x55, (byte) 0x55),
                         new AssertionResult(true, (byte) 0x66, (byte) 0x66)
                 ))

@@ -4,6 +4,7 @@ import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.parser.ParseException;
 import com.gnopai.ji65.parser.expression.PrimaryExpression;
 import com.gnopai.ji65.test.Target;
+import com.gnopai.ji65.test.TestStepType;
 import com.gnopai.ji65.util.ErrorHandler;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +28,7 @@ class TestAssertStatementParseletTest {
         );
 
         TestStatement expectedResult = TestStatement.builder()
-                .type(TestStatement.Type.ASSERT)
+                .type(TestStepType.ASSERT)
                 .target(Target.X)
                 .value(new PrimaryExpression(NUMBER, 99))
                 .build();
@@ -44,7 +45,7 @@ class TestAssertStatementParseletTest {
         );
 
         TestStatement expectedResult = TestStatement.builder()
-                .type(TestStatement.Type.ASSERT)
+                .type(TestStepType.ASSERT)
                 .target(Target.Y)
                 .value(new PrimaryExpression(NUMBER, 99))
                 .build();
@@ -61,7 +62,7 @@ class TestAssertStatementParseletTest {
         );
 
         TestStatement expectedResult = TestStatement.builder()
-                .type(TestStatement.Type.ASSERT)
+                .type(TestStepType.ASSERT)
                 .target(Target.A)
                 .value(new PrimaryExpression(NUMBER, 99))
                 .build();
@@ -83,7 +84,7 @@ class TestAssertStatementParseletTest {
         );
 
         TestStatement expectedResult = TestStatement.builder()
-                .type(TestStatement.Type.ASSERT)
+                .type(TestStepType.ASSERT)
                 .target(Target.A)
                 .value(new PrimaryExpression(NUMBER, 99))
                 .message("Whee!")
@@ -101,7 +102,7 @@ class TestAssertStatementParseletTest {
         );
 
         TestStatement expectedResult = TestStatement.builder()
-                .type(TestStatement.Type.ASSERT)
+                .type(TestStepType.ASSERT)
                 .target(Target.MEMORY)
                 .targetAddress(new PrimaryExpression(NUMBER, 0x1234))
                 .value(new PrimaryExpression(NUMBER, 99))
@@ -124,7 +125,7 @@ class TestAssertStatementParseletTest {
         );
 
         TestStatement expectedResult = TestStatement.builder()
-                .type(TestStatement.Type.ASSERT)
+                .type(TestStepType.ASSERT)
                 .target(Target.MEMORY)
                 .targetAddress(new PrimaryExpression(NUMBER, 0x1234))
                 .value(new PrimaryExpression(NUMBER, 99))

@@ -27,7 +27,10 @@ public class DirectiveStatementParselet implements StatementParselet {
                 entry(DirectiveType.TEST, new TestDirectiveParser()),
                 entry(DirectiveType.TEST_ASSERT, new TestAssertStatementParselet()),
                 entry(DirectiveType.TEST_SET, new TestSetStatementParselet()),
-                entry(DirectiveType.TEST_RUN, new TestRunStatementParselet())
+                entry(DirectiveType.TEST_RUN, new TestRunStatementParselet()),
+                entry(DirectiveType.TEST_MOCK, new TestMockMemoryStatementParselet()),
+                entry(DirectiveType.TEST_VERIFY_READ, new TestVerifyReadStatementParselet()),
+                entry(DirectiveType.TEST_VERIFY_WRITE, new TestVerifyWriteStatementParselet())
         );
     }
 

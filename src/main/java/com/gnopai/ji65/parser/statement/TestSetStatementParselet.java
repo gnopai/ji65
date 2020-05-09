@@ -5,6 +5,7 @@ import com.gnopai.ji65.parser.expression.Expression;
 import com.gnopai.ji65.scanner.Token;
 import com.gnopai.ji65.scanner.TokenType;
 import com.gnopai.ji65.test.Target;
+import com.gnopai.ji65.test.TestStepType;
 
 import java.util.Map;
 import java.util.Optional;
@@ -37,7 +38,7 @@ public class TestSetStatementParselet implements StatementParselet {
         parser.consumeEndOfLine();
 
         return TestStatement.builder()
-                .type(TestStatement.Type.SET)
+                .type(TestStepType.SET)
                 .target(target)
                 .value(value)
                 .build();
@@ -49,7 +50,7 @@ public class TestSetStatementParselet implements StatementParselet {
         parser.consumeEndOfLine();
 
         return TestStatement.builder()
-                .type(TestStatement.Type.SET)
+                .type(TestStepType.SET)
                 .target(Target.MEMORY)
                 .targetAddress(targetAddress)
                 .value(value)

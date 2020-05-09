@@ -4,6 +4,7 @@ import com.gnopai.ji65.DirectiveType;
 import com.gnopai.ji65.parser.ParseException;
 import com.gnopai.ji65.parser.expression.PrimaryExpression;
 import com.gnopai.ji65.test.Target;
+import com.gnopai.ji65.test.TestStepType;
 import com.gnopai.ji65.util.ErrorHandler;
 import org.junit.jupiter.api.Test;
 
@@ -63,16 +64,16 @@ class TestDirectiveParserTest {
                 .name("test_test")
                 .statements(List.of(
                         TestStatement.builder()
-                                .type(TestStatement.Type.SET)
+                                .type(TestStepType.SET)
                                 .target(Target.X)
                                 .value(new PrimaryExpression(NUMBER, 666))
                                 .build(),
                         TestStatement.builder()
-                                .type(TestStatement.Type.RUN)
+                                .type(TestStepType.RUN)
                                 .targetAddress(new PrimaryExpression(NUMBER, 0x1234))
                                 .build(),
                         TestStatement.builder()
-                                .type(TestStatement.Type.ASSERT)
+                                .type(TestStepType.ASSERT)
                                 .target(Target.X)
                                 .value(new PrimaryExpression(NUMBER, 777))
                                 .build()

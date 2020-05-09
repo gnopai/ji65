@@ -28,13 +28,13 @@ class TestResultTrackerTest {
     void testAssertionFailed() {
         TestResultTracker testClass = new TestResultTracker();
         testClass.startTest(test("one"));
-        testClass.assertionFailed((byte) 0x04, (byte) 0x05);
+        testClass.assertionFailed((byte) 0x04, (byte) 0x05, "ohno");
         List<TestResult> results = testClass.getResults();
 
         List<TestResult> expectedResults = List.of(
                 TestResult.builder()
                         .name("one")
-                        .assertionResult(new AssertionResult(false, (byte) 0x04, (byte) 0x05))
+                        .assertionResult(new AssertionResult(false, (byte) 0x04, (byte) 0x05, "ohno"))
                         .build()
         );
         assertEquals(expectedResults, results);
@@ -62,7 +62,7 @@ class TestResultTrackerTest {
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> testClass.assertionPassed((byte) 0x88));
         assertEquals(expectedMessage, exception.getMessage());
 
-        exception = assertThrows(IllegalStateException.class, () -> testClass.assertionFailed((byte) 0x88, (byte) 0x89));
+        exception = assertThrows(IllegalStateException.class, () -> testClass.assertionFailed((byte) 0x88, (byte) 0x89, "ohno"));
         assertEquals(expectedMessage, exception.getMessage());
     }
 
@@ -71,7 +71,7 @@ class TestResultTrackerTest {
         TestResultTracker testClass = new TestResultTracker();
         testClass.startTest(test("one"));
         testClass.assertionPassed((byte) 0x12);
-        testClass.assertionFailed((byte) 0x04, (byte) 0x05);
+        testClass.assertionFailed((byte) 0x04, (byte) 0x05, "ohno");
         testClass.startTest(test("two"));
         testClass.assertionPassed((byte) 0x99);
         List<TestResult> results = testClass.getResults();
@@ -80,7 +80,7 @@ class TestResultTrackerTest {
                 TestResult.builder()
                         .name("one")
                         .assertionResult(new AssertionResult(true, (byte) 0x12, (byte) 0x12))
-                        .assertionResult(new AssertionResult(false, (byte) 0x04, (byte) 0x05))
+                        .assertionResult(new AssertionResult(false, (byte) 0x04, (byte) 0x05, "ohno"))
                         .build(),
                 TestResult.builder()
                         .name("two")

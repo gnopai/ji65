@@ -3,6 +3,7 @@ package com.gnopai.ji65.parser.statement;
 import com.gnopai.ji65.parser.Parser;
 import com.gnopai.ji65.parser.expression.Expression;
 import com.gnopai.ji65.scanner.Token;
+import com.gnopai.ji65.test.TestStepType;
 
 public class TestRunStatementParselet implements StatementParselet {
     @Override
@@ -10,7 +11,7 @@ public class TestRunStatementParselet implements StatementParselet {
         Expression targetAddress = parser.expression();
         parser.consumeEndOfLine();
         return TestStatement.builder()
-                .type(TestStatement.Type.RUN)
+                .type(TestStepType.RUN)
                 .targetAddress(targetAddress)
                 .build();
     }
